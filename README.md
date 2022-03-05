@@ -26,6 +26,7 @@ The exe was compiled with pyinstaller and windows defender will most likely repo
 
 The position of some GUI elements may be slightly off depending on your windows personalization setup. This is because i placed the elements with pixels and did not use the tkinter grid system. I will update it in the near future.
 I can easily modify this program to work with dark souls 3 or other games. Just let me know.
+NOTE: Never use someone elses save file or you'll get banned.
 
 Icon used from https://www.deviantart.com/abdelrahman18/art/Elden-Ring-Icon-877626671
 
