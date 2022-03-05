@@ -4,8 +4,8 @@ GUI app written entirely in Python.
 
 When drop trading with a friend:
   1. click file > save backup
-  2. Go ingame, drop trade items to friend, exit game to main menu (or you can quit the game, up to you).
-  3. click file > restore backup
+  2. Go ingame, drop trade items to friend, exit game to main menu, dont sign in after Bandai Namco screen (or you can quit the game, up to you).
+  3. alt-tab, click file > restore backup
   4. Done! Now your friend will have all of your items and you will still have all the items you gave them.
 
 
