@@ -2,11 +2,10 @@
 GUI app written entirely in Python.
 
 
-When drop trading with a friend or just making a quick backup:
-  1. click file > save backup
-  2. Go ingame, drop trade items to friend, exit game to main menu, dont sign in after Bandai Namco screen (or you can quit the game, up to you).
-  3. alt-tab, click file > restore backup
-  4. Done!
+When making a quick backup:
+  1. Launch game or go to main menu (just dont sign in after the Bandai Namco screen)
+  2. alt-tab, click file > save backup
+  3. Make sure the Game is exited or at the main menu (dont sign in) and alt-tab, file > restore backup
 
 
 Creating save slots to easily store and load various builds before RESPEC, etc.
