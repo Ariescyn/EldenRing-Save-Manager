@@ -28,3 +28,6 @@ The position of some GUI elements may be slightly off depending on your windows 
 I can easily modify this program to work with dark souls 3 or other games. Just let me know.
 
 Icon used from https://www.deviantart.com/abdelrahman18/art/Elden-Ring-Icon-877626671
+
+
+![image](https://user-images.githubusercontent.com/68882322/156894674-4511043f-f643-4c64-abb2-cbfe0217b454.png)
