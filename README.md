@@ -23,7 +23,6 @@ This is my first GUI app and i would love suggestions/advice! Email me at scynta
 
 The exe was compiled with pyinstaller and windows defender will most likely report it as untrusted. Just click more info > run anyway. This is a known issue and i am actively working on it. If you don't feel comfortable downloading then wait a couple days and it should be fixed. If anyone can help, please contact me.
 
-The position of some GUI elements may be slightly off depending on your windows personalization setup. This is because i placed the elements with pixels and did not use the tkinter grid system. I will update it in the near future.
 I can easily modify this program to work with dark souls 3 or other games. Just let me know.
 NOTE: Never use someone elses save file or you'll get banned.
 
