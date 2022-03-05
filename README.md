@@ -2,7 +2,7 @@
 GUI app written entirely in python.
 
 
-When drop trading with a friend:
+#When drop trading with a friend:
   1. click file > save backup
   2. Go ingame, drop trade items to friend, exit game to main menu (or you can quit the game, up to you).
   3. click file > restore backup
