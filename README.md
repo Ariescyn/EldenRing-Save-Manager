@@ -28,7 +28,10 @@ NOTE: Never use someone elses save file or you'll get banned.
 Icon used from https://www.deviantart.com/abdelrahman18/art/Elden-Ring-Icon-877626671
 
 
+NOTE: The exe was compiled with pyinstaller and windows defender will most likely report it as untrusted. Just click more info > run anyway. I have already fixed this issue and will release it along with a fix where some GUI elements are placed wrong depending on your windows personalization settings.
+
+
 ![image](https://user-images.githubusercontent.com/68882322/156894674-4511043f-f643-4c64-abb2-cbfe0217b454.png)
 
 
-The exe was compiled with pyinstaller and windows defender will most likely report it as untrusted. Just click more info > run anyway. I have already fixed this issue and will release it along with a fix where some GUI elements are placed wrong depending on your windows personalization settings.
+
