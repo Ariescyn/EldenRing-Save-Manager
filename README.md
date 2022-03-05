@@ -19,7 +19,7 @@ Creating save slots to easily store and load various builds before RESPEC, etc.
 
 
 
-This is my first GUI app and i would love suggestions/advice! Email me at scyntacks94@gmail.com
+This is my first GUI app and have been using it since release. Figured i would share it with all the issues of people losing their progress. i would love suggestions/advice! Email me at scyntacks94@gmail.com
 
 The exe was compiled with pyinstaller and windows defender will most likely report it as untrusted. Just click more info > run anyway. This is a known issue and i am actively working on it. If you don't feel comfortable downloading then wait a couple days and it should be fixed. If anyone can help, please contact me.
 
