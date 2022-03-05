@@ -21,7 +21,6 @@ Creating save slots to easily store and load various builds before RESPEC, etc.
 
 This is my first GUI app and have been using it since release. Figured i would share it with all the issues of people losing their progress. i would love suggestions/advice! Email me at scyntacks94@gmail.com
 
-The exe was compiled with pyinstaller and windows defender will most likely report it as untrusted. Just click more info > run anyway. This is a known issue and i am actively working on it. If you don't feel comfortable downloading then wait a couple days and it should be fixed. If anyone can help, please contact me.
 
 I can easily modify this program to work with dark souls 3 or other games. Just let me know.
 NOTE: Never use someone elses save file or you'll get banned.
@@ -30,3 +29,6 @@ Icon used from https://www.deviantart.com/abdelrahman18/art/Elden-Ring-Icon-8776
 
 
 ![image](https://user-images.githubusercontent.com/68882322/156894674-4511043f-f643-4c64-abb2-cbfe0217b454.png)
+
+
+The exe was compiled with pyinstaller and windows defender will most likely report it as untrusted. Just click more info > run anyway. I have already fixed this issue and will release it along with a fix where some GUI elements are placed wrong depending on your windows personalization settings.
