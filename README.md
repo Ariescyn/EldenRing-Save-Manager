@@ -1,5 +1,5 @@
 # EldenRing-Save-Manager
-GUI app written entirely in python.
+GUI app written entirely in Python.
 
 
 When drop trading with a friend:
