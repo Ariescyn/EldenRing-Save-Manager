@@ -2,8 +2,8 @@
 GUI app written entirely in Python.
 
 
-When making a quick backup:
-  1. Launch game or go to main menu (just dont sign in after the Bandai Namco screen)
+When making a quick save or backup:
+  1. Exit game or go to main menu (just dont sign in after the Bandai Namco screen)
   2. alt-tab, click file > save backup
   3. Make sure the Game is exited or at the main menu (dont sign in) and alt-tab, file > restore backup
 
