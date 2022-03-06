@@ -19,7 +19,7 @@ Creating save slots to easily store and load various builds before RESPEC, etc.
 
 
 
-This is my first GUI app and have been using it since release. Figured i would share it with all the issues of people losing their progress. i would love suggestions/advice! Email me at scyntacks94@gmail.com
+This is my first GUI app and have been using it since DS3. Figured i would share it with all the issues of people losing their progress. i would love suggestions/advice! Email me at scyntacks94@gmail.com
 
 
 I can easily modify this program to work with dark souls 3 or other games. Just let me know.
