@@ -29,7 +29,6 @@ Icon used from https://www.deviantart.com/abdelrahman18/art/Elden-Ring-Icon-8776
 
 NOTE: Never use someone elses save file or you'll get banned. The exe was compiled with pyinstaller and windows defender might report it as untrusted. This is a common issue with pyinstaller. Just click more info > run anyway. I am working to fix this by compiling it differently but it has been a real PAIN. Would appreciate advice.
 
-![v1 1](https://user-images.githubusercontent.com/68882322/156934341-ae406f45-81a9-4a60-9f6f-98a5445622a5.jpg)
 
 ![v1 1-two](https://user-images.githubusercontent.com/68882322/156934436-a416d6a1-501b-4cc9-8a31-60d07d50b10a.png)
 
