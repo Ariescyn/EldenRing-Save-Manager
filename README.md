@@ -25,7 +25,7 @@ This is my first GUI app and have been using it since DS3. Figured i would share
 I can easily modify this program to work with dark souls 3 or other games. Just let me know.
 
 Icon used from https://www.deviantart.com/abdelrahman18/art/Elden-Ring-Icon-877626671
-
+You can use this icon to replace the horrible default one.
 
 NOTE: Never use someone elses save file or you'll get banned. The exe was compiled with pyinstaller and windows defender might report it as untrusted. This is a common issue with pyinstaller. Just click more info > run anyway. I am working to fix this by compiling it differently but it has been a real PAIN. Would appreciate advice.
 
