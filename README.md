@@ -36,5 +36,5 @@ NOTE: Never use someone elses save file or you'll get banned. The exe was compil
 Build from source:
   - pip install pillow pyinstaller
   - cd into folder with saveManager.py and data folder
-    - make sure you have the data folder from the exe release in the same directory as the script
+    - make sure you have the data folder from the release in the same directory as the script
   - pyinstaller --onefile --icon=.\data\icon.ico --windowed .\SaveManager.py
