@@ -16,7 +16,8 @@ Creating save slots to easily store and load various builds before RESPEC, etc.
   - To delete a save slot, select the slot and click 'Delete Save'.
   - Right-click on a save slot to edit notes. Notepad will open and allow you to enter details related to the save, like rune count, levels etc.
 
-
+To update an existing save slot.
+  - enter the same name and click Done and it will overwrite the existing one.
 
 
 This is my first GUI app and have been using it since DS3. Figured i would share it with all the issues of people losing their progress. i would love suggestions/advice! Email me at scyntacks94@gmail.com
