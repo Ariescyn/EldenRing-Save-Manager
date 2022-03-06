@@ -20,6 +20,9 @@ To update an existing save slot.
   - enter the same name and click Done and it will overwrite the existing one.
 
 
+
+
+
 This is my first GUI app and have been using it since DS3. Figured i would share it with all the issues of people losing their progress. i would love suggestions/advice! Email me at scyntacks94@gmail.com
 
 
