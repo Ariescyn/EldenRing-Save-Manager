@@ -32,7 +32,7 @@ NOTE: Never use someone elses save file or you'll get banned. The exe was compil
 
 ![v1 1-two](https://user-images.githubusercontent.com/68882322/156934436-a416d6a1-501b-4cc9-8a31-60d07d50b10a.png)
 
-[![In Action](https://img.youtube.com/vi/CO9h2gy9Qh8/0.jpg)](https://youtu.be/CO9h2gy9Qh8)
+Video of the app in action here: https://youtu.be/CO9h2gy9Qh8
 
 
 Build from source:
