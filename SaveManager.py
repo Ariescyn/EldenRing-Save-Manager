@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import font as FNT
-from PIL import Image, ImageTk  # sudo apt-get install python3-pil python3-pil.imagetk, OR MAC python3 -m pip install --upgrade Pillow
+from PIL import Image, ImageTk
 from tkinter import ttk
 import subprocess
 import os
