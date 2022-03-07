@@ -2,24 +2,24 @@
 GUI app written entirely in Python.
 
 
-When making a quick save or backup:
-  1. Exit game or go to main menu (just dont sign in after the Bandai Namco screen)
-  2. alt-tab, click file > save backup
-  3. Make sure the Game is exited or at the main menu (dont sign in) and alt-tab, file > restore backup
+Quick Backup and Restore when you dont need to make a save slot:
+  
+  1. Make sure you are at the main menu (after bandai namco screen and before you login to elden ring servers) or exit the game.
+  2. click file > save backup.
+  3. Load into the game and do as you wish.
+  4. Repeat step 1.
+  4. click file > restore backup.
 
 
 Creating save slots to easily store and load various builds before RESPEC, etc.
   
   - When creating a save slot, enter a name for the save and click 'Done'. It will then appear in the list box.
-  - This will copy the contents of your appdata/roaming/EldenRing folder and back it up for easy retrieval.
+  - This will copy the contents of your appdata/roaming/EldenRing folder and save a copy to data/save-files up for easy retrieval.
   - Simply select the save slot you want to load into the game and click 'Load Save'.
   - To delete a save slot, select the slot and click 'Delete Save'.
   - Right-click on a save slot to edit notes. Notepad will open and allow you to enter details related to the save, like rune count, levels etc.
-
-To update an existing save slot.
-  - enter the same name and click Done and it will overwrite the existing one.
-
-
+  - Right-click on a save slot to rename a save file. Enter a new name and press Done. NOTE: Some characters are forbidden in save slot names. example: "~'{};:./\,:*?<>|-!@#$%^&()+
+  - Right-click on a save slot to update a save slot. This will copy the contents of your most current save file in appdata/roaming/EldenRing and overwrite the      selected save slot.
 
 
 
