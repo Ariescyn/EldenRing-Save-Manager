@@ -31,7 +31,6 @@ I can easily modify this program to work with dark souls 3 or other games. Just 
 Icon used from https://www.deviantart.com/abdelrahman18/art/Elden-Ring-Icon-877626671
 You can use this icon to replace the horrible default Elden Ring game icon.
 
-NOTE: Never use someone elses save file or you'll get banned. The exe was compiled with pyinstaller and windows defender might report it as untrusted. This is a common issue with pyinstaller. Just click more info > run anyway. I am working to fix this by compiling it differently but it has been a real PAIN. Would appreciate advice.
 
 
 ![1 2](https://user-images.githubusercontent.com/68882322/157093926-c4476981-3a80-42a0-a7f0-717486706347.jpg)
