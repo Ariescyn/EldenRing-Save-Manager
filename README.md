@@ -38,8 +38,3 @@ You can use this icon to replace the horrible default Elden Ring game icon.
 Video of the app in action here: https://youtu.be/CO9h2gy9Qh8
 
 
-Build from source:
-  - pip install pillow pyinstaller
-  - cd into folder with saveManager.py and data folder
-    - make sure you have the data folder from the release in the same directory as the script
-  - pyinstaller --onefile --icon=.\data\icon.ico --windowed .\SaveManager.py
