@@ -1,7 +1,7 @@
 # EldenRing-Save-Manager
 GUI app written entirely in Python.
 
-![1 2](https://user-images.githubusercontent.com/68882322/157093926-c4476981-3a80-42a0-a7f0-717486706347.jpg)
+![1 3](https://user-images.githubusercontent.com/68882322/158031688-48924144-f97d-494f-8602-ffb92507efa4.jpg)
 
 
 Quick Backup and Restore when you dont need to make a save slot:
