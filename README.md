@@ -1,6 +1,11 @@
 # EldenRing-Save-Manager
 GUI app written entirely in Python.
 
+- Create save and load backups 
+- Create save slots for various builds before respec etc. 
+- Edit notes attached to each save slot.
+- Update to the latest release with included updater
+
 ![1 3](https://user-images.githubusercontent.com/68882322/158031688-48924144-f97d-494f-8602-ffb92507efa4.jpg)
 
 
