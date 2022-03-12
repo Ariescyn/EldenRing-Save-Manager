@@ -1,6 +1,8 @@
 # EldenRing-Save-Manager
 GUI app written entirely in Python.
 
+![1 2](https://user-images.githubusercontent.com/68882322/157093926-c4476981-3a80-42a0-a7f0-717486706347.jpg)
+
 
 Quick Backup and Restore when you dont need to make a save slot:
   
@@ -26,14 +28,13 @@ Creating save slots to easily store and load various builds before RESPEC, etc.
 This is my first GUI app and have been using it since DS3. Figured i would share it with all the issues of people losing their progress. i would love suggestions/advice! Email me at scyntacks94@gmail.com
 
 
-I can easily modify this program to work with dark souls 3 or other games. Just let me know.
 
 Icon used from https://www.deviantart.com/abdelrahman18/art/Elden-Ring-Icon-877626671
 You can use this icon to replace the horrible default Elden Ring game icon.
 
 
 
-![1 2](https://user-images.githubusercontent.com/68882322/157093926-c4476981-3a80-42a0-a7f0-717486706347.jpg)
+
 
 Video of the app in action here: https://youtu.be/CO9h2gy9Qh8
 
