@@ -12,7 +12,7 @@ Features:
 ![1 3](https://user-images.githubusercontent.com/68882322/158031688-48924144-f97d-494f-8602-ffb92507efa4.jpg)
 
 NOTE: I removed the update application from the newest release since it was being detected as a virus and it is now an optional download.
-You can still check for updates within the save manager, but will have to be manually download from GitHub.
+You can still check for updates within the save manager, but will have to be manually downloaded from GitHub.
 
 Quick Backup and Restore when you dont need to make a save slot:
   
