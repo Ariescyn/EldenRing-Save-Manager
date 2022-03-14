@@ -5,7 +5,7 @@ Features:
 - Create save and load backups 
 - Create save slots for various builds before respec etc. 
 - Edit notes attached to each save slot
-- Update to the latest release with included updater
+- Update to the latest release with optional updater
 - Force quit EldenRing when the game locks up and even task manager wont end the process
 
 
