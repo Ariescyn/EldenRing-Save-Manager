@@ -46,4 +46,5 @@ You can use this icon to replace the horrible default Elden Ring game icon.
 
 
 Video of the app in action here: https://youtu.be/-F34HSQW2Jk
+
 NOTE: To anyone who received virus warnings, i have contacted Microsoft and they have removed the false positive on Defender
