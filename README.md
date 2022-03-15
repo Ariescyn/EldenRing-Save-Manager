@@ -5,14 +5,12 @@ Features:
 - Create save and load backups 
 - Create save slots for various builds before respec etc. 
 - Edit notes attached to each save slot
-- Update to the latest release with optional updater
+- Update to the latest release with included updater
 - Force quit EldenRing when the game locks up and even task manager wont end the process
 
 
 ![1 3](https://user-images.githubusercontent.com/68882322/158031688-48924144-f97d-494f-8602-ffb92507efa4.jpg)
 
-NOTE: I removed the update application from the newest release since it was being detected as a virus and it is now an optional download.
-You can still check for updates within the save manager, but will have to be manually downloaded from GitHub.
 
 Quick Backup and Restore when you dont need to make a save slot:
   
@@ -48,5 +46,4 @@ You can use this icon to replace the horrible default Elden Ring game icon.
 
 
 Video of the app in action here: https://youtu.be/-F34HSQW2Jk
-
-
+NOTE: To anyone who received virus warnings, i have contacted Microsoft and they have removed the false positive on Defender
