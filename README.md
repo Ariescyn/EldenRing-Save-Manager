@@ -1,6 +1,10 @@
 # EldenRing-Save-Manager
 GUI app written entirely in Python.
 
+
+
+
+
 Features:
 - Create save and load backups 
 - Create save slots for various builds before respec etc. 
@@ -9,7 +13,16 @@ Features:
 - Force quit EldenRing when the game locks up and even task manager wont end the process
 
 
+
+UPCOMING FEATURES:
+  - Copy a character from one save file to another, or duplicate a character within the same save file
+  - View the names of all characters in a save file
+  - Savegame Patcher: Attempt to fix corrupt save files by running checksums on a save slot, and if they dont match, write new checksums
+  - change the steamID associated with a save file
+
+
 ![1 3](https://user-images.githubusercontent.com/68882322/158031688-48924144-f97d-494f-8602-ffb92507efa4.jpg)
+
 
 
 Quick Backup and Restore when you dont need to make a save slot:
