@@ -3,9 +3,12 @@ GUI app written entirely in Python.
 
 
 
-
-
 Features:
+- Copy characters between save files
+- Duplicate characters within the same save file
+- rename characters ingame name
+- automatically patch downloaded save files with your own Steam ID
+- Fix corrupt save files by recalculating checksum values
 - Create save and load backups 
 - Create save slots for various builds before respec etc. 
 - Edit notes attached to each save slot
@@ -14,40 +17,10 @@ Features:
 
 
 
-UPCOMING FEATURES:
-  - Copy a character from one save file to another, or duplicate a character within the same save file
-  - View the names of all characters in a save file
-  - Savegame Patcher: Attempt to fix corrupt save files by running checksums on a save slot, and if they dont match, write new checksums
-  - change the steamID associated with a save file
 
+![1 42222](https://user-images.githubusercontent.com/68882322/162021779-dfa54a2d-eebf-49c2-823f-87a73751dbdf.jpg)
 
-![1 3](https://user-images.githubusercontent.com/68882322/158031688-48924144-f97d-494f-8602-ffb92507efa4.jpg)
-
-
-
-Quick Backup and Restore when you dont need to make a save slot:
-  
-  1. Make sure you are at the main menu (after bandai namco screen and before you login to elden ring servers) or exit the game.
-  2. click file > save backup.
-  3. Load into the game and do as you wish.
-  4. Repeat step 1.
-  4. click file > restore backup.
-
-
-Creating save slots to easily store and load various builds before RESPEC, etc.
-  
-  - When creating a save slot, enter a name for the save and click 'Done'. It will then appear in the list box.
-  - This will copy the contents of your appdata/roaming/EldenRing folder and save a copy to data/save-files up for easy retrieval.
-  - Simply select the save slot you want to load into the game and click 'Load Save'.
-  - To delete a save slot, select the slot and click 'Delete Save'.
-  - Right-click on a save slot to edit notes. Notepad will open and allow you to enter details related to the save, like rune count, levels etc.
-  - Right-click on a save slot to rename a save file. Enter a new name and press Done. NOTE: Some characters are forbidden in save slot names. example: "~'{};:./\,:*?<>|-!@#$%^&()+
-  - Right-click on a save slot to update a save slot. This will copy the contents of your most current save file in appdata/roaming/EldenRing and overwrite the      selected save slot.
-
-
-
-
-This is my first GUI app and have been using it since DS3. Figured i would share it with all the issues of people losing their progress. i would love suggestions/advice! Email me at scyntacks94@gmail.com
+![v1 40](https://user-images.githubusercontent.com/68882322/161843003-dfefa2fb-ca14-4401-970a-2875bb74c943.jpg)
 
 
 
@@ -56,8 +29,5 @@ You can use this icon to replace the horrible default Elden Ring game icon.
 
 
 
+Walkthrough: https://youtu.be/RZIP0kYjvZM
 
-
-Video of the app in action here: https://youtu.be/-F34HSQW2Jk
-
-NOTE: To anyone who received virus warnings, i have contacted Microsoft and they have removed the false positive on Defender
