@@ -6,7 +6,7 @@ GUI app written entirely in Python.
 Features:
 - Copy characters between save files
 - Duplicate characters within the same save file
-- rename characters ingame name
+- rename characters in-game name
 - automatically patch downloaded save files with your own Steam ID
 - Fix corrupt save files by recalculating checksum values
 - Create save and load backups 
