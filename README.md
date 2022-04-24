@@ -4,6 +4,7 @@ GUI app written entirely in Python.
 
 
 Features:
+- Edit item quantities
 - Edit character stats
 - Copy characters between save files
 - Duplicate characters within the same save file
