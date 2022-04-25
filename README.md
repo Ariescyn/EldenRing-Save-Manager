@@ -1,9 +1,23 @@
 # EldenRing-Save-Manager
 GUI app written entirely in Python.
 
+## Usage
+#### Windows
+Release executables are avaiable here on github
 
+#### Linux / Proton / SteamDeck
 
-Features:
+Dependencies
+```
+python -m pip install Pillow
+python -m pip install tk
+```
+Run
+```
+python SaveManager.py
+```
+
+## Features:
 - Edit item quantities
 - Edit character stats
 - Copy characters between save files
