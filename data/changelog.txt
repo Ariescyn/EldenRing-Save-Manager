@@ -1,0 +1,5 @@
+- New Inventory Editor tool (More items will be added in the future)
+
+- Setting character stats now automatically sets HP/STAM/FP values
+
+- Small bug fixes and improvements
