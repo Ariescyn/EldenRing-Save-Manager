@@ -3,7 +3,6 @@ import platform
 import sys
 import subprocess
 import shutil
-from .settings import *
 
 # main variables, directories and settings
 savedir = "./data/save-files/"
@@ -29,7 +28,7 @@ def get_savedata_dir():
     
     return folder
 
-eldenring_savedata_dir = _get_savedata_dir()
+eldenring_savedata_dir = get_savedata_dir()
 
 def open_folder_standard_exporer(path):
     if platform.system() == "Windows":
@@ -61,7 +60,7 @@ def copy_folder(src, dest):
     """
     shutil.copytree(src, dest, dirs_exist_ok=True)
 
-def copy_file(src, dest):
+def copy_file(src, dst):
     shutil.copy(src, dst)
 
 def delete_folder(folder):

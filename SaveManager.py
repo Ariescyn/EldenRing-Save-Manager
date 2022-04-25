@@ -9,7 +9,7 @@ import tkinter as TKIN
 from collections import Counter
 from PIL import Image, ImageTk
 import subprocess, os, zipfile, requests, re, time, hexedit, webbrowser, itemdata
-from .os_layer import *
+from os_layer import *
 
 # Load and parse save directory
 if not os.path.exists(gamesavedir_txt):
@@ -24,20 +24,21 @@ with open(gamesavedir_txt, 'r') as fh:
 def get_steamid():
     """Get users steamID by pulling folder name."""
     for dir_name in os.listdir(eldenring_savedata_dir):
+        print(dir_name)
         steam_id = None
         if len(dir_name) == 17:
             steam_id = dir_name
 
-        if not steam_id:
-            popup("Steam ID not detected. Ensure your default game directory\nis set properly before performing any actions.")
-            return None
-        else:
-            return steam_id
+    if not steam_id:
+        popup("Steam ID not detected. Ensure your default game directory\nis set properly before performing any actions.")
+        return None
+    else:
+        return steam_id
 
 def import_save():
     """Opens file explorer to choose a save file to import, Then checks if the files steam ID matches users, and replaces it with users id """
     if os.path.isdir(savedir) is False:
-        os.mkdir(savedir)
+        os.makedirs(savedir)
     d = fd.askopenfilename()
 
     if len(d) < 1:
@@ -76,15 +77,14 @@ def import_save():
 
         id = user_steam_id
         newdir = "{}{}/{}/".format(savedir,name.replace(' ', '-'),id)
-        cp_to_saves_cmd = lambda: copy_folder(d, newdir)
+        cp_to_saves_cmd = lambda: copy_file(d, newdir)
 
         if os.path.isdir(newdir) is False:
-            cmd_out = run_command(lambda: os.mkdir(newdir))
+            cmd_out = run_command(lambda: os.makedirs(newdir))
 
             if cmd_out[0]  == 'error':
                 return
             lb.insert(END, "  " + name)
-            # dirs_exist_ok flag ??
             cmd_out = run_command(cp_to_saves_cmd)
             if cmd_out[0] == 'error':
                 return
@@ -168,7 +168,7 @@ def reset_default_dir():
 def create_notes(name,dir):
     """Create a notepad document in specified save slot."""
     name = name.replace(' ', '-')
-    cmd = lambda: os.close(os.open("{dir}/notes.txt", os.O_CREAT))
+    cmd = lambda: os.close(os.open(f"{dir}/notes.txt", os.O_CREAT))
     run_command(cmd)
 
 
@@ -198,7 +198,7 @@ def save_backup():
     comm = lambda: copy_folder(gamedir,backupdir)
 
     if os.path.isdir(backupdir) is False:
-        cmd_out1 = run_command(lambda: os.mkdir(backupdir))
+        cmd_out1 = run_command(lambda: os.makedirs(backupdir))
         if cmd_out1[0] == 'error':
             return
     cmd_out2 = run_command(comm)
@@ -213,7 +213,7 @@ def load_backup():
     """Quickly load a backup of the current game save. Used from the menubar."""
     comm = lambda: copy_folder(backupdir, gamedir)
     if os.path.isdir(backupdir) is False:
-        run_command(lambda: os.mkdir(backupdir))
+        run_command(lambda: os.makedirs(backupdir))
 
     if len(re.findall(r'\d{17}',str(os.listdir(backupdir)))) < 1:
         popup('No backup found')
@@ -241,7 +241,7 @@ def create_save():
 
     if os.path.isdir(savedir) is False:
         #subprocess.run("md .\\save-files", shell=True)
-        cmd_out = run_command(lambda: os.mkdir(savedir))
+        cmd_out = run_command(lambda: os.makedirs(savedir))
         if cmd_out[0] == 'error':
             return
 
@@ -256,7 +256,7 @@ def create_save():
         # /I - If in doubt, always assume the destination is a folder. e.g. when the destination does not exist
         # /Y - Overwrite all without PROMPT (ex: yes no)
         if os.path.isdir(newdir) is False:
-            cmd_out = run_command(lambda: os.mkdir(newdir))
+            cmd_out = run_command(lambda: os.makedirs(newdir))
             if cmd_out[0]  == 'error':
                 return
             lb.insert(END, "  " + name)
@@ -344,7 +344,8 @@ def run_command(subprocess_command, optional_success_out='OK'):
     try:
         subprocess_command()
     except Exception as e:
-        str_err = traceback.print_exc()
+        traceback.print_exc()
+        str_err = ''.join(traceback.format_stack())
         popup(str_err)
         return ('error', str_err)
     return ('Successfully completed operation', optional_success_out)
@@ -410,7 +411,7 @@ def rename_slot():
 
             else:
                 newnm = new_name.replace(' ', '-')
-                cmd = lambda: os.rename(f"{savedir}{lst_box_choice}", f"{newnm}")
+                cmd = lambda: os.rename(f"{savedir}{lst_box_choice}", f"{savedir}{newnm}")
                 run_command(cmd)
                 lb.delete(0,END)
                 load_listbox(lb)
@@ -439,7 +440,7 @@ def rename_slot():
 
 
 def update_slot():
-    """Copies the selected save file to the elden ring save location"""
+    """Update the selected savefile with the current elden ring savedata"""
     lst_box_choice =  fetch_listbox_entry(lb)[0]
     if len(lst_box_choice) < 1:
         popup('No listbox item selected.')
@@ -714,7 +715,7 @@ def quick_restore():
         popup('No listbox item selected.')
         return
     src = f"./data/temp/{lst_box_choice}"
-    dest = f"{savedi}{lst_box_choice}"
+    dest = f"{savedir}{lst_box_choice}"
     cmd = lambda: copy_folder(src, dest)
     x = run_command(cmd)
     if x[0] != 'error':
@@ -1293,7 +1294,11 @@ root = Tk()
 root.resizable(width=False, height=False)
 root.title('{} {}'.format(app_title, version))
 root.geometry('785x541')
-root.iconbitmap(icon_file)
+try:
+    root.iconbitmap(icon_file)
+except Exception:
+    print("Unix doesn't support .ico - setting the background as app icon")
+    root.iconphoto(True, PhotoImage(background_img))
 
 
 bg_img = ImageTk.PhotoImage(image=Image.open(background_img))
@@ -1368,7 +1373,7 @@ def open_notes():
     if len(name) < 1:
         popup('Select a save slot first.')
         return
-    cmd = lambda: open_textfile_in_editor("{savedir}{name}/notes.txt")
+    cmd = lambda: open_textfile_in_editor(f"{savedir}{name}/notes.txt")
     out = run_command(cmd)
 
 
