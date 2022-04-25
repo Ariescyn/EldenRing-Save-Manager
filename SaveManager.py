@@ -11,6 +11,11 @@ from PIL import Image, ImageTk
 import subprocess, os, zipfile, requests, re, time, hexedit, webbrowser, itemdata
 from os_layer import *
 
+
+# set always the working dir to the correct folder for unix env
+if not is_windows:
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 # Load and parse save directory
 if not os.path.exists(gamesavedir_txt):
     with open(gamesavedir_txt, 'w') as fh:
