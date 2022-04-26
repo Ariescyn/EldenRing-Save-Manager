@@ -28,18 +28,22 @@ with open(gamesavedir_txt, 'r') as fh:
 
 def get_steamid():
     """Get users steamID by pulling folder name."""
-    for dir_name in os.listdir(eldenring_savedata_dir):
-        print(dir_name)
-        steam_id = None
-        if len(dir_name) == 17:
-            steam_id = dir_name
-            break
+    try:
+        for dir_name in os.listdir(eldenring_savedata_dir):
+            print(dir_name)
+            steam_id = None
+            if len(dir_name) == 17:
+                steam_id = dir_name
+                break
 
-    if not steam_id:
+        if not steam_id:
+            popup("Steam ID not detected. Ensure your default game directory\nis set properly before performing any actions.")
+            return None
+        else:
+            return steam_id
+    except  FileNotFoundError:
         popup("Steam ID not detected. Ensure your default game directory\nis set properly before performing any actions.")
         return None
-    else:
-        return steam_id
 
 def import_save():
     """Opens file explorer to choose a save file to import, Then checks if the files steam ID matches users, and replaces it with users id """
