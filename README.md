@@ -9,8 +9,7 @@ Release executables are avaiable here on github
 
 Dependencies
 ```
-python -m pip install Pillow
-python -m pip install tk
+python -m pip install Pillow tk requests
 ```
 Run
 ```
