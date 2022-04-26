@@ -33,6 +33,7 @@ def get_steamid():
         steam_id = None
         if len(dir_name) == 17:
             steam_id = dir_name
+            break
 
     if not steam_id:
         popup("Steam ID not detected. Ensure your default game directory\nis set properly before performing any actions.")
