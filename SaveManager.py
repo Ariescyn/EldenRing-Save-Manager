@@ -351,7 +351,7 @@ def run_command(subprocess_command, optional_success_out='OK'):
         subprocess_command()
     except Exception as e:
         traceback.print_exc()
-        str_err = ''.join(traceback.format_stack())
+        str_err = ''.join(traceback.format_exc())
         popup(str_err)
         return ('error', str_err)
     return ('Successfully completed operation', optional_success_out)
