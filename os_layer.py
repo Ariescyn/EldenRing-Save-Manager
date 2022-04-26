@@ -31,8 +31,9 @@ def get_savedata_dir():
 eldenring_savedata_dir = get_savedata_dir()
 
 def open_folder_standard_exporer(path):
+    """Note: os.startfile is only avaiable on Win platform"""
     if platform.system() == "Windows":
-        os.startfile(path)
+        os.startfile(path.replace('/', '\\'))
     else:
         subprocess.Popen(["xdg-open", path])
 
