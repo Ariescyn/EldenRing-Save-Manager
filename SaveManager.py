@@ -1,3 +1,6 @@
+import sys
+import traceback
+import shutil
 from tkinter import *
 from tkinter import font as FNT
 from tkinter import filedialog as fd
@@ -6,27 +9,17 @@ import tkinter as TKIN
 from collections import Counter
 from PIL import Image, ImageTk
 import subprocess, os, zipfile, requests, re, time, hexedit, webbrowser, itemdata
+from os_layer import *
 
 
-# Directories and settings
-savedir = ".\\data\\save-files\\"
-app_title = "Elden Ring Save Manager"
-backupdir = ".\\data\\backup\\"
-update_dir = ".\\data\\updates\\"
-version = 'v1.43'
-v_num = 1.43 # Used for checking version for update
-video_url = 'https://youtu.be/RZIP0kYjvZM'
-stat_edit_video = 'https://youtu.be/TxXUuyIDj2s'
-background_img = './data/background.png'
-icon_file = './data/icon.ico'
-gamesavedir_txt = '.\\data\\GameSaveDir.txt'
-bk_p = (-140,20) # Background image position
-#gamedir = "%APPDATA%\\EldenRing\\"
+# set always the working dir to the correct folder for unix env
+if not is_windows:
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Load and parse save directory
 if not os.path.exists(gamesavedir_txt):
     with open(gamesavedir_txt, 'w') as fh:
-        fh.write('"%APPDATA%\\EldenRing\\"')
+        fh.write(eldenring_savedata_dir)
 
 with open(gamesavedir_txt, 'r') as fh:
     gamedir = fh.readline()
@@ -35,21 +28,24 @@ with open(gamesavedir_txt, 'r') as fh:
 
 def get_steamid():
     """Get users steamID by pulling folder name."""
-    th = subprocess.run(f'dir {gamedir}', stdout=subprocess.PIPE, shell=True)
-    x = re.findall(r'\d{17}',str(th))
-    if len(x) < 1:
+    for dir_name in os.listdir(eldenring_savedata_dir):
+        print(dir_name)
+        steam_id = None
+        if len(dir_name) == 17:
+            steam_id = dir_name
+            break
+
+    if not steam_id:
         popup("Steam ID not detected. Ensure your default game directory\nis set properly before performing any actions.")
         return None
     else:
-        return x[0]
-
-
+        return steam_id
 
 def import_save():
     """Opens file explorer to choose a save file to import, Then checks if the files steam ID matches users, and replaces it with users id """
     if os.path.isdir(savedir) is False:
-        run_command(f'md {savedir}')
-    d = fd.askopenfilename().replace("/", "\\")
+        os.makedirs(savedir)
+    d = fd.askopenfilename()
 
     if len(d) < 1:
         return
@@ -86,11 +82,11 @@ def import_save():
 
 
         id = user_steam_id
-        newdir = "{}{}\\{}\\".format(savedir,name.replace(' ', '-'),id)
-        cp_to_saves_cmd = "copy {} {}".format(f'"{d}"',newdir)
+        newdir = "{}{}/{}/".format(savedir,name.replace(' ', '-'),id)
+        cp_to_saves_cmd = lambda: copy_file(d, newdir)
 
         if os.path.isdir(newdir) is False:
-            cmd_out = run_command("md {}".format(newdir))
+            cmd_out = run_command(lambda: os.makedirs(newdir))
 
             if cmd_out[0]  == 'error':
                 return
@@ -98,13 +94,13 @@ def import_save():
             cmd_out = run_command(cp_to_saves_cmd)
             if cmd_out[0] == 'error':
                 return
-            create_notes(name,  "{}{}\\".format(savedir,name.replace(' ', '-')))
+            create_notes(name,  "{}{}/".format(savedir,name.replace(' ', '-')))
 
 
-            file_id = hexedit.get_id(f'{newdir}\ER0000.sl2')
+            file_id = hexedit.get_id(f'{newdir}/ER0000.sl2')
             if file_id != int(id):
                 popup(f'Steam ID of file did not match your own ID\nAutomatically patched file with your Steam ID\nFile ID: {file_id}\nYour ID: {id}')
-                hexedit.replace_id(f'{newdir}\ER0000.sl2',int(id))
+                hexedit.replace_id(f'{newdir}/ER0000.sl2',int(id))
 
             popupwin.destroy()
 
@@ -132,13 +128,13 @@ def open_folder():
         popup('No listbox item selected.')
         return
     name = fetch_listbox_entry(lb)[0]
-    cmd = f'start {savedir}{name.replace(" ", "-")}'
+    cmd = lambda: open_folder_standard_exporer(f'{savedir}{name.replace(" ", "-")}')
     run_command(cmd)
 
 
 
 def forcequit():
-    comm = "taskkill /IM eldenring.exe -F"
+    comm = lambda: force_close_process("eldenring.exe")
     popup(text='Are you sure?', buttons=True, command=comm)
 
 
@@ -168,7 +164,7 @@ def reset_default_dir():
     """Writes the original gamedir to text file"""
     global gamedir
     with open(gamesavedir_txt, 'w') as fh:
-        fh.write('"%APPDATA%\\EldenRing\\"')
+        fh.write(eldenring_savedata_dir)
     with open(gamesavedir_txt, 'r') as fh:
         gamedir = fh.readline()
     popup('Successfully reset default directory')
@@ -178,7 +174,7 @@ def reset_default_dir():
 def create_notes(name,dir):
     """Create a notepad document in specified save slot."""
     name = name.replace(' ', '-')
-    cmd = f'type nul > {dir}\\notes.txt'
+    cmd = lambda: os.close(os.open(f"{dir}/notes.txt", os.O_CREAT))
     run_command(cmd)
 
 
@@ -205,10 +201,10 @@ def load_listbox(lstbox):
 
 def save_backup():
     """Quickly save a backup of the current game save. Used from the menubar."""
-    comm = "Xcopy {} {} /E /H /C /I /Y".format(gamedir,backupdir)
+    comm = lambda: copy_folder(gamedir,backupdir)
 
     if os.path.isdir(backupdir) is False:
-        cmd_out1 = run_command("md {}".format(backupdir))
+        cmd_out1 = run_command(lambda: os.makedirs(backupdir))
         if cmd_out1[0] == 'error':
             return
     cmd_out2 = run_command(comm)
@@ -221,9 +217,9 @@ def save_backup():
 
 def load_backup():
     """Quickly load a backup of the current game save. Used from the menubar."""
-    comm = "Xcopy {} {} /E /H /C /I /Y".format(backupdir,gamedir)
+    comm = lambda: copy_folder(backupdir, gamedir)
     if os.path.isdir(backupdir) is False:
-        run_command("md {}".format(backupdir))
+        run_command(lambda: os.makedirs(backupdir))
 
     if len(re.findall(r'\d{17}',str(os.listdir(backupdir)))) < 1:
         popup('No backup found')
@@ -251,7 +247,7 @@ def create_save():
 
     if os.path.isdir(savedir) is False:
         #subprocess.run("md .\\save-files", shell=True)
-        cmd_out = run_command("md {}".format(savedir))
+        cmd_out = run_command(lambda: os.makedirs(savedir))
         if cmd_out[0] == 'error':
             return
 
@@ -259,14 +255,14 @@ def create_save():
     # If new save name doesnt exist, insert it into the listbox,
     # otherwise duplicates will appear in listbox even though the copy command will overwrite original save
     if len(name) > 0 and isforbidden is False:
-        cp_to_saves_cmd = "Xcopy {} {} /E /H /C /I /Y".format(gamedir,newdir)
+        cp_to_saves_cmd = lambda: copy_folder(gamedir,newdir)
         # /E – Copy subdirectories, including any empty ones.
         # /H - Copy files with hidden and system file attributes.
         # /C - Continue copying even if an error occurs.
         # /I - If in doubt, always assume the destination is a folder. e.g. when the destination does not exist
         # /Y - Overwrite all without PROMPT (ex: yes no)
         if os.path.isdir(newdir) is False:
-            cmd_out = run_command("md {}".format(newdir))
+            cmd_out = run_command(lambda: os.makedirs(newdir))
             if cmd_out[0]  == 'error':
                 return
             lb.insert(END, "  " + name)
@@ -290,7 +286,8 @@ def load_save_from_lb():
         popup('No listbox item selected.')
         return
     name = fetch_listbox_entry(lb)[0]
-    comm = "Xcopy {}{}\\ {} /E /H /C /I /Y".format(savedir,name.replace(' ', '-'),gamedir)
+    src_dir = ''.join((savedir, name.replace(' ', '-'), '/'))
+    comm = lambda: copy_folder(src_dir, gamedir)
     if not os.path.isdir(f'{savedir}{name}'):
         popup('Save slot does not exist.\nDid you move or delete it from data/save-files?')
         lb.delete(0,END)
@@ -347,24 +344,23 @@ def popup(text, command=None, functions=False, buttons=False, button_names=('Yes
 
 
 
-def run_command(subprocess_command):
-    """ Used throughout to run commands into subprocess and capture the output. Note that
-        it is integrated with popup function for in app error reporting."""
-
-    out = subprocess.run(subprocess_command, shell=True , capture_output=True, text=True)
-    if len(out.stderr) > 0:
-        popup(out.stderr)
-        return ('error',out.stderr)
-
-    else:
-        return ('Successfully completed operation',out.stdout)
-
+def run_command(subprocess_command, optional_success_out='OK'):
+    """Used throughout to run commands into subprocess and capture the output. Note that
+    it is integrated with popup function for in app error reporting."""
+    try:
+        subprocess_command()
+    except Exception as e:
+        traceback.print_exc()
+        str_err = ''.join(traceback.format_exc())
+        popup(str_err)
+        return ('error', str_err)
+    return ('Successfully completed operation', optional_success_out)
 
 
 def delete_save():
     """Removes entire directory in save-files dir"""
     name = fetch_listbox_entry(lb)[0]
-    comm = "rmdir {}{} /s /q".format(savedir,name)
+    comm = lambda: delete_folder(f'{savedir}{name}')
     def yes():
         out = run_command(comm)
         lb.delete(0,END)
@@ -421,7 +417,7 @@ def rename_slot():
 
             else:
                 newnm = new_name.replace(' ', '-')
-                cmd = f'rename "{savedir}{lst_box_choice}" "{newnm}"'
+                cmd = lambda: os.rename(f"{savedir}{lst_box_choice}", f"{savedir}{newnm}")
                 run_command(cmd)
                 lb.delete(0,END)
                 load_listbox(lb)
@@ -450,12 +446,12 @@ def rename_slot():
 
 
 def update_slot():
-    """Copies the selected save file to the elden ring save location"""
+    """Update the selected savefile with the current elden ring savedata"""
     lst_box_choice =  fetch_listbox_entry(lb)[0]
     if len(lst_box_choice) < 1:
         popup('No listbox item selected.')
         return
-    cmd = "Xcopy {} {}{} /E /H /C /I /Y".format(gamedir,savedir,lst_box_choice)
+    cmd = lambda: copy_folder(gamedir, ''.join((savedir,lst_box_choice)))
     popup(text="Are you sure?", buttons=True, command=cmd)
 
 
@@ -470,10 +466,7 @@ def change_default_dir():
 
     # Check if selected directory contains 17 digit steamid folder and GraphicsConfig.xml
     if os.path.exists(f'{newdir}/GraphicsConfig.xml') and len(re.findall(r'\d{17}',str(os.listdir(newdir)))) > 0:
-        newdir = f'"{newdir}"'
-
-
-        with open('.\\data\\GameSaveDir.txt', 'w') as fh:
+        with open(gamesavedir_txt, 'w') as fh:
             fh.write(newdir)
         gamedir = newdir
         popup(f'Directory set to:\n {newdir}')
@@ -520,7 +513,7 @@ def char_manager():
         name = fetch_listbox_entry(lstbox)[0]
         if len(name) < 1:
             return
-        file = f'{savedir}{name}\\{user_steam_id}\\ER0000.sl2'
+        file = f'{savedir}{name}/{user_steam_id}/ER0000.sl2'
         names = hexedit.get_names(file)
         drop['menu'].delete(0,'end') # remove full list
 
@@ -573,8 +566,8 @@ def char_manager():
             pop_up(txt='Character not selected')
             return
 
-        src_file = f'{savedir}{name1}\{user_steam_id}\\ER0000.sl2'
-        dest_file = f'{savedir}{name2}\{user_steam_id}\\ER0000.sl2'
+        src_file = f'{savedir}{name1}/{user_steam_id}/ER0000.sl2'
+        dest_file = f'{savedir}{name2}/{user_steam_id}/ER0000.sl2'
 
 
         src_ind = int(src_char.split('.')[0])
@@ -594,11 +587,11 @@ def char_manager():
 
         src_names.pop(src_ind -1)
         dest_names.pop(dest_ind - 1)
-        backup_path = r'.\data\temp\ER0000.sl2'
+        backup_path = r'./data/temp/ER0000.sl2'
 
         # If performing operations on the same file. Changes name to random, copies character to specified slot, then rewrites the name and re-populates the dropdown entries
         if src_file == dest_file:
-            cmd = f'copy "{src_file}" {backup_path} /Y'
+            cmd = lambda: copy_file(src_file, backup_path)
             x = run_command(cmd)
             rand_name = hexedit.random_str()
             rename_char(backup_path,rand_name,src_ind) # Change backup to random name
@@ -614,7 +607,7 @@ def char_manager():
         # If source name in destination file, copies source file to temp folder, changes the name of copied save to random, then copies source character of
         #  copied file to destination save file, and rewrites names on destination file
         elif src_char_real in dest_names:
-            cmd = f'copy "{src_file}" {backup_path} /Y'
+            cmd = lambda: copy_file(src_file, backup_path)
             x = run_command(cmd)
             rand_name = hexedit.random_str()
             rename_char(backup_path, rand_name ,src_ind)
@@ -727,7 +720,9 @@ def quick_restore():
     if len(lst_box_choice) < 1:
         popup('No listbox item selected.')
         return
-    cmd = "Xcopy .\\data\\temp\\{} {}{} /E /H /C /I /Y".format(lst_box_choice,savedir,lst_box_choice)
+    src = f"./data/temp/{lst_box_choice}"
+    dest = f"{savedir}{lst_box_choice}"
+    cmd = lambda: copy_folder(src, dest)
     x = run_command(cmd)
     if x[0] != 'error':
         popup('Successfully restored backup.')
@@ -740,7 +735,10 @@ def quick_backup():
     if len(lst_box_choice) < 1:
         popup('No listbox item selected.')
         return
-    cmd = "Xcopy {}{} .\\data\\temp\\{} /E /H /C /I /Y".format(savedir,lst_box_choice,lst_box_choice)
+    
+    src = f"{savedir}{lst_box_choice}"
+    dest = f"./data/temp/{lst_box_choice}"
+    cmd = lambda: copy_folder(src, dest)
     x = run_command(cmd)
     if x[0] != 'error':
         popup('Successfully created backup.')
@@ -784,7 +782,7 @@ def rename_characters():
 
 
     name = fetch_listbox_entry(lb)[0]
-    path = f'{savedir}{name}\{user_steam_id}\ER0000.sl2'
+    path = f'{savedir}{name}/{user_steam_id}/ER0000.sl2'
     names = hexedit.get_names(path)
     chars = []
     for ind,i in enumerate(names):
@@ -859,7 +857,7 @@ def stat_editor():
         char = vars.get().split('. ')[1]
         char_slot = int(vars.get().split('.')[0])
         name = fetch_listbox_entry(lb1)[0]
-        file = f'{savedir}{name}\\{user_steam_id}\\ER0000.sl2'
+        file = f'{savedir}{name}/{user_steam_id}/ER0000.sl2'
         try:
             hexedit.set_stats(file, char_slot, stats)
             hexedit.set_attributes(file, char_slot, [vig,min,end])
@@ -896,7 +894,7 @@ def stat_editor():
         name = fetch_listbox_entry(lstbox)[0]
         if len(name) < 1:
             return
-        file = f'{savedir}{name}\\{user_steam_id}\\ER0000.sl2'
+        file = f'{savedir}{name}/{user_steam_id}/ER0000.sl2'
         names = hexedit.get_names(file)
         drop['menu'].delete(0,'end') # remove full list
 
@@ -923,7 +921,7 @@ def stat_editor():
         char = vars.get().split('. ')[1]
         char_slot = int(vars.get().split('.')[0])
         name = fetch_listbox_entry(lb1)[0]
-        file = f'{savedir}{name}\\{user_steam_id}\\ER0000.sl2'
+        file = f'{savedir}{name}/{user_steam_id}/ER0000.sl2'
 
         try:
             stats = hexedit.get_stats(file,char_slot)[0]
@@ -1087,7 +1085,7 @@ def set_steam_id():
     global user_steam_id
     def done():
         name = fetch_listbox_entry(lb)[0]
-        file = f'{savedir}{name}\{user_steam_id}\ER0000.sl2'
+        file = f'{savedir}{name}/{user_steam_id}/ER0000.sl2'
         id = ent.get()
         x = re.findall(r'\d{17}',str(id))
         if len(x) < 1:
@@ -1153,7 +1151,7 @@ def inventory_editor():
         name = fetch_listbox_entry(lstbox)[0]
         if len(name) < 1:
             return
-        file = f'{savedir}{name}\\{user_steam_id}\\ER0000.sl2'
+        file = f'{savedir}{name}/{user_steam_id}/ER0000.sl2'
         names = hexedit.get_names(file)
         drop['menu'].delete(0,'end') # remove full list
 
@@ -1205,7 +1203,7 @@ def inventory_editor():
             return
 
 
-        dest_file = f'{savedir}{name}\{user_steam_id}\\ER0000.sl2'
+        dest_file = f'{savedir}{name}/{user_steam_id}/ER0000.sl2'
         char_ind = int(char.split('.')[0])
 
         qty = qty_ent.get()
@@ -1302,7 +1300,11 @@ root = Tk()
 root.resizable(width=False, height=False)
 root.title('{} {}'.format(app_title, version))
 root.geometry('785x541')
-root.iconbitmap(icon_file)
+try:
+    root.iconbitmap(icon_file)
+except Exception:
+    print("Unix doesn't support .ico - setting the background as app icon")
+    root.iconphoto(True, PhotoImage(background_img))
 
 
 bg_img = ImageTk.PhotoImage(image=Image.open(background_img))
@@ -1367,17 +1369,17 @@ lb.grid(row=0, column=3, padx=(110,0), pady=(30,0))
 # right click popup menu in listbox
 
 def do_popup(event):
-	try:
-		rt_click_menu.tk_popup(event.x_root, event.y_root) # Grab x,y position of mouse cursor
-	finally:
-		rt_click_menu.grab_release()
+    try:
+        rt_click_menu.tk_popup(event.x_root, event.y_root) # Grab x,y position of mouse cursor
+    finally:
+        rt_click_menu.grab_release()
 
 def open_notes():
     name = fetch_listbox_entry(lb)[0]
     if len(name) < 1:
         popup('Select a save slot first.')
         return
-    cmd = f'notepad {savedir}{name}\\notes.txt'
+    cmd = lambda: open_textfile_in_editor(f"{savedir}{name}/notes.txt")
     out = run_command(cmd)
 
 
