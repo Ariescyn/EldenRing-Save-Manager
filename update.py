@@ -1,6 +1,6 @@
 
 import subprocess, os, zipfile, requests, time
-from .os_layer import copy_folder, delete_folder
+from os_layer import copy_folder, delete_folder
 
 
 
