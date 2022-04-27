@@ -405,6 +405,7 @@ def get_stats(file, char_slot):
 
     return [stats,indexes, hp_inds, stam_inds, fp_inds] # [[36, 16, 38, 33, 16, 9, 10, 7], 47421]
 
+    # DELETE THIS ON NEXT RELEASE
     hp = []
     hp_inds = []
     x = start_ind - 44
@@ -414,7 +415,7 @@ def get_stats(file, char_slot):
         x += 4
 
     return [stats,indexes, hp_inds] # [[36, 16, 38, 33, 16, 9, 10, 7], [47421,47421], [3534345,35345,35345]]
-
+    # END
 
 def set_level(file,char,lvl):
     """Sets levels in static header position by char names for in-game load save menu."""
@@ -481,7 +482,7 @@ def set_attributes(file, slot,lvls, custom_val=False):
     recalc_checksum(file)
 
 
-def additem(file,slot,name, quantity):
+def additem(file,slot,itemids, quantity):
     cs = get_slot_ls(file)[slot -1]
     slices = get_slot_slices(file)
     s_start = slices[slot -1][0]
@@ -491,7 +492,7 @@ def additem(file,slot,name, quantity):
         dat = f.read()
 
         index = []
-        cur = itemdata.get(name)
+        cur = itemids
         if cur is None:
             return
 
@@ -516,8 +517,3 @@ def additem(file,slot,name, quantity):
         recalc_checksum(file)
         return True
 
-#additem('ER0000.sl2', 1, 'larval tear', 99)
-#set_stats('ER0000.sl2', 1, [99,99,99,99,99,99,99,99])
-#set_attributes('ER0000.sl2', 1, [99,90,97])
-#set_attribute('ER0000.sl2', 'fp', 2, 5000, custom_val=True)
-#set_attribute('ER0000.sl2', 'st', 2, 6000, custom_val=True)
