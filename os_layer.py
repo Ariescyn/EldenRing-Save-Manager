@@ -9,8 +9,8 @@ savedir = "./data/save-files/"
 app_title = "Elden Ring Save Manager"
 backupdir = "./data/backup/"
 update_dir = "./data/updates/"
-version = 'v1.43'
-v_num = 1.43 # Used for checking version for update
+version = 'v1.44'
+v_num = 1.44 # Used for checking version for update
 video_url = 'https://youtu.be/RZIP0kYjvZM'
 stat_edit_video = 'https://youtu.be/TxXUuyIDj2s'
 background_img = './data/background.png'
@@ -25,7 +25,7 @@ def get_savedata_dir():
         folder = "{}/EldenRing/".format(os.getenv('APPDATA').replace("\\", "/"))
     else:
         folder = "{}/.steam/steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing/".format(os.getenv("HOME"))
-    
+
     return folder
 
 eldenring_savedata_dir = get_savedata_dir()
