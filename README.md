@@ -9,11 +9,11 @@ GUI app written entirely in Python.
 
 Dependencies
 ```
-python -m pip install Pillow tk requests
+python3 -m pip install Pillow tk requests
 ```
 Run
 ```
-python SaveManager.py
+python3 SaveManager.py
 ```
 
 ## Features:
