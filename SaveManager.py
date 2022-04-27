@@ -1,6 +1,5 @@
 import sys
 import traceback
-import shutil
 from tkinter import *
 from tkinter import font as FNT
 from tkinter import filedialog as fd
@@ -30,7 +29,6 @@ def get_steamid():
     """Get users steamID by pulling folder name."""
     try:
         for dir_name in os.listdir(eldenring_savedata_dir):
-            print(dir_name)
             steam_id = None
             if len(dir_name) == 17:
                 steam_id = dir_name
@@ -739,7 +737,7 @@ def quick_backup():
     if len(lst_box_choice) < 1:
         popup('No listbox item selected.')
         return
-    
+
     src = f"{savedir}{lst_box_choice}"
     dest = f"./data/temp/{lst_box_choice}"
     cmd = lambda: copy_folder(src, dest)
@@ -786,6 +784,9 @@ def rename_characters():
 
 
     name = fetch_listbox_entry(lb)[0]
+    if name == '':
+        popup('No listbox item selected.')
+        return
     path = f'{savedir}{name}/{user_steam_id}/ER0000.sl2'
     names = hexedit.get_names(path)
     chars = []
@@ -1088,7 +1089,7 @@ def stat_editor():
 def set_steam_id():
     global user_steam_id
     def done():
-        name = fetch_listbox_entry(lb)[0]
+
         file = f'{savedir}{name}/{user_steam_id}/ER0000.sl2'
         id = ent.get()
         x = re.findall(r'\d{17}',str(id))
@@ -1127,6 +1128,10 @@ def set_steam_id():
     but_cancel = Button(popupwin, text='Cancel', borderwidth=5, width=6, command=cancel)
     but_cancel.grid(row=2, column=0, padx=(70,0), pady=(0,15))
 
+    name = fetch_listbox_entry(lb)[0]
+    if name == '':
+        popup('No listbox item selected.')
+        popupwin.destroy()
 
 
 
@@ -1134,7 +1139,7 @@ def set_steam_id():
 
 
 def inventory_editor():
-
+    itemdb = itemdata.Items()
     def pop_up(txt,bold=True):
         """Basic popup window used only for parent function"""
         win = Toplevel(popupwin)
@@ -1191,7 +1196,7 @@ def inventory_editor():
             return
 
         item = i_vars.get()
-        if item == 'Items':
+        if item == 'Items' or item == '':
             pop_up('Select an item first.')
             return
 
@@ -1216,8 +1221,10 @@ def inventory_editor():
             return
         else:
             qty = int(qty)
-        #print('dest: ', dest_file, 'char ind: ', char_ind, 'item: ', item, 'qty: ', qty)
-        x = hexedit.additem(dest_file,char_ind,item, qty)
+        itemid = itemdb.db[cat_vars.get()].get(item)
+
+        x = hexedit.additem(dest_file,char_ind,itemid,qty)
+        #x = hexedit.additem(dest_file,char_ind,item, qty)
         if x is None:
             pop_up('Unable to set quantity. Ensure you have at least 1 of the selected items.')
         else:
@@ -1225,9 +1232,16 @@ def inventory_editor():
         return
 
 
+    def populate_items(*args):
+        """Populates the item dropdown by getting category"""
+        cat = cat_vars.get()
+        items = itemdb.get_item_ls(cat)
 
-
-
+        dropdown3['menu'].delete(0,'end') # remove full list
+        for i in items:
+            if len(i) > 1:
+                dropdown3['menu'].add_command(label=i, command=TKIN._setit(i_vars, i))
+        i_vars.set('Items') # default value set
 
 
     # Main GUI content STAT
@@ -1268,29 +1282,38 @@ def inventory_editor():
     but_select1.grid(row=2,column=0, padx=(155,0), pady=(0,10))
 
 
-    # DROPDOWN MENU STUFF
+    # CHARACTER DROPDOWN MENU
     opts = ['']
     c_vars = StringVar(popupwin)
     c_vars.set('Character')
     dropdown1 = OptionMenu(popupwin, c_vars, *opts)
     dropdown1.grid(row=3,column=0, padx=(155,0), pady=(0,10))
 
-    opts1 = itemdata.get_list()
+    # CATEGORY DROPDOWN
+    opts1 = itemdb.categories
+    cat_vars = StringVar(popupwin)
+    cat_vars.set('Category')
+    dropdown2 = OptionMenu(popupwin, cat_vars, *opts1)
+    dropdown2.config(width=14)
+    cat_vars.trace('w',populate_items)
+    dropdown2.grid(row=4, column=0, padx=(155,0), pady=(0,10))
+
+
+    # ITEM DROPDOWN
+    opts2 = ['']
     i_vars = StringVar(popupwin)
     i_vars.set('Items')
-    dropdown2 = OptionMenu(popupwin, i_vars, *opts1)
-    dropdown2.config(width=14)
-    dropdown2.grid(row=4,column=0, padx=(155,0), pady=(0,10))
-
-
+    dropdown3 = OptionMenu(popupwin, i_vars, *opts2)
+    dropdown3.config(width=14)
+    dropdown3.grid(row=5,column=0, padx=(155,0), pady=(0,10))
 
     qty_ent = Entry(popupwin,borderwidth=5, width=3, validate="key", validatecommand=vcmd)
-    qty_ent.grid(row=4,column=0, padx=(345,0), pady=(0,10))
+    qty_ent.grid(row=5,column=0, padx=(345,0), pady=(0,10))
 
     # SELECT LISTBOX ITEM BUTTON
     but_set = Button(popupwin, text='Set', command=add)
     but_set.config(font=bolded)
-    but_set.grid(row=5,column=0, padx=(155,0), pady=(22,10))
+    but_set.grid(row=6,column=0, padx=(155,0), pady=(22,10))
 
 
 
@@ -1381,7 +1404,7 @@ def do_popup(event):
 def open_notes():
     name = fetch_listbox_entry(lb)[0]
     if len(name) < 1:
-        popup('Select a save slot first.')
+        popup('No listbox item selected.')
         return
     cmd = lambda: open_textfile_in_editor(f"{savedir}{name}/notes.txt")
     out = run_command(cmd)
@@ -1409,8 +1432,16 @@ but_delete_save.grid(row=3, column=3, padx=(215,0), pady=(12,0))
 
 
 
-
+# INITIALIZE APP
 
 user_steam_id = get_steamid()
 update_app(True)
+
+#Every release comes with PostUpdate.check, and will be deleted after the app is launched for the first time
+if os.path.exists('./data/PostUpdate.check'):
+    changelog()
+    os.remove('./data/PostUpdate.check')
+
+
+
 root.mainloop()
