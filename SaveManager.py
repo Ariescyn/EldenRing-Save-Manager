@@ -20,8 +20,18 @@ if not os.path.exists(gamesavedir_txt):
     with open(gamesavedir_txt, 'w') as fh:
         fh.write(eldenring_savedata_dir)
 
-with open(gamesavedir_txt, 'r') as fh:
-    gamedir = fh.readline()
+with open(gamesavedir_txt, 'r+') as fh:
+    s_path = fh.readline()
+    # before 1.44 old txt path was like this on windows: %APPDATA%\EldenRing\"
+    # this convert env variables, transform to forward slash and escape spaces
+    if s_path.startswith('"'):
+        s_path = s_path.strip().replace('"', '').replace('%APPDATA%', os.getenv('APPDATA')).replace("\\", "/").replace(" ", "\\ ")
+        if not s_path.endswith("/"):
+            s_path = s_path + "/"
+        fh.truncate(0)
+        fh.seek(0)
+        fh.write(s_path)
+    gamedir = s_path
 
 
 
