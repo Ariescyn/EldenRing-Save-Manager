@@ -11,6 +11,7 @@ import subprocess, os, zipfile, requests, re, time, hexedit, webbrowser, itemdat
 from os_layer import *
 
 
+
 # set always the working dir to the correct folder for unix env
 if not is_windows:
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -311,7 +312,7 @@ def load_save_from_lb():
 
 
 
-def popup(text, command=None, functions=False, buttons=False, button_names=('Yes', 'No')):
+def popup(text, command=None, functions=False, buttons=False, button_names=('Yes', 'No'), title='Manager'):
     """text: Message to display on the popup window.
        command: Simply run the windows CMD command if you press yes.
        functions: Pass in external functions to be executed for yes/no"""
@@ -332,7 +333,7 @@ def popup(text, command=None, functions=False, buttons=False, button_names=('Yes
 
 
     popupwin = Toplevel(root)
-    popupwin.title("Manager")
+    popupwin.title(title)
     #popupwin.geometry("200x75")
     lab = Label(popupwin, text=text)
     lab.grid(row=0, column=0, padx=5, pady=5, columnspan=2)
@@ -565,7 +566,7 @@ def char_manager():
 
 
         if src_char.split('.')[1] == ' ' or dest_char.split('.')[1] == ' ':
-            pop_up("Can't write to empty slot")
+            pop_up("Can't write to empty slot.\nGo in-game and create a character to overwrite.")
             return
 
         name1 = fetch_listbox_entry(lb1)[0] # Save file name. EX: main
@@ -835,7 +836,7 @@ def changelog():
         dat = f.readlines()
         for line in dat:
             info = info + line
-    popup(info)
+    popup(info, title='Changelog')
 
 
 
@@ -1212,7 +1213,7 @@ def inventory_editor():
 
 
         if char.split('.')[1] == ' ':
-            pop_up("Can't write to empty slot")
+            pop_up("Can't write to empty slot.\nGo in-game and create a character to overwrite.")
             return
 
 
@@ -1259,6 +1260,7 @@ def inventory_editor():
     popupwin.title("Inventory Editor")
     popupwin.resizable(width=True, height=True)
     popupwin.geometry("530x540")
+
     vcmd = (popupwin.register(validate), '%P')
 
     bolded = FNT.Font(weight='bold') # will use the default font
@@ -1289,6 +1291,7 @@ def inventory_editor():
 
     # SELECT LISTBOX ITEM BUTTON
     but_select1 = Button(popupwin, text='Select', command=lambda: get_char_names(lb1, dropdown1,c_vars))
+    #but_select1.config(bg='grey', fg='white')
     but_select1.grid(row=2,column=0, padx=(155,0), pady=(0,10))
 
 
@@ -1304,7 +1307,7 @@ def inventory_editor():
     cat_vars = StringVar(popupwin)
     cat_vars.set('Category')
     dropdown2 = OptionMenu(popupwin, cat_vars, *opts1)
-    dropdown2.config(width=14)
+
     cat_vars.trace('w',populate_items)
     dropdown2.grid(row=4, column=0, padx=(155,0), pady=(0,10))
 
@@ -1314,7 +1317,6 @@ def inventory_editor():
     i_vars = StringVar(popupwin)
     i_vars.set('Items')
     dropdown3 = OptionMenu(popupwin, i_vars, *opts2)
-    dropdown3.config(width=14)
     dropdown3.grid(row=5,column=0, padx=(155,0), pady=(0,10))
 
     qty_ent = Entry(popupwin,borderwidth=5, width=3, validate="key", validatecommand=vcmd)
@@ -1336,18 +1338,26 @@ def inventory_editor():
 root = Tk()
 root.resizable(width=False, height=False)
 root.title('{} {}'.format(app_title, version))
-root.geometry('785x541')
+
+root.geometry('830x561')
 try:
     root.iconbitmap(icon_file)
 except Exception:
     print("Unix doesn't support .ico - setting the background as app icon")
     root.iconphoto(True, PhotoImage(background_img))
 
-
+# FANCY STUFF
 bg_img = ImageTk.PhotoImage(image=Image.open(background_img))
 background = Label(root, image=bg_img)
 
 background.place(x=bk_p[0], y=bk_p[1], relwidth=1, relheight=1)
+
+# Images used on button widgets
+done_img = ImageTk.PhotoImage(image=Image.open('./data/assets/but_done.png').resize((50,30)))
+load_save_img = ImageTk.PhotoImage(image=Image.open('./data/assets/but_load_save.png').resize((85,40)))
+delete_save_img = ImageTk.PhotoImage(image=Image.open('./data/assets/but_delete_save.png').resize((85,40)))
+
+
 
 
 
@@ -1387,13 +1397,15 @@ menubar.add_cascade(label="Help", menu=helpmenu)
 
 
 
-create_save_lab = Label(root,text='Create Save:' )
+create_save_lab = Label(root,text='Create Save:' , font=("Impact", 15))
+create_save_lab.config(fg='grey')
 create_save_lab.grid(row=0, column=0, padx=(80,10), pady=(0,260))
 
 cr_save_ent = Entry(root,borderwidth=5)
+#cr_save_ent.config(bg='grey')
 cr_save_ent.grid(row=0, column=1, pady=(0,260))
 
-but_go = Button(root, text='Done', borderwidth=5, command=create_save)
+but_go = Button(root, text='Done', image=done_img, borderwidth=0, command=create_save)
 but_go.grid(row=0,column=2, padx=(10,0), pady=(0,260))
 
 lb = Listbox(root, borderwidth=3, width=25, height=16)
@@ -1434,8 +1446,8 @@ lb.bind("<Button-3>", do_popup) # button 3 is right click, so when right clickin
 
 load_listbox(lb) # populates listbox with saves on runtime
 
-but_load_save = Button(root, text='Load Save', borderwidth=5, command=load_save_from_lb)
-but_delete_save = Button(root, text='Delete Save', borderwidth=5, command=delete_save)
+but_load_save = Button(root, text='Load Save', image=load_save_img, borderwidth=0, command=load_save_from_lb)
+but_delete_save = Button(root, text='Delete Save', image=delete_save_img, borderwidth=0, command=delete_save,)
 
 but_load_save.grid(row=3, column=3, pady=(12,0))
 but_delete_save.grid(row=3, column=3, padx=(215,0), pady=(12,0))
