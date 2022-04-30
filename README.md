@@ -11,6 +11,10 @@ Dependencies
 ```
 python3 -m pip install Pillow tk requests
 ```
+Fedora/DNF for 'ImageTk' from 'PIL'
+```
+sudo dnf install python3-pillow-tk.x86_64 python3-pillow.x86_64 
+```
 Run
 ```
 python3 SaveManager.py
