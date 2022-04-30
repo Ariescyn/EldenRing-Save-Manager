@@ -12,7 +12,6 @@ item_dict = {
             'Smithing Stone [7]': [122,39],
             'Smithing Stone [8]': [123,39],
             'Smithing Stone [9]': [124,39],
-            'Smithing Stone [10]': [125,39],
             'Somber Stone [1]': [176,39],
             'Somber Stone [2]': [177,39],
             'Somber Stone [3]': [178,39],
@@ -21,8 +20,7 @@ item_dict = {
             'Somber Stone [6]': [181,39],
             'Somber Stone [7]': [182,39],
             'Somber Stone [8]': [183,39],
-            'Somber Stone [9]': [184,39],
-            'Somber Stone [10]': [185,39]
+            'Somber Stone [9]': [216,39]
                 },
 
         'Runes' : {
