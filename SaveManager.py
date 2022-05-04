@@ -867,8 +867,8 @@ def stat_editor():
         try:
             for ent in entries:
                 stats.append(int(ent.get()))
-        except:
-            pop_up("Select a Character first.")
+        except Exception as e:
+            pop_up(f"Error: Make sure all fields are completed.\n{e}")
             return
         if sum(stats) - 79 < 5:
             pop_up("Character level too low.")
