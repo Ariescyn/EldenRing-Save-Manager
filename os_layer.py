@@ -9,47 +9,54 @@ savedir = "./data/save-files/"
 app_title = "Elden Ring Save Manager"
 backupdir = "./data/backup/"
 update_dir = "./data/updates/"
-version = 'v1.46'
-v_num = 1.46 # Used for checking version for update
-video_url = 'https://youtu.be/RZIP0kYjvZM'
-stat_edit_video = 'https://youtu.be/TxXUuyIDj2s'
-background_img = './data/background.png'
-icon_file = './data/icon.ico'
-gamesavedir_txt = './data/GameSaveDir.txt'
-bk_p = (-140,20) # Background image position
-is_windows = any(platform.win32_ver()) or hasattr(sys, 'getwindowsversion')
+version = "v1.46"
+v_num = 1.46  # Used for checking version for update
+video_url = "https://youtu.be/RZIP0kYjvZM"
+stat_edit_video = "https://youtu.be/TxXUuyIDj2s"
+background_img = "./data/background.png"
+icon_file = "./data/icon.ico"
+gamesavedir_txt = "./data/GameSaveDir.txt"
+bk_p = (-140, 20)  # Background image position
+is_windows = any(platform.win32_ver()) or hasattr(sys, "getwindowsversion")
 
 
 def get_savedata_dir():
     if is_windows:
-        folder = "{}/EldenRing/".format(os.getenv('APPDATA').replace("\\", "/"))
+        folder = "{}/EldenRing/".format(os.getenv("APPDATA").replace("\\", "/"))
     else:
-        folder = "{}/.steam/steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing/".format(os.getenv("HOME"))
+        folder = "{}/.steam/steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing/".format(
+            os.getenv("HOME")
+        )
 
     return folder
 
+
 eldenring_savedata_dir = get_savedata_dir()
+
 
 def open_folder_standard_exporer(path):
     """Note: os.startfile is only avaiable on Win platform"""
     if platform.system() == "Windows":
-        os.startfile(path.replace('/', '\\'))
+        os.startfile(path.replace("/", "\\"))
     else:
         subprocess.Popen(["xdg-open", path])
 
+
 def open_textfile_in_editor(path):
     if is_windows:
-        subprocess.run(f"notepad {path}", shell=True , capture_output=True, text=True)
+        subprocess.run(f"notepad {path}", shell=True, capture_output=True, text=True)
     else:
         subprocess.Popen(["xdg-open", path])
+
 
 def force_close_process(process):
     if is_windows:
         comm = f"taskkill /IM {process} -F"
-        subprocess.run(comm, shell=True , capture_output=True, text=True)
+        subprocess.run(comm, shell=True, capture_output=True, text=True)
     else:
         comm = f"pkill {process}"
         os.system(comm)
+
 
 def copy_folder(src, dest):
     """
@@ -61,8 +68,10 @@ def copy_folder(src, dest):
     """
     shutil.copytree(src, dest, dirs_exist_ok=True)
 
+
 def copy_file(src, dst):
     shutil.copy(src, dst)
+
 
 def delete_folder(folder):
     if folder is None or not isinstance(folder, str) or len(folder) < 5:
