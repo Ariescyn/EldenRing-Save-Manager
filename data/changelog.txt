@@ -1,5 +1,6 @@
-- New Inventory Editor tool (More items will be added in the future)
-
-- Setting character stats now automatically sets HP/STAM/FP values
-
-- Small bug fixes and improvements
+New Recovery tool. Every action made in the manager will automatically archive the save file.
+Major directory handling re-write. (YOU WILL NEED TO SET YOUR DEFAULT GAME DIRECTORY AND STEAM ID AGAIN)
+Importing a save file no longer automatically patches SteamID
+Added new items to Inventory Editor
+Inventory Editor max value changed from 99 to 999
+Removed various unnecessary features
