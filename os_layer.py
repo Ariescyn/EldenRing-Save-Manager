@@ -3,35 +3,23 @@ import platform
 import sys
 import subprocess
 import shutil
+import re
 
 # main variables, directories and settings
+config_path = "./data/config.json"
 savedir = "./data/save-files/"
 app_title = "Elden Ring Save Manager"
 backupdir = "./data/backup/"
 update_dir = "./data/updates/"
-version = "v1.46"
-v_num = 1.46  # Used for checking version for update
+version = "v1.5"
+v_num = 1.5  # Used for checking version for update
 video_url = "https://youtu.be/RZIP0kYjvZM"
-stat_edit_video = "https://youtu.be/TxXUuyIDj2s"
 background_img = "./data/background.png"
 icon_file = "./data/icon.ico"
-gamesavedir_txt = "./data/GameSaveDir.txt"
 bk_p = (-140, 20)  # Background image position
 is_windows = any(platform.win32_ver()) or hasattr(sys, "getwindowsversion")
 
 
-def get_savedata_dir():
-    if is_windows:
-        folder = "{}/EldenRing/".format(os.getenv("APPDATA").replace("\\", "/"))
-    else:
-        folder = "{}/.steam/steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing/".format(
-            os.getenv("HOME")
-        )
-
-    return folder
-
-
-eldenring_savedata_dir = get_savedata_dir()
 
 
 def open_folder_standard_exporer(path):

@@ -1,4 +1,4 @@
-import binascii, re, hashlib, random, base64, stat_progression, itemdata
+import binascii, re, hashlib, random, base64, stat_progression, itemdata, os
 
 
 def l_endian(val):
@@ -20,9 +20,8 @@ def recalc_checksum(file):
 
         # Build nested list containing data and checksum related to each slot
         for i in range(10):
-            d = dat[
-                s_ind : s_ind + slot_len + 1
-            ]  # [ dat[0x00000310:0x0028030F +1], dat[ 0x00000300:0x0000030F + 1] ]
+            # [ dat[0x00000310:0x0028030F +1], dat[ 0x00000300:0x0000030F + 1] ]
+            d = dat[s_ind : s_ind + slot_len + 1]
             c = dat[c_ind : c_ind + cs_len + 1]
             slot_ls.append([d, c])
             s_ind += 2621456
@@ -59,52 +58,57 @@ def recalc_checksum(file):
             fh1.write(dat)
 
 
-def replacer(file, slot, name):
-    with open(file, "rb") as fh:
-        dat1 = fh.read()
-        id_loc = []
-        index = 0
-
-        while index < len(dat1):
-            index = dat1.find(slot.rstrip(b"\x00"), index)
-
-            if index == -1:
-                break
-            id_loc.append(index)
-            if len(id_loc) > 300:
-                return "error"
-            index += 8
-
-        nw_nm_bytes = name.encode("utf-16")[2:]
-
-        num = 32 - len(nw_nm_bytes)
-        for i in range(num):
-            nw_nm_bytes = nw_nm_bytes + b"\x00"
-
-        for i in id_loc:
-            fh.seek(0)
-            a = fh.read(i)
-            b = nw_nm_bytes
-            fh.seek(i + 32)
-            c = fh.read()
-            data = a + b + c
-
-            with open(file, "wb") as f:
-                f.write(data)
-    recalc_checksum(file)
-
-
 def change_name(file, nw_nm, dest_slot):
+    """Builds list of each character name from static name locations in header, then passes specified char name in bytes into replacer function."""
 
-    empty = b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    def replacer(file, old_name, name):
+        """Scans for all occurences of old_name and replaces it with name."""
+        with open(file, "rb") as fh:
+            dat1 = fh.read()
+            id_loc = []
+            index = 0
+
+            while index < len(dat1):
+                index = dat1.find(
+                    old_name.rstrip(b"\x00"), index
+                )  # Strip empty bytes off of character name
+
+                if index == -1:
+                    break
+                id_loc.append(index)
+                if (
+                    len(id_loc) > 300
+                ):  # If it found that many locations then the name might be short like "M"
+                    return "error"
+                index += 8
+
+            nw_nm_bytes = name.encode("utf-16")[2:]
+
+            num = 32 - len(nw_nm_bytes)
+            for i in range(num):
+                nw_nm_bytes = nw_nm_bytes + b"\x00"
+
+            for i in id_loc:
+                fh.seek(0)
+                a = fh.read(i)
+                b = nw_nm_bytes
+                fh.seek(i + 32)
+                c = fh.read()
+                data = a + b + c
+
+                with open(file, "wb") as f:
+                    f.write(data)
+        recalc_checksum(file)
+
+    # empty = b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
     with open(file, "rb") as fh:
         dat1 = fh.read()
 
     name_locations = []
-    ind1 = 0x1901D0E
+    ind1 = 0x1901D0E  # Start address of char names in header, 588 bytes apart
     for i in range(10):
         nm = dat1[ind1 : ind1 + 32]
-        name_locations.append(nm)
+        name_locations.append(nm)  # Name in bytes
         ind1 += 588
 
     x = replacer(file, name_locations[dest_slot - 1], nw_nm)
@@ -144,6 +148,7 @@ def replace_id(file, newid):
 
 
 def copy_save(src_file, dest_file, src_char, dest_char):
+    """Copy characters between save files"""
     slot_len = 2621456
     lvls = get_levels(src_file)
     lvl = lvls[src_char - 1]
@@ -187,31 +192,46 @@ def get_id(file):
 
 
 def get_names(file):
-    with open(file, "rb") as fh:
-        dat1 = fh.read()
+    try:
+        with open(file, "rb") as fh:
+            dat1 = fh.read()
 
-    name1 = dat1[0x1901D0E : 0x1901D0E + 32].decode("utf-16")
-    name2 = dat1[0x1901F5A : 0x1901F5A + 32].decode("utf-16")
-    name3 = dat1[0x19021A6 : 0x19021A6 + 32].decode("utf-16")
-    name4 = dat1[0x19023F2 : 0x19023F2 + 32].decode("utf-16")
-    name5 = dat1[0x190263E : 0x190263E + 32].decode("utf-16")
-    name6 = dat1[0x190288A : 0x190288A + 32].decode("utf-16")
-    name7 = dat1[0x1902AD6 : 0x1902AD6 + 32].decode("utf-16")
-    name8 = dat1[0x1902D22 : 0x1902D22 + 32].decode("utf-16")
-    name9 = dat1[0x1902F6E : 0x1902F6E + 32].decode("utf-16")
-    name10 = dat1[0x19031BA : 0x19031BA + 32].decode("utf-16")
+    except FileNotFoundError as e:
+        return False
+#    except FileNotFoundError as e:
+#        d = file.split("/")[:4]
+#        d = "/".join(d)
 
-    names = [name1, name2, name3, name4, name5, name6, name7, name8, name9, name10]
+#        dir_id = re.findall(r'\d{17}',str(os.listdir(d)))
+#        if len(dir_id) != 1:
+#            return False
 
-    for ind, i in enumerate(names):
-        if i == "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00":
+#        new_path = f"{d}/{dir_id[0]}/ER0000.sl2"
+#        with open(new_path, "rb") as fh:
+#            dat1 = fh.read()
+
+    name1 = dat1[0x1901d0e:0x1901d0e + 32].decode('utf-16')
+    name2 = dat1[0x1901f5a:0x1901f5a + 32].decode('utf-16')
+    name3 = dat1[0x19021a6:0x19021a6 + 32].decode('utf-16')
+    name4 = dat1[0x19023f2 :0x19023f2  +32].decode('utf-16')
+    name5 = dat1[0x190263e :0x190263e  +32].decode('utf-16')
+    name6 = dat1[0x190288a :0x190288a  +32].decode('utf-16')
+    name7 = dat1[0x1902ad6 :0x1902ad6  +32].decode('utf-16')
+    name8 = dat1[0x1902d22 :0x1902d22  +32].decode('utf-16')
+    name9 = dat1[0x1902f6e :0x1902f6e  +32].decode('utf-16')
+    name10 = dat1[0x19031ba :0x19031ba  +32].decode('utf-16')
+
+
+    names = [name1,name2,name3,name4,name5,name6,name7,name8,name9,name10]
+
+
+    for ind,i in enumerate(names):
+        if i == '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00':
             names[ind] = None
 
-    for ind, i in enumerate(names):
+    for ind,i in enumerate(names):
         if not i is None:
-            names[ind] = i.split("\x00")[
-                0
-            ]  # name looks like this: 'wete\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+            names[ind] = i.split('\x00')[0] # name looks like this: 'wete\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
 
     return names
 
@@ -339,8 +359,6 @@ def get_stats(file, char_slot):
     lvls = get_levels(file)
     lv = lvls[char_slot - 1]
     slots = get_slot_ls(file)
-    #    with open(file, 'rb') as fh:
-    #        dat = fh.read()
 
     start_ind = 0
     slot1 = slots[char_slot - 1]
@@ -539,8 +557,8 @@ def additem(file, slot, itemids, quantity):
             ch = (
                 s_start
                 + cs[:pos]
-                + quantity.to_bytes(1, "little")
-                + cs[pos + 1 :]
+                + quantity.to_bytes(2, "little")
+                + cs[pos + 2 :]
                 + s_end
             )
 

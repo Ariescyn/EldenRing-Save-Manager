@@ -7,64 +7,143 @@ from tkinter import ttk
 import tkinter as TKIN
 from collections import Counter
 from PIL import Image, ImageTk
-import subprocess, os, zipfile, requests, re, time, hexedit, webbrowser, itemdata
+import subprocess, os, zipfile, requests, re, time, hexedit, webbrowser, itemdata, lzma, datetime, json
 from os_layer import *
-
+from pathlib import Path as PATH
 
 # set always the working dir to the correct folder for unix env
 if not is_windows:
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-# Load and parse save directory
-if not os.path.exists(gamesavedir_txt):
-    with open(gamesavedir_txt, "w") as fh:
-        fh.write(eldenring_savedata_dir)
-
-with open(gamesavedir_txt, "r+") as fh:
-    s_path = fh.readline()
-    # before 1.44 old txt path was like this on windows: %APPDATA%\EldenRing\"
-    # this convert env variables, transform to forward slash and escape spaces
-    if s_path.startswith('"'):
-        s_path = (
-            s_path.strip()
-            .replace('"', "")
-            .replace("%APPDATA%", os.getenv("APPDATA"))
-            .replace("\\", "/")
-            .replace(" ", "\\ ")
-        )
-        if not s_path.endswith("/"):
-            s_path = s_path + "/"
-        fh.truncate(0)
-        fh.seek(0)
-        fh.write(s_path)
-    gamedir = s_path
 
 
-def get_steamid():
-    """Get users steamID by pulling folder name."""
-    try:
-        for dir_name in os.listdir(eldenring_savedata_dir):
-            steam_id = None
-            if len(dir_name) == 17:
-                steam_id = dir_name
-                break
+class Config:
+    def __init__(self):
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
+                dat = json.load(f)
 
-        if not steam_id:
-            popup(
-                "Steam ID not detected. Ensure your default game directory\nis set properly before performing any actions."
-            )
-            return None
+
+        if not os.path.exists(config_path):  # Build dictionary for first time
+            dat = {}
+            dat["post_update"] = True
+            dat["gamedir"] = ""
+            dat["steamid"] = ""
+            dat["seamless-coop"] = False
+
+            self.cfg = dat
+            with open(config_path, 'w') as f:
+                json.dump(self.cfg, f)
         else:
-            return steam_id
-    except FileNotFoundError:
-        popup(
-            "Steam ID not detected. Ensure your default game directory\nis set properly before performing any actions."
-        )
-        return None
+            with open(config_path, 'r') as f:
+                js = json.load(f)
+                self.cfg = js
+
+
+    def set(self,k,v):
+        self.cfg[k] = v
+        #print('SET: ', self.cfg[k])
+        with open(config_path, 'w') as f:
+            json.dump(self.cfg, f)
+
+
+def archive_file(file, name, metadata, names):
+
+    name = name.replace(" ", "_")
+
+    if not os.path.exists(file):  # If you try to load a save from listbox, and it tries to archive the file already present in the gamedir, but it doesn't exist, then skip
+        return
+
+    lzc = lzma.LZMACompressor()
+    now = datetime.datetime.now()
+    date = now.strftime("%Y-%m-%d__(%I.%M.%S)")
+    name = f"{name}__{date}"
+    os.makedirs(f"./data/archive/{name}")
+
+
+    with open(file, "rb") as fhi, open(f"./data/archive/{name}/ER0000.xz", 'wb') as fho:
+        pc = lzc.compress(fhi.read())
+        fho.write(pc)
+        fho.write(lzc.flush())
+
+        names = [i for i in names if not i is None]
+        formatted_names = ", ".join(names)
+        meta = f"{metadata}\nCHARACTERS: {formatted_names}"
+
+    with open(f"./data/archive/{name}/info.txt", 'w') as f:
+        f.write(meta)
+
+
+def unarchive_file(file):
+    lzc = lzma.LZMACompressor()
+    name = file.split("/")[-2]
+    path = f"./data/recovered/{name}/"
+    print("PATH: ", path)
+
+    if not os.path.exists("./data/recovered/"):
+        os.makedirs("./data/recovered/")
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    with lzma.open(file, "rb") as f_in, open(f"{path}/{ext()}", "wb") as f_out:
+        f_out.write(f_in.read())
+
+
+def grab_metadata(file):
+    """Used to grab metadata from archive info.txt"""
+    with open(file.replace(" ", "__").replace(":", "."), 'r') as f:
+        meta = f.read()
+        popup(meta)
+
+
+def change_default_steamid():
+
+
+    def done():
+        s_id = ent.get()
+        if not len(s_id) == 17:
+            popup("SteamID should be 17 digits long")
+            return
+        config.set("steamid", s_id)
+
+
+        popup("Successfully changed default SteamID")
+        popupwin.destroy()
+
+    def cancel():
+        popupwin.destroy()
+
+    def validate(P):
+        if len(P) == 0:
+            return True
+        elif len(P) < 18 and P.isdigit():
+            return True
+        else:
+            # Anything else, reject it
+            return False
+
+    popupwin = Toplevel(root)
+    popupwin.title("Set SteamID")
+    vcmd = (popupwin.register(validate), "%P")
+    # popupwin.geometry("200x70")
+
+    s_id = config.cfg["steamid"]
+    lab = Label(popupwin, text=f"Current ID: {s_id}\nEnter new ID:")
+    lab.grid(row=0, column=0)
+    ent = Entry(popupwin, borderwidth=5, validate="key", validatecommand=vcmd)
+    ent.grid(row=1, column=0, padx=25, pady=10)
+    x = root.winfo_x()
+    y = root.winfo_y()
+    popupwin.geometry("+%d+%d" % (x + 200, y + 200))
+    but_done = Button(popupwin, text="Done", borderwidth=5, width=6, command=done)
+    but_done.grid(row=2, column=0, padx=(25, 65), pady=(0, 15), sticky="w")
+    but_cancel = Button(popupwin, text="Cancel", borderwidth=5, width=6, command=cancel)
+    but_cancel.grid(row=2, column=0, padx=(70, 0), pady=(0, 15))
 
 
 def import_save():
     """Opens file explorer to choose a save file to import, Then checks if the files steam ID matches users, and replaces it with users id"""
+
     if os.path.isdir(savedir) is False:
         os.makedirs(savedir)
     d = fd.askopenfilename()
@@ -72,14 +151,18 @@ def import_save():
     if len(d) < 1:
         return
 
-    if not d.endswith(("ER0000.sl2")):
-        popup("Select a valid save file!\nIt should be named: ER0000.sl2")
+    if not d.endswith(ext()):
+        popup("Select a valid save file!\nIt should be named: ER0000.sl2/ER0000.co2")
         return
+
+
+
 
     def cancel():
         popupwin.destroy()
 
     def done():
+
         name = ent.get().strip()
         if len(name) < 1:
             popup("No name entered.")
@@ -99,27 +182,39 @@ def import_save():
                 popup("Name already exists")
                 return
 
-        id = user_steam_id
-        newdir = "{}{}/{}/".format(savedir, name.replace(" ", "-"), id)
+
+
+
+
+
+
+        names = get_charnames(d)
+        archive_file(d, name, "ACTION: Imported", names)
+
+        newdir = "{}{}/".format(savedir, name.replace(" ", "-"))
         cp_to_saves_cmd = lambda: copy_file(d, newdir)
 
         if os.path.isdir(newdir) is False:
             cmd_out = run_command(lambda: os.makedirs(newdir))
 
             if cmd_out[0] == "error":
+                print("---ERROR #1----")
                 return
+
             lb.insert(END, "  " + name)
             cmd_out = run_command(cp_to_saves_cmd)
             if cmd_out[0] == "error":
                 return
             create_notes(name, "{}{}/".format(savedir, name.replace(" ", "-")))
 
-            file_id = hexedit.get_id(f"{newdir}/ER0000.sl2")
-            if file_id != int(id):
+            file_id = hexedit.get_id(f"{newdir}/{ext()}")
+            user_id = config.cfg["steamid"]
+
+            if file_id != int(user_id):
                 popup(
-                    f"Steam ID of file did not match your own ID\nAutomatically patched file with your Steam ID\nFile ID: {file_id}\nYour ID: {id}"
+                    f"File SteamID: {file_id}\nYour SteamID: {user_id}", buttons=True, button_names=("Patch with your ID", "Leave it"), b_width=(15,8), functions=(lambda:hexedit.replace_id(f"{newdir}/{ext()}", int(user_id)), donothing)
                 )
-                hexedit.replace_id(f"{newdir}/ER0000.sl2", int(id))
+                #hexedit.replace_id(f"{newdir}/ER0000.sl2", int(id))
 
             popupwin.destroy()
 
@@ -182,7 +277,7 @@ def update_app(on_start=False):
 
 
 def reset_default_dir():
-    """Writes the original gamedir to text file"""
+    """DEPRECIATED! writes the original gamedir to text file"""
     global gamedir
     with open(gamesavedir_txt, "w") as fh:
         fh.write(eldenring_savedata_dir)
@@ -190,12 +285,6 @@ def reset_default_dir():
         gamedir = fh.readline()
     popup("Successfully reset default directory")
 
-
-def create_notes(name, dir):
-    """Create a notepad document in specified save slot."""
-    name = name.replace(" ", "-")
-    cmd = lambda: os.close(os.open(f"{dir}/notes.txt", os.O_CREAT))
-    run_command(cmd)
 
 
 def help_me():
@@ -214,34 +303,6 @@ def load_listbox(lstbox):
     if os.path.isdir(savedir) is True:
         for entry in os.listdir(savedir):
             lstbox.insert(END, "  " + entry.replace("-", " "))
-
-
-def save_backup():
-    """Quickly save a backup of the current game save. Used from the menubar."""
-    comm = lambda: copy_folder(gamedir, backupdir)
-
-    if os.path.isdir(backupdir) is False:
-        cmd_out1 = run_command(lambda: os.makedirs(backupdir))
-        if cmd_out1[0] == "error":
-            return
-    cmd_out2 = run_command(comm)
-    if cmd_out2[0] == "error":
-        return
-    else:
-        popup("Backup saved successfully")
-
-
-def load_backup():
-    """Quickly load a backup of the current game save. Used from the menubar."""
-    comm = lambda: copy_folder(backupdir, gamedir)
-    if os.path.isdir(backupdir) is False:
-        run_command(lambda: os.makedirs(backupdir))
-
-    if len(re.findall(r"\d{17}", str(os.listdir(backupdir)))) < 1:
-        popup("No backup found")
-
-    else:
-        popup("Overwrite existing save?", command=comm, buttons=True)
 
 
 def create_save():
@@ -269,7 +330,14 @@ def create_save():
     # If new save name doesnt exist, insert it into the listbox,
     # otherwise duplicates will appear in listbox even though the copy command will overwrite original save
     if len(name) > 0 and isforbidden is False:
-        cp_to_saves_cmd = lambda: copy_folder(gamedir, newdir)
+
+        path = "{}/{}".format(config.cfg["gamedir"], ext())
+
+        nms = get_charnames(path)
+        archive_file(path, name, "ACTION: Clicked Create Save", nms)
+
+
+        cp_to_saves_cmd = lambda: copy_file(path,newdir)
         # /E – Copy subdirectories, including any empty ones.
         # /H - Copy files with hidden and system file attributes.
         # /C - Continue copying even if an error occurs.
@@ -288,6 +356,9 @@ def create_save():
             popup(
                 "File already exists, OVERWRITE?", command=cp_to_saves_cmd, buttons=True
             )
+        #save_path = f"{newdir}/{user_steam_id}/ER0000.sl2"
+        #nms = get_charnames(save_path)
+        #archive_file(save_path, f"ACTION: Create save\nCHARACTERS: {nms}")
 
 
 def donothing():
@@ -296,12 +367,28 @@ def donothing():
 
 def load_save_from_lb():
     """Fetches currently selected listbox item and copies files to game save dir."""
+
+
+    def wrapper(comm):
+        """Archives savefile in gamedir and runs command to overwrite. This function is then passed into popup function."""
+        #path = f"{gamedir}/{user_steam_id}/ER0000.sl2"
+        path = "{}/{}".format(config.cfg["gamedir"],ext())
+        if not os.path.exists(path):
+            run_command(comm)
+        else:
+            nms = get_charnames(path)
+            archive_file(path, "None", "ACTION: Loaded save and overwrite current save file in EldenRing game directory", nms)
+            run_command(comm)
+
     if len(lb.curselection()) < 1:
         popup("No listbox item selected.")
         return
     name = fetch_listbox_entry(lb)[0]
     src_dir = "".join((savedir, name.replace(" ", "-"), "/"))
-    comm = lambda: copy_folder(src_dir, gamedir)
+
+
+
+    comm = lambda: copy_folder(src_dir, str(config.cfg["gamedir"]))
     if not os.path.isdir(f"{savedir}{name}"):
         popup(
             "Save slot does not exist.\nDid you move or delete it from data/save-files?"
@@ -310,7 +397,7 @@ def load_save_from_lb():
         load_listbox(lb)
         return
     popup(
-        "Are you sure?", buttons=True, functions=(lambda: run_command(comm), donothing)
+        "Are you sure?", buttons=True, functions=(lambda: wrapper(comm), donothing)
     )
 
 
@@ -320,12 +407,11 @@ def popup(
     functions=False,
     buttons=False,
     button_names=("Yes", "No"),
-    title="Manager",
-):
+    b_width=(6,6),
+    title="Manager",):
     """text: Message to display on the popup window.
     command: Simply run the windows CMD command if you press yes.
     functions: Pass in external functions to be executed for yes/no"""
-
     def run_cmd():
         cmd_out = run_command(command)
         popupwin.destroy()
@@ -352,10 +438,10 @@ def popup(
     # Runs for simple windows CMD execution
     if functions is False and buttons is True:
         but_yes = Button(
-            popupwin, text=button_names[0], borderwidth=5, width=6, command=run_cmd
+            popupwin, text=button_names[0], borderwidth=5, width=b_width[0], command=run_cmd
         ).grid(row=1, column=0, padx=(10, 0), pady=(0, 10))
         but_no = Button(
-            popupwin, text=button_names[1], borderwidth=5, width=6, command=dontrun_cmd
+            popupwin, text=button_names[1], borderwidth=5, width=b_width[1], command=dontrun_cmd
         ).grid(row=1, column=1, padx=(10, 10), pady=(0, 10))
 
     elif functions is not False and buttons is True:
@@ -363,14 +449,14 @@ def popup(
             popupwin,
             text=button_names[0],
             borderwidth=5,
-            width=6,
+            width=b_width[0],
             command=lambda: run_func(functions[0]),
         ).grid(row=1, column=0, padx=(10, 0), pady=(0, 10))
         but_no = Button(
             popupwin,
             text=button_names[1],
             borderwidth=5,
-            width=6,
+            width=b_width[1],
             command=lambda: run_func(functions[1]),
         ).grid(row=1, column=1, padx=(10, 10), pady=(0, 10))
     # if text is the only arguement passed in, it will simply be a popup window to display text
@@ -395,6 +481,9 @@ def delete_save():
     comm = lambda: delete_folder(f"{savedir}{name}")
 
     def yes():
+        path = f"{savedir}{name}/{ext()}"
+        chars = get_charnames(path)
+        archive_file(path, name, "ACTION: Delete save file in Manager", chars)
         out = run_command(comm)
         lb.delete(0, END)
         load_listbox(lb)
@@ -417,10 +506,6 @@ def fetch_listbox_entry(lstbox):
     return (internal_name, name)
 
 
-def about():
-    popup(
-        text="Author: Lance Fitz\nEmail: scyntacks94@gmail.com\nGithub: github.com/Ariescyn"
-    )
 
 
 def rename_slot():
@@ -482,34 +567,42 @@ def rename_slot():
 
 def update_slot():
     """Update the selected savefile with the current elden ring savedata"""
+    def do(file):
+        names = get_charnames(file)
+        archive_file(file, lst_box_choice, "ACTION: Clicked Update save-file in Manager", names)
+
+        copy_file(f"{config.cfg['gamedir']}/{ext()}", f"{savedir}{lst_box_choice}")
+
+
     lst_box_choice = fetch_listbox_entry(lb)[0]
     if len(lst_box_choice) < 1:
         popup("No listbox item selected.")
         return
-    cmd = lambda: copy_folder(gamedir, "".join((savedir, lst_box_choice)))
-    popup(text="Are you sure?", buttons=True, command=cmd)
+    path = f"{savedir}{lst_box_choice}/{ext()}"
+
+    popup(text="This will take your current save in-game\nand overwrite this save slot\nAre you sure?", buttons=True, command=lambda: do(path))
 
 
 def change_default_dir():
     """Opens file explorer for user to choose new default elden ring directory. Writes changes to GameSaveDir.txt"""
-    global gamedir
+
     newdir = fd.askdirectory()
     if len(newdir) < 1:  # User presses cancel
         return
 
-    # Check if selected directory contains 17 digit steamid folder and GraphicsConfig.xml
-    if (
-        os.path.exists(f"{newdir}/GraphicsConfig.xml")
-        and len(re.findall(r"\d{17}", str(os.listdir(newdir)))) > 0
-    ):
-        with open(gamesavedir_txt, "w") as fh:
-            fh.write(newdir)
-        gamedir = newdir
-        popup(f"Directory set to:\n {newdir}")
+    folder = newdir.split("/")[-1]
+    f_id = re.findall(r"\d{17}", folder)
+
+    if len(f_id) == 0:
+        popup("Please select the directory named after your 17 digit SteamID")
+        return
+
+
     else:
-        popup(
-            "Cant find savedata in this Directory.\nThe selected folder should contain GraphicsConfig.xml and\na folder named after your 17 digit SteamID"
-        )
+
+        config.set("gamedir", newdir)
+
+        popup(f"Directory set to:\n {newdir}\n")
 
 
 def rename_char(file, nw_nm, dest_slot):
@@ -544,8 +637,11 @@ def char_manager():
         name = fetch_listbox_entry(lstbox)[0]
         if len(name) < 1:
             return
-        file = f"{savedir}{name}/{user_steam_id}/ER0000.sl2"
-        names = hexedit.get_names(file)
+        file = f"{savedir}{name}/{ext()}"
+        names = get_charnames(file)
+
+
+
         drop["menu"].delete(0, "end")  # remove full list
 
         index = 1
@@ -594,16 +690,17 @@ def char_manager():
             pop_up(txt="Character not selected")
             return
 
-        src_file = f"{savedir}{name1}/{user_steam_id}/ER0000.sl2"
-        dest_file = f"{savedir}{name2}/{user_steam_id}/ER0000.sl2"
+        src_file = f"{savedir}{name1}/{ext()}"
+        dest_file = f"{savedir}{name2}/{ext()}"
 
         src_ind = int(src_char.split(".")[0])
         dest_ind = int(dest_char.split(".")[0])
 
         # Duplicate names check
         src_char_real = src_char.split(". ")[1]
-        dest_names = hexedit.get_names(dest_file)
-        src_names = hexedit.get_names(src_file)
+        dest_names = get_charnames(dest_file)
+        nms = [i for i in dest_names]  # For archive_file only
+        src_names = get_charnames(src_file)
 
         # If there are two or more of the name name in a destination file, quits
         rmv_none = [i for i in dest_names if not i is None]
@@ -616,10 +713,11 @@ def char_manager():
 
         src_names.pop(src_ind - 1)
         dest_names.pop(dest_ind - 1)
-        backup_path = r"./data/temp/ER0000.sl2"
+        backup_path = r"./data/temp/{}".format(ext())
 
         # If performing operations on the same file. Changes name to random, copies character to specified slot, then rewrites the name and re-populates the dropdown entries
         if src_file == dest_file:
+            archive_file(dest_file, name2, "ACTION: Copy Character", nms)
             cmd = lambda: copy_file(src_file, backup_path)
             x = run_command(cmd)
             rand_name = hexedit.random_str()
@@ -639,6 +737,7 @@ def char_manager():
         # If source name in destination file, copies source file to temp folder, changes the name of copied save to random, then copies source character of
         #  copied file to destination save file, and rewrites names on destination file
         elif src_char_real in dest_names:
+            archive_file(dest_file, name2, "ACTION: Copy character", nms)
             cmd = lambda: copy_file(src_file, backup_path)
             x = run_command(cmd)
             rand_name = hexedit.random_str()
@@ -657,6 +756,7 @@ def char_manager():
             )
             return
 
+        archive_file(dest_file, name2, f"ACTION: Copy character", nms)
         hexedit.copy_save(src_file, dest_file, src_ind, dest_ind)
         rename_char(dest_file, src_char_real, dest_ind)
 
@@ -743,36 +843,7 @@ def char_manager():
     but_cancel.config(font=bolded)
     but_cancel.grid(row=5, column=0, padx=(70, 0), pady=(50, 0))
 
-    mainloop()
-
-
-def quick_restore():
-    """Copies the selected save file in temp to selected listbox item"""
-    lst_box_choice = fetch_listbox_entry(lb)[0]
-    if len(lst_box_choice) < 1:
-        popup("No listbox item selected.")
-        return
-    src = f"./data/temp/{lst_box_choice}"
-    dest = f"{savedir}{lst_box_choice}"
-    cmd = lambda: copy_folder(src, dest)
-    x = run_command(cmd)
-    if x[0] != "error":
-        popup("Successfully restored backup.")
-
-
-def quick_backup():
-    """Creates a backup of selected listbox item to temp folder"""
-    lst_box_choice = fetch_listbox_entry(lb)[0]
-    if len(lst_box_choice) < 1:
-        popup("No listbox item selected.")
-        return
-
-    src = f"{savedir}{lst_box_choice}"
-    dest = f"./data/temp/{lst_box_choice}"
-    cmd = lambda: copy_folder(src, dest)
-    x = run_command(cmd)
-    if x[0] != "error":
-        popup("Successfully created backup.")
+    #mainloop()
 
 
 def rename_characters():
@@ -794,13 +865,14 @@ def rename_characters():
             return
 
         # Duplicate names check
-        dest_names = names
+        dest_names = [i for i in names]
         dest_names.pop(slot_ind - 1)
 
         if new_name in dest_names:
             popup("Save can not have duplicate names")
             return
 
+        archive_file(path, choice_real, "ACTION: Rename Character", names)
         rename_char(path, new_name, slot_ind)
         popup("Successfully Renamed Character")
         drop["menu"].delete(0, "end")
@@ -810,8 +882,12 @@ def rename_characters():
     if name == "":
         popup("No listbox item selected.")
         return
-    path = f"{savedir}{name}/{user_steam_id}/ER0000.sl2"
-    names = hexedit.get_names(path)
+    path = f"{savedir}{name}/{ext()}"
+    names = get_charnames(path)
+    if names is False:
+        popup("FileNotFoundError: This is a known issue.\nPlease try re-importing your save file.")
+
+
     chars = []
     for ind, i in enumerate(names):
         if i != None:
@@ -841,14 +917,18 @@ def rename_characters():
     but_go.grid(row=2, column=0, padx=(35, 0), pady=(10, 0))
 
 
-def changelog():
-    # out = run_command("notepad ./data/changelog.txt")
+def changelog(run=False):
     info = ""
     with open("./data/changelog.txt", "r") as f:
         dat = f.readlines()
         for line in dat:
-            info = info + line
-    popup(info, title="Changelog")
+            info = info + f"\n\u2022 {line}\n"
+    if run:
+        popup(info, title="Changelog")
+        return
+    if config.cfg["post_update"]:
+        popup(info, title="Changelog", buttons=True, button_names=("Change default directory now", "Do it later"), functions=(change_default_dir,donothing), b_width=(27,10))
+
 
 
 def stat_editor():
@@ -881,13 +961,16 @@ def stat_editor():
         char = vars.get().split(". ")[1]
         char_slot = int(vars.get().split(".")[0])
         name = fetch_listbox_entry(lb1)[0]
-        file = f"{savedir}{name}/{user_steam_id}/ER0000.sl2"
+        file = f"{savedir}{name}/{ext()}"
         try:
+            nms = get_charnames(file)
+            archive_file(file, name, "ACTION: Edit stats", nms)
             hexedit.set_stats(file, char_slot, stats)
             hexedit.set_attributes(file, char_slot, [vig, min, end])
             pop_up("Success!")
         except Exception as e:
             pop_up("Something went wrong!: ", e)
+            return
 
     def pop_up(txt, bold=True):
         """Basic popup window used only for parent function"""
@@ -916,8 +999,12 @@ def stat_editor():
         name = fetch_listbox_entry(lstbox)[0]
         if len(name) < 1:
             return
-        file = f"{savedir}{name}/{user_steam_id}/ER0000.sl2"
-        names = hexedit.get_names(file)
+        file = f"{savedir}{name}/{ext()}"
+        names = get_charnames(file)
+
+        if names is False:
+            popup("FileNotFoundError: This is a known issue.\nPlease try re-importing your save file.")
+
         drop["menu"].delete(0, "end")  # remove full list
 
         index = 1
@@ -941,17 +1028,17 @@ def stat_editor():
         char = vars.get().split(". ")[1]
         char_slot = int(vars.get().split(".")[0])
         name = fetch_listbox_entry(lb1)[0]
-        file = f"{savedir}{name}/{user_steam_id}/ER0000.sl2"
+        file = f"{savedir}{name}/{ext()}"
 
         try:
             stats = hexedit.get_stats(file, char_slot)[0]
         except Exception as e:
-            pop_up("Can't get stats, go in-game and\nload into the character first.")
+            pop_up("Can't get stats, go in-game and\nload into the character first or try leveling up once.")
             return
 
         # entries = [vig_ent, min_ent, end_ent, str_ent, dex_ent, int_ent, fai_ent, arc_ent]
         if 0 in stats:
-            pop_up("Can't get stats, go in-game and\nload into the character first.")
+            pop_up("Can't get stats, go in-game and\nload into the character first or try leveling up once.")
             return
 
         for stat, entry in list(zip(stats, entries)):
@@ -966,9 +1053,7 @@ def stat_editor():
     popupwin.resizable(width=True, height=True)
     popupwin.geometry("580x550")
     vcmd = (popupwin.register(validate), "%P")
-
     bolded = FNT.Font(weight="bold")  # will use the default font
-
     x = root.winfo_x()
     y = root.winfo_y()
     popupwin.geometry("+%d+%d" % (x + 200, y + 200))
@@ -976,16 +1061,9 @@ def stat_editor():
     menubar = Menu(popupwin)
     popupwin.config(menu=menubar)
     helpmenu = Menu(menubar, tearoff=0)
-    helpmenu.add_command(
-        label="Important Info",
-        command=lambda: pop_up(
-            "\u2022 Offline use only! Using this feature may get you banned."
-        ),
-    )
-    helpmenu.add_command(
-        label="Watch Video", command=lambda: webbrowser.open_new_tab(stat_edit_video)
-    )
-    menubar.add_cascade(label="Help", menu=helpmenu)
+    #helpmenu.add_command(label="Important Info", command=lambda: pop_up("\u2022 Offline use only! Using this feature may get you banned."))
+    #helpmenu.add_command(label="Watch Video", command=lambda: webbrowser.open_new_tab(stat_edit_video))
+    menubar.add_cascade(label="MAY BE UNSAFE ONLINE!", menu=helpmenu)
 
     # MAIN SAVE FILE LISTBOX
     lb1 = Listbox(popupwin, borderwidth=3, width=15, height=10, exportselection=0)
@@ -1113,16 +1191,17 @@ def stat_editor():
 
 
 def set_steam_id():
-    global user_steam_id
 
     def done():
 
-        file = f"{savedir}{name}/{user_steam_id}/ER0000.sl2"
+        file = f"{savedir}{name}/{ext()}"
         id = ent.get()
         x = re.findall(r"\d{17}", str(id))
         if len(x) < 1:
             popup("Your id should be a 17 digit number.")
             return
+        nms = get_charnames(file)
+        archive_file(file, name, "ACTION: Changed SteamID", nms)
         hexedit.replace_id(file, int(x[0]))
         popup("Successfully changed SteamID")
         popupwin.destroy()
@@ -1139,26 +1218,30 @@ def set_steam_id():
             # Anything else, reject it
             return False
 
-    popupwin = Toplevel(root)
-    popupwin.title("Set SteamID")
-    vcmd = (popupwin.register(validate), "%P")
-    # popupwin.geometry("200x70")
-    lab = Label(popupwin, text="Enter your ID:")
-    lab.grid(row=0, column=0)
-    ent = Entry(popupwin, borderwidth=5, validate="key", validatecommand=vcmd)
-    ent.grid(row=1, column=0, padx=25, pady=10)
-    x = root.winfo_x()
-    y = root.winfo_y()
-    popupwin.geometry("+%d+%d" % (x + 200, y + 200))
-    but_done = Button(popupwin, text="Done", borderwidth=5, width=6, command=done)
-    but_done.grid(row=2, column=0, padx=(25, 65), pady=(0, 15), sticky="w")
-    but_cancel = Button(popupwin, text="Cancel", borderwidth=5, width=6, command=cancel)
-    but_cancel.grid(row=2, column=0, padx=(70, 0), pady=(0, 15))
-
     name = fetch_listbox_entry(lb)[0]
     if name == "":
         popup("No listbox item selected.")
         popupwin.destroy()
+    cur_id = hexedit.get_id(f"{savedir}{name}/{ext()}")
+
+    popupwin = Toplevel(root)
+    popupwin.title("Set SteamID")
+    vcmd = (popupwin.register(validate), "%P")
+    # popupwin.geometry("200x70")
+    id_lab = Label(popupwin, text=f"Current ID: {cur_id}")
+    id_lab.grid(row=0, column=0)
+    lab = Label(popupwin, text="Enter new ID:")
+    lab.grid(row=1, column=0)
+
+    ent = Entry(popupwin, borderwidth=5, validate="key", validatecommand=vcmd)
+    ent.grid(row=2, column=0, padx=25, pady=10)
+    x = root.winfo_x()
+    y = root.winfo_y()
+    popupwin.geometry("+%d+%d" % (x + 200, y + 200))
+    but_done = Button(popupwin, text="Done", borderwidth=5, width=6, command=done)
+    but_done.grid(row=3, column=0, padx=(25, 65), pady=(0, 15), sticky="w")
+    but_cancel = Button(popupwin, text="Cancel", borderwidth=5, width=6, command=cancel)
+    but_cancel.grid(row=3, column=0, padx=(70, 0), pady=(0, 15))
 
 
 def inventory_editor():
@@ -1182,8 +1265,10 @@ def inventory_editor():
         name = fetch_listbox_entry(lstbox)[0]
         if len(name) < 1:
             return
-        file = f"{savedir}{name}/{user_steam_id}/ER0000.sl2"
-        names = hexedit.get_names(file)
+        file = f"{savedir}{name}/{ext()}"
+        names = get_charnames(file)
+        if names is False:
+            popup("FileNotFoundError: This is a known issue.\nPlease try re-importing your save file.")
         drop["menu"].delete(0, "end")  # remove full list
 
         index = 1
@@ -1200,7 +1285,7 @@ def inventory_editor():
     def validate(P):
         if len(P) == 0:
             return True
-        elif len(P) < 3 and P.isdigit() and int(P) > 0:
+        elif len(P) < 4 and P.isdigit() and int(P) > 0:
             return True
         else:
             # Anything else, reject it
@@ -1228,7 +1313,7 @@ def inventory_editor():
             pop_up(txt="Slot not selected")
             return
 
-        dest_file = f"{savedir}{name}/{user_steam_id}/ER0000.sl2"
+        dest_file = f"{savedir}{name}/{ext()}"
         char_ind = int(char.split(".")[0])
 
         qty = qty_ent.get()
@@ -1238,7 +1323,7 @@ def inventory_editor():
         else:
             qty = int(qty)
         itemid = itemdb.db[cat_vars.get()].get(item)
-
+        archive_file(dest_file, name, "ACTION: Add inventory items", get_charnames(dest_file))
         x = hexedit.additem(dest_file, char_ind, itemid, qty)
         # x = hexedit.additem(dest_file,char_ind,item, qty)
         if x is None:
@@ -1277,18 +1362,8 @@ def inventory_editor():
     menubar = Menu(popupwin)
     popupwin.config(menu=menubar)
     helpmenu = Menu(menubar, tearoff=0)
-    helpmenu.add_command(
-        label="Important Info",
-        command=lambda: pop_up(
-            "\u2022 Offline use only! Using this feature may get you banned.\n\n\u2022 You must have at least 1 of the selected item in your inventory."
-        ),
-    )
-    # helpmenu.add_command(label='Watch Video', command=lambda:webbrowser.open_new_tab(stat_edit_video))
-    menubar.add_cascade(label="Help", menu=helpmenu)
+    menubar.add_cascade(label="NOT SAFE FOR ONLINE USE!", menu=helpmenu)
 
-    # warn_lab = Label(popupwin,text='Note: You must already have at least 1 of the selected item in your inventory' )
-    # qty_lab.config(font=bolded)
-    # warn_lab.grid(row=0, column=0, padx=(55,0), pady=(10,10))
 
     # MAIN SAVE FILE LISTBOX
     lb1 = Listbox(popupwin, borderwidth=3, width=15, height=10, exportselection=0)
@@ -1337,6 +1412,229 @@ def inventory_editor():
     but_set.grid(row=6, column=0, padx=(155, 0), pady=(22, 10))
 
 
+def recovery():
+    def do_popup(event):
+        try:
+            rt_click_menu.tk_popup(
+                event.x_root, event.y_root
+            )  # Grab x,y position of mouse cursor
+        finally:
+            rt_click_menu.grab_release()
+
+
+
+    def recover():
+        name = fetch_listbox_entry(lb1)[1].strip().replace(" ", "__").replace(":", ".")
+        path = f"./data/archive/{name}/ER0000.xz"
+        folder_path = f"./data/recovered/{name}/"
+        try:
+            unarchive_file(path)
+            popup("Succesfully recovered save file.", functions=(lambda:open_folder_standard_exporer(folder_path), donothing), buttons=True, button_names=("Open", "Cancel"))
+        except FileNotFoundError as e:
+            popup(e)
+
+
+    def pop_up(txt, bold=True):
+        """Basic popup window used only for parent function"""
+        pwin = Toplevel(win)
+        pwin.title("Manager")
+        lab = Label(pwin, text=txt)
+        if bold is True:
+            lab.config(font=bolded)
+        lab.grid(row=0, column=0, padx=15, pady=15, columnspan=2)
+        x = win.winfo_x()
+        y = win.winfo_y()
+        pwin.geometry("+%d+%d" % (x + 200, y + 200))
+
+
+    win = Toplevel(root)
+    win.title("Recovery")
+    win.resizable(width=True, height=True)
+    win.geometry("530x640")
+
+
+    #bolded = FNT.Font(weight="bold")  # will use the default font
+
+    x = root.winfo_x()
+    y = root.winfo_y()
+    win.geometry("+%d+%d" % (x + 200, y + 200))
+
+    menubar = Menu(win)
+    win.config(menu=menubar)
+    helpmenu = Menu(menubar, tearoff=0)
+    helpmenu.add_command(
+        label="Readme",
+        command=lambda: pop_up(
+            """\u2022 This tool recovers ruined save files in case of user error.\n
+                \u2022 Every time you modify/create/delete a save file, before the action is performed, a copy is created, compressed and stored in data/archive.\n
+                \u2022 The original file size of 28mb is compressed to 2mb. To recover a file, simply select a file and click Restore.\n
+                \u2022 Restored save files are in the data/recovered directory.\n
+                \u2022 Right-click on a save in the listbox to get additional file info.
+                """
+        ),
+    )
+    menubar.add_cascade(label="Help", menu=helpmenu)
+
+
+
+
+    # LISTBOX
+    lb1 = Listbox(win, borderwidth=3, width=32, height=25, exportselection=0)
+    lb1.config(font=bolded)
+    lb1.grid(row=1, column=0, padx=(120, 0), pady=(35, 15))
+    if os.path.isdir("./data/archive/") is True:
+        lb1.delete(0, END)
+        entries = sorted(PATH("./data/archive/").iterdir(), key=os.path.getmtime)
+
+        for entry in reversed(entries):
+            lb1.insert(END, "  " + str(entry).replace("\\", "/").split("archive/")[1].replace("__", " ").replace(".", ":"))
+
+    rt_click_menu = Menu(lb1, tearoff=0)
+    rt_click_menu.add_command(label="Get Info", command=lambda:grab_metadata(f"./data/archive/{fetch_listbox_entry(lb1)[1].strip()}/info.txt"   )  )
+
+    lb1.bind("<Button-3>", do_popup)
+
+
+
+    # SELECT LISTBOX ITEM BUTTON
+    but_select1 = Button(win, text="Recover", command=recover)
+    but_select1.grid(row=2, column=0, padx=(120, 0), pady=(0, 10))
+
+
+def get_charnames(file):
+    """wrapper for hexedit.get_names"""
+
+
+
+    out = hexedit.get_names(file)
+    if out is False:
+        popup(f"Error: Unable to get character names.\nDoes the following path exist?\n{file}")
+    else:
+        return out
+
+
+def finish_update():
+
+    if config.cfg["post_update"]:
+
+        if os.path.exists("./data/GameSaveDir.txt"):
+            os.remove("./data/GameSaveDir.txt")
+        try:
+            copy_folder(savedir, f"./data/save-files-pre-V1.5-BACKUP")
+        except Exception as e:
+            traceback.print_exc()
+            str_err = "".join(traceback.format_exc())
+            popup(str_err)
+
+        for dir in os.listdir(savedir):
+
+            try:
+                id = re.findall(r"\d{17}", str(os.listdir(f"{savedir}{dir}/")))
+                if len(id) < 1:
+                    continue
+
+                shutil.move(f"{savedir}{dir}/{id[0]}/{ext()}", f"{savedir}{dir}/{ext()}")
+                for i in ["GraphicsConfig.xml", "notes.txt", "steam_autocloud.vdf"]:
+                    if os.path.exists(f"{savedir}{dir}/{i}"):
+                        os.remove(f"{savedir}{dir}/{i}")
+
+                delete_folder(f"{savedir}{dir}/{id[0]}")
+            except Exception as e:
+                traceback.print_exc()
+                str_err = "".join(traceback.format_exc())
+                popup(str_err)
+                continue
+
+
+
+def seamless_coop():
+    x = lambda: 'Enabled' if config.cfg['seamless-coop'] else 'Disabled'
+    popup(f"Enable this option to support the seamless Co-op mod .co2 extension\nIt's recommended to use a separate copy of the Manager just for seamless co-op.\n\nCurrent State: {x()}", buttons=True, button_names=("Enable", "Disable"), functions=(lambda:config.set("seamless-coop", True), lambda:config.set("seamless-coop", False)))
+
+
+def ext():
+    if config.cfg["seamless-coop"]:
+        return "ER0000.co2"
+    elif config.cfg["seamless-coop"] is False:
+        return "ER0000.sl2"
+
+
+
+
+# ----- LEGACY FUNCTIONS (NO LONGER USED) -----
+
+def quick_restore():
+    """Copies the selected save file in temp to selected listbox item"""
+    lst_box_choice = fetch_listbox_entry(lb)[0]
+    if len(lst_box_choice) < 1:
+        popup("No listbox item selected.")
+        return
+    src = f"./data/temp/{lst_box_choice}"
+    dest = f"{savedir}{lst_box_choice}"
+    file = f"{dest}/{user_steam_id}/{ext()}" # USER_STEAM_ID no longer used
+    archive_file(file,lst_box_choice, "ACTION: Quick Restore", get_charnames(file))
+    cmd = lambda: copy_folder(src, dest)
+    x = run_command(cmd)
+    if x[0] != "error":
+        popup("Successfully restored backup.")
+
+
+def quick_backup():
+    """Creates a backup of selected listbox item to temp folder"""
+    lst_box_choice = fetch_listbox_entry(lb)[0]
+    if len(lst_box_choice) < 1:
+        popup("No listbox item selected.")
+        return
+
+    src = f"{savedir}{lst_box_choice}"
+    dest = f"./data/temp/{lst_box_choice}"
+    cmd = lambda: copy_folder(src, dest)
+    x = run_command(cmd)
+    if x[0] != "error":
+        popup("Successfully created backup.")
+
+
+def save_backup():
+    """Quickly save a backup of the current game save. Used from the menubar."""
+    comm = lambda: copy_folder(gamedir, backupdir)
+
+    if os.path.isdir(backupdir) is False:
+        cmd_out1 = run_command(lambda: os.makedirs(backupdir))
+        if cmd_out1[0] == "error":
+            return
+    cmd_out2 = run_command(comm)
+    if cmd_out2[0] == "error":
+        return
+    else:
+        popup("Backup saved successfully")
+
+
+def load_backup():
+    """Quickly load a backup of the current game save. Used from the menubar."""
+    comm = lambda: copy_folder(backupdir, gamedir)
+    if os.path.isdir(backupdir) is False:
+        run_command(lambda: os.makedirs(backupdir))
+
+    if len(re.findall(r"\d{17}", str(os.listdir(backupdir)))) < 1:
+        popup("No backup found")
+
+    else:
+        popup("Overwrite existing save?", command=comm, buttons=True)
+
+
+def create_notes(name, dir):
+    """Create a notepad document in specified save slot."""
+
+    return
+    name = name.replace(" ", "-")
+    cmd = lambda: os.close(os.open(f"{dir}/notes.txt", os.O_CREAT))
+    run_command(cmd)
+
+def about():
+    popup(text="Author: Lance Fitz\nEmail: scyntacks94@gmail.com\nGithub: github.com/Ariescyn")
+
+
+
 # ----- MAIN GUI CONTENT -----
 
 
@@ -1369,15 +1667,19 @@ delete_save_img = ImageTk.PhotoImage(
 )
 
 
-menubar = Menu(root)  # Create menubar attached to main window
+menubar = Menu(root)
 root.config(
     menu=menubar
-)  # menu is a parameter that lets you set a menubar for any given window
+)
 
-filemenu = Menu(menubar, tearoff=0)  # Create file menu attached to menubar
-filemenu.add_command(label="Save Backup", command=save_backup)
-filemenu.add_command(label="Restore Backup", command=load_backup)
+# FILE MENU
+filemenu = Menu(menubar, tearoff=0)
+
+#filemenu.add_command(label="Save Backup", command=save_backup)
+#filemenu.add_command(label="Restore Backup", command=load_backup)
+
 filemenu.add_command(label="Import Save File", command=import_save)
+filemenu.add_command(label="seamless Co-op Mode", command=seamless_coop)
 filemenu.add_separator()
 filemenu.add_command(label="Force quit EldenRing", command=forcequit)
 filemenu.add_command(label="Exit", command=root.quit)
@@ -1386,28 +1688,35 @@ menubar.add_cascade(
 )  # add_cascade creates a new hierarchical menu by associating a given menu to a parent menu
 
 
+
+# EDIT MENU
 editmenu = Menu(menubar, tearoff=0)
 editmenu.add_command(label="Change Default Directory", command=change_default_dir)
-editmenu.add_command(label="Reset To Default Directory", command=reset_default_dir)
+#editmenu.add_command(label="Reset To Default Directory", command=reset_default_dir)
+editmenu.add_command(label="Change Default SteamID", command=change_default_steamid)
 editmenu.add_command(label="Check for updates", command=update_app)
 menubar.add_cascade(label="Edit", menu=editmenu)
 
+# TOOLS MENU
 toolsmenu = Menu(menubar, tearoff=0)
 toolsmenu.add_command(label="Character Manager", command=char_manager)
 toolsmenu.add_command(label="Stat Editor", command=stat_editor)
 toolsmenu.add_command(label="Inventory Editor", command=inventory_editor)
+toolsmenu.add_command(label="File Recovery", command=recovery)
 menubar.add_cascade(label="Tools", menu=toolsmenu)
 
+# HELP MENU
 helpmenu = Menu(menubar, tearoff=0)
-helpmenu.add_command(label="Readme", command=help_me)
-helpmenu.add_command(label="About", command=about)
+#helpmenu.add_command(label="Readme", command=help_me)
+#helpmenu.add_command(label="About", command=about)
 helpmenu.add_command(
     label="Watch Video", command=lambda: webbrowser.open_new_tab(video_url)
 )
-helpmenu.add_command(label="Changelog", command=changelog)
+helpmenu.add_command(label="Changelog", command=lambda:changelog(run=True))
+helpmenu.add_command(label="Report Bug", command=lambda:popup("Report bugs on Nexus or GitHub or email me at scyntacks94@gmail.com"))
 menubar.add_cascade(label="Help", menu=helpmenu)
 
-
+#
 create_save_lab = Label(root, text="Create Save:", font=("Impact", 15))
 create_save_lab.config(fg="grey")
 create_save_lab.grid(row=0, column=0, padx=(80, 10), pady=(0, 260))
@@ -1448,15 +1757,14 @@ def open_notes():
 
 
 rt_click_menu = Menu(lb, tearoff=0)
-rt_click_menu.add_command(label="Edit Notes", command=open_notes)
+#rt_click_menu.add_command(label="Edit Notes", command=open_notes)
 rt_click_menu.add_command(label="Rename Save", command=rename_slot)
 rt_click_menu.add_command(label="Rename Characters", command=rename_characters)
 rt_click_menu.add_command(label="Update", command=update_slot)
-rt_click_menu.add_command(label="Quick Backup", command=quick_backup)
-rt_click_menu.add_command(label="Quick Restore", command=quick_restore)
+#rt_click_menu.add_command(label="Quick Backup", command=quick_backup)
+#rt_click_menu.add_command(label="Quick Restore", command=quick_restore)
 rt_click_menu.add_command(label="Change SteamID", command=set_steam_id)
 rt_click_menu.add_command(label="Open File Location", command=open_folder)
-# rt_click_menu.add_command(label=)
 lb.bind(
     "<Button-3>", do_popup
 )  # button 3 is right click, so when right clicking inside listbox, do_popup is executed at cursor position
@@ -1482,15 +1790,24 @@ but_load_save.grid(row=3, column=3, pady=(12, 0))
 but_delete_save.grid(row=3, column=3, padx=(215, 0), pady=(12, 0))
 
 
-# INITIALIZE APP
 
-user_steam_id = get_steamid()
+
+
+
+
+# INITIALIZE APP
+config = Config()
+if not os.path.exists("./data/save-files"):
+    os.makedirs("./data/save-files")
+
 update_app(True)
 
-# Every release comes with PostUpdate.check, and will be deleted after the app is launched for the first time
-if os.path.exists("./data/PostUpdate.check"):
-    changelog()
-    os.remove("./data/PostUpdate.check")
+if len(config.cfg["steamid"]) != 17:
+    popup("SteamID not set. Click edit > Change default SteamID to set.")
 
 
+
+changelog()
+finish_update()
+config.set("post_update", False)
 root.mainloop()

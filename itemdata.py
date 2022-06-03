@@ -19,7 +19,12 @@ item_dict = {
         "Somber Stone [6]": [181, 39],
         "Somber Stone [7]": [182, 39],
         "Somber Stone [8]": [183, 39],
-        "Somber Stone [9]": [216, 39],
+        "Somber Stone [9]": [216, 39]
+    },
+    "Crafting Materials": {
+        "Flight Pinion": [212,58],
+        "Gold Fireflies": [75,81],
+        "Root Resin": [39,81]
     },
     "Runes": {
         "Lords Rune": [103, 11],
@@ -32,9 +37,19 @@ item_dict = {
         "Golden Rune [7]": [90, 11],
         "Golden Rune [8]": [91, 11],
         "Golden Rune [9]": [92, 11],
-        "Golden Rune [10]": [93, 11],
+        "Golden Rune [10]": [93, 11]
     },
-    "Key Items": {"Rune Arc": [190, 0], "Larval Tear": [249, 31]},
+    "Key Items":
+        {"Rune Arc": [190, 0],
+        "Larval Tear": [249, 31]
+    },
+    "Tools": {
+        "Gold Pickled Foot": [176, 4],
+        "Silver Pickled Foot": [166,4],
+        "Bewitching Branches": [22,13]
+    },
+
+
 }
 
 
