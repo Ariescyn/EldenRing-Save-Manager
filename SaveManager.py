@@ -408,7 +408,8 @@ def popup(
     buttons=False,
     button_names=("Yes", "No"),
     b_width=(6,6),
-    title="Manager",):
+    title="Manager",
+    filemenu=None):
     """text: Message to display on the popup window.
     command: Simply run the windows CMD command if you press yes.
     functions: Pass in external functions to be executed for yes/no"""
@@ -459,7 +460,16 @@ def popup(
             width=b_width[1],
             command=lambda: run_func(functions[1]),
         ).grid(row=1, column=1, padx=(10, 10), pady=(0, 10))
-    # if text is the only arguement passed in, it will simply be a popup window to display text
+
+    if filemenu is not None:
+        # filemenu is list ["TITLE", "README", COMMAND/FUNCTION]
+        menubar = Menu(popupwin)
+        popupwin.config(menu=menubar)
+
+        menu1 = Menu(popupwin, tearoff=0)
+        menu1.add_command(label=filemenu[1], command=filemenu[2])
+        menu1.add_cascade(label=filemenu[0], menu=menu1)
+
 
 
 def run_command(subprocess_command, optional_success_out="OK"):
@@ -1548,8 +1558,10 @@ def finish_update():
 
 
 def seamless_coop():
+    def convert():
+        pass
     x = lambda: 'Enabled' if config.cfg['seamless-coop'] else 'Disabled'
-    popup(f"Enable this option to support the seamless Co-op mod .co2 extension\nIt's recommended to use a separate copy of the Manager just for seamless co-op.\n\nCurrent State: {x()}", buttons=True, button_names=("Enable", "Disable"), functions=(lambda:config.set("seamless-coop", True), lambda:config.set("seamless-coop", False)))
+    popup(f"Enable this option to support the seamless Co-op mod .co2 extension\nIt's recommended to use a separate copy of the Manager just for seamless co-op.\n\nCurrent State: {x()}", buttons=True, filemenu=["Help", "Readme", convert], button_names=("Enable", "Disable"), functions=(lambda:config.set("seamless-coop", True), lambda:config.set("seamless-coop", False)))
 
 
 def ext():
@@ -1634,7 +1646,6 @@ def about():
     popup(text="Author: Lance Fitz\nEmail: scyntacks94@gmail.com\nGithub: github.com/Ariescyn")
 
 
-
 # ----- MAIN GUI CONTENT -----
 
 
@@ -1668,9 +1679,7 @@ delete_save_img = ImageTk.PhotoImage(
 
 
 menubar = Menu(root)
-root.config(
-    menu=menubar
-)
+root.config(menu=menubar)
 
 # FILE MENU
 filemenu = Menu(menubar, tearoff=0)
@@ -1707,8 +1716,7 @@ menubar.add_cascade(label="Tools", menu=toolsmenu)
 
 # HELP MENU
 helpmenu = Menu(menubar, tearoff=0)
-#helpmenu.add_command(label="Readme", command=help_me)
-#helpmenu.add_command(label="About", command=about)
+
 helpmenu.add_command(
     label="Watch Video", command=lambda: webbrowser.open_new_tab(video_url)
 )
@@ -1757,12 +1765,9 @@ def open_notes():
 
 
 rt_click_menu = Menu(lb, tearoff=0)
-#rt_click_menu.add_command(label="Edit Notes", command=open_notes)
 rt_click_menu.add_command(label="Rename Save", command=rename_slot)
 rt_click_menu.add_command(label="Rename Characters", command=rename_characters)
 rt_click_menu.add_command(label="Update", command=update_slot)
-#rt_click_menu.add_command(label="Quick Backup", command=quick_backup)
-#rt_click_menu.add_command(label="Quick Restore", command=quick_restore)
 rt_click_menu.add_command(label="Change SteamID", command=set_steam_id)
 rt_click_menu.add_command(label="Open File Location", command=open_folder)
 lb.bind(
