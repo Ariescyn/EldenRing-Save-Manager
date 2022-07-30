@@ -11,6 +11,13 @@ import subprocess, os, zipfile, requests, re, time, hexedit, webbrowser, itemdat
 from os_layer import *
 from pathlib import Path as PATH
 
+# TODO + Notes
+#   Replace all nested pop_up functions with new popup impplementation
+# Left off with displaying file paths when opening save files in item finder
+
+
+
+
 # set always the working dir to the correct folder for unix env
 if not is_windows:
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -408,7 +415,8 @@ def popup(
     buttons=False,
     button_names=("Yes", "No"),
     b_width=(6,6),
-    title="Manager",):
+    title="Manager",
+    parent_window=None):
     """text: Message to display on the popup window.
     command: Simply run the windows CMD command if you press yes.
     functions: Pass in external functions to be executed for yes/no"""
@@ -424,15 +432,16 @@ def popup(
     def run_func(arg):
         arg()
         popupwin.destroy()
-
-    popupwin = Toplevel(root)
+    if parent_window is None:
+        parent_window = root
+    popupwin = Toplevel(parent_window)
     popupwin.title(title)
     # popupwin.geometry("200x75")
     lab = Label(popupwin, text=text)
     lab.grid(row=0, column=0, padx=5, pady=5, columnspan=2)
     # Places popup window at center of the root window
-    x = root.winfo_x()
-    y = root.winfo_y()
+    x = parent_window.winfo_x()
+    y = parent_window.winfo_y()
     popupwin.geometry("+%d+%d" % (x + 200, y + 200))
 
     # Runs for simple windows CMD execution
@@ -1362,7 +1371,8 @@ def inventory_editor():
     menubar = Menu(popupwin)
     popupwin.config(menu=menubar)
     helpmenu = Menu(menubar, tearoff=0)
-    menubar.add_cascade(label="NOT SAFE FOR ONLINE USE!", menu=helpmenu)
+    helpmenu.add_command(label="Search", command=find_itemid)
+    menubar.add_cascade(label="Manually add item", menu=helpmenu)
 
 
     # MAIN SAVE FILE LISTBOX
@@ -1559,8 +1569,125 @@ def ext():
         return "ER0000.sl2"
 
 
+def find_itemid():
+    def validate(P):
+        if len(P) == 0:
+            return True
+        elif len(P) < 4 and P.isdigit() and int(P) > 0:
+            return True
+        else:
+            # Anything else, reject it
+            return False
+
+    def open_save(pos):
 
 
+        path = fd.askopenfilename()
+        if pos == 1:
+            file_paths[0] = path
+            s1_label.config(text=path)
+
+        if pos == 2:
+            file_paths[1] = path
+            s2_label.config(text=path)
+
+        if pos == 3:
+            file_paths[2] = path
+            s3_label.config(text=path)
+
+    def search():
+        valid = True
+        # VALIDATE USER INPUTS
+        print('PATHS:   ', file_paths)
+        if len([i for i in file_paths if not i == 0]) < 3:
+            popup("Not all save files selected.", parent_window=window)
+            return
+        for p in file_paths:
+            if not os.path.exists(p):
+                valid = False
+        if not valid:
+            popup("Invalid paths")
+            return
+
+        found = False
+        with open(file_paths[0], 'rb') as f, open(file_paths[1], 'rb') as ff, open(file_paths[2], 'rb') as fff:
+            dat = f.read()
+            dat2 = ff.read()
+            dat3 = fff.read()
+            c1 = dat[0x00000310:0x0028030F +1]
+            c2 = dat2[0x00000310:0x0028030F +1]
+            c3 = dat3[0x00000310:0x0028030F +1]
+            idx = 0
+            for ind, i in enumerate(c1):
+                if hexedit.l_endian(c1[ind:ind+1]) == q1_ent.get() and hexedit.l_endian(c2[ind:ind+1]) == q2_ent.get() and hexedit.l_endian(c3[ind:ind+1]) == q3_ent.get():
+                    found = True
+                    if ind < 30000:
+                        continue
+                    idx = ind
+                    #break
+
+        if not found:
+            print("Unable to find item")
+            return
+
+
+        idx -= 6
+        item_id = f"Item ID: ({l_endian(c1[idx + 2:idx + 3])} {l_endian(c1[idx + 3:idx+4])})"
+        print(item_id)
+
+
+
+
+
+    file_paths = [0,0,0]
+
+    window = Toplevel(root)
+    window.title("Inventory Editor")
+    window.resizable(width=True, height=True)
+    window.geometry("530x540")
+
+    vcmd = (window.register(validate), "%P")
+
+    bolded = FNT.Font(weight="bold")  # will use the default font
+
+    x = root.winfo_x()
+    y = root.winfo_y()
+    window.geometry("+%d+%d" % (x + 200, y + 200))
+
+    menubar = Menu(window)
+    window.config(menu=menubar)
+    helpmenu = Menu(menubar, tearoff=0)
+    helpmenu.add_command(label="Search", command=find_itemid)
+    menubar.add_cascade(label="Manually add item", menu=helpmenu)
+
+    s1_label = Label(window, text="Save file #1:")
+    s1_label.pack()
+    q1_ent = Entry(window, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
+    q1_ent.pack()
+
+    s2_label = Label(window, text="Save file #2:")
+    s2_label.pack()
+    q2_ent = Entry(window, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
+    q2_ent.pack()
+
+
+    s3_label = Label(window, text="Save file #3:")
+    s3_label.pack()
+    q3_ent = Entry(window, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
+    q3_ent.pack()
+
+
+    but_open1 = Button(window, text="Open", command=lambda:open_save(1))
+    but_open1.pack()
+
+    but_open2 = Button(window, text="Open", command=lambda:open_save(2))
+    but_open2.pack()
+
+    but_open3 = Button(window, text="Open", command=lambda:open_save(3))
+    but_open3.pack()
+
+    but_search = Button(window, text="Search", command=search)
+    but_search.pack()
 # ----- LEGACY FUNCTIONS (NO LONGER USED) -----
 
 def quick_restore():
@@ -1683,9 +1810,7 @@ filemenu.add_command(label="seamless Co-op Mode", command=seamless_coop)
 filemenu.add_separator()
 filemenu.add_command(label="Force quit EldenRing", command=forcequit)
 filemenu.add_command(label="Exit", command=root.quit)
-menubar.add_cascade(
-    label="File", menu=filemenu
-)  # add_cascade creates a new hierarchical menu by associating a given menu to a parent menu
+menubar.add_cascade(label="File", menu=filemenu)
 
 
 
@@ -1709,9 +1834,7 @@ menubar.add_cascade(label="Tools", menu=toolsmenu)
 helpmenu = Menu(menubar, tearoff=0)
 #helpmenu.add_command(label="Readme", command=help_me)
 #helpmenu.add_command(label="About", command=about)
-helpmenu.add_command(
-    label="Watch Video", command=lambda: webbrowser.open_new_tab(video_url)
-)
+helpmenu.add_command(label="Watch Video", command=lambda: webbrowser.open_new_tab(video_url))
 helpmenu.add_command(label="Changelog", command=lambda:changelog(run=True))
 helpmenu.add_command(label="Report Bug", command=lambda:popup("Report bugs on Nexus or GitHub or email me at scyntacks94@gmail.com"))
 menubar.add_cascade(label="Help", menu=helpmenu)
