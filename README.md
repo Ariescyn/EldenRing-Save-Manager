@@ -48,7 +48,7 @@ pyinstaller --onefile --windowed --icon=.\data\icon.ico .\SaveManager.py .\hexed
 ![v1 40](https://user-images.githubusercontent.com/68882322/161843003-dfefa2fb-ca14-4401-970a-2875bb74c943.jpg)
 
 
-You can [Donate](https://www.google.com) via PayPal and help support me
+You can [Donate](https://www.google.com) via PayPal if you want support me
 
 Icon used from https://www.deviantart.com/abdelrahman18/art/Elden-Ring-Icon-877626671
 You can use this icon to replace the horrible default Elden Ring game icon.
