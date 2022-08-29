@@ -1,6 +1,5 @@
-New Recovery tool. Every action made in the manager will automatically archive the save file.
-Major directory handling re-write. (YOU WILL NEED TO SET YOUR DEFAULT GAME DIRECTORY AND STEAM ID AGAIN)
-Importing a save file no longer automatically patches SteamID
-Added new items to Inventory Editor
-Inventory Editor max value changed from 99 to 999
-Removed various unnecessary features
+Ability to manually search for your own item IDs and add them to your manager (Go to inventory editor > Custom Items)
+Fixed bug when a character name is the substring of the other e.g. "gone" and "gone32". Trying to rename "gone" would also rename "gone32"
+Fixed bug with import window not disappearing after clicking Done
+Fixed bug preventing some save files from being imported
+Added Donate button (Any support would be appreciated! This is the first program i've written and have hundreds of hours invested)

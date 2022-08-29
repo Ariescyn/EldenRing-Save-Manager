@@ -1,3 +1,6 @@
+import os, json
+
+
 item_dict = {
     "Upgrade Materials": {
         "Ancient Dragon Stone": [156, 39],
@@ -24,7 +27,8 @@ item_dict = {
     "Crafting Materials": {
         "Flight Pinion": [212,58],
         "Gold Fireflies": [75,81],
-        "Root Resin": [39,81]
+        "Root Resin": [39,81],
+        "Old Fang": [192,58]
     },
     "Runes": {
         "Lords Rune": [103, 11],
@@ -56,7 +60,12 @@ item_dict = {
 class Items:
     def __init__(self):
         self.db = item_dict
+        if os.path.exists("./data/config.json"):
+            with open("./data/config.json", "r") as f:
+                js = json.load(f)
+                self.db["Custom Items"] = js["custom_ids"]  # ADDS custom IDS from config to itemdb merging with hard coded items
         self.categories = list(self.db.keys())  # Populate 1st dropdown menu
+
 
     def get_item_ls(self, cat):
         return list(self.db[cat])  # populate 2nd dropdown menu
