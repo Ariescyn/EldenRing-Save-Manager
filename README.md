@@ -39,7 +39,7 @@ pyinstaller --onefile --windowed --icon=.\data\icon.ico .\SaveManager.py .\hexed
 - Update to the latest release with included updater
 - Force quit EldenRing when the game locks up and even task manager wont end the process
 
-You can [Donate](https://www.google.com) via PayPal if you want support me
+You can [Donate](https://www.paypal.com/donate/?hosted_button_id=H2X24U55NUJJW) via PayPal if you want support me
 ![main](https://user-images.githubusercontent.com/68882322/171963417-fe931395-e0b5-4680-bebd-81ebc564bea3.jpg)
 
 ![save-editor](https://user-images.githubusercontent.com/68882322/163687699-334cf9d6-f956-4509-bebc-e549fe39fd3e.jpg)
