@@ -9,11 +9,11 @@ GUI app written entirely in Python.
 
 Dependencies
 ```
-python3 -m pip install Pillow tk requests
+python3 -m pip install Pillow requests
 ```
 Fedora/DNF for 'ImageTk' from 'PIL'
 ```
-sudo dnf install python3-pillow-tk.x86_64 python3-pillow.x86_64 
+sudo dnf install python3-pillow-tk.x86_64 python3-pillow.x86_64
 ```
 Run
 ```
@@ -33,8 +33,8 @@ pyinstaller --onefile --windowed --icon=.\data\icon.ico .\SaveManager.py .\hexed
 - rename characters in-game name
 - automatically patch downloaded save files with your own Steam ID
 - Fix corrupt save files by recalculating checksum values
-- Create save and load backups 
-- Create save slots for various builds before respec etc. 
+- Create save and load backups
+- Create save slots for various builds before respec etc.
 - Edit notes attached to each save slot
 - Update to the latest release with included updater
 - Force quit EldenRing when the game locks up and even task manager wont end the process
@@ -55,4 +55,3 @@ You can use this icon to replace the horrible default Elden Ring game icon.
 
 
 Walkthrough: https://youtu.be/RZIP0kYjvZM
-
