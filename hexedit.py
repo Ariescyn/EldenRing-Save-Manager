@@ -532,12 +532,14 @@ def additem(file, slot, itemids, quantity):
         dat = f.read()
 
         index = []
-        cur = itemids
+        cur = [int(i) for i in itemids]
+
         if cur is None:
             return
 
         for ind, i in enumerate(cs):
-
+            if ind < 30000:
+                continue
             if (
                 l_endian(cs[ind : ind + 1]) == cur[0]
                 and l_endian(cs[ind + 1 : ind + 2]) == cur[1]
@@ -545,9 +547,17 @@ def additem(file, slot, itemids, quantity):
                 and l_endian(cs[ind + 3 : ind + 4]) == 176
             ):
                 index.append(ind + 4)
-                # print(ind)
 
-        if len(index) < 1:
+            elif (
+                l_endian(cs[ind : ind + 1]) == cur[0]
+                and l_endian(cs[ind + 1 : ind + 2]) == cur[1]
+                and l_endian(cs[ind + 2 : ind + 3]) == 128
+                and l_endian(cs[ind + 3 : ind + 4]) == 128
+            ):
+                index.append(ind + 4)
+
+        print(f"Index:  {index}")
+        if len(index) < 1 or len(index) > 1:
             return None
 
         else:
@@ -566,3 +576,41 @@ def additem(file, slot, itemids, quantity):
 
         recalc_checksum(file)
         return True
+
+
+def search_itemid(f1,f2,f3,q1,q2,q3):
+    print(q1,q2,q3)
+    with open(f1, 'rb') as f, open(f2, 'rb') as ff, open(f3, 'rb') as fff:
+        dat = f.read()
+        dat2 = ff.read()
+        dat3 = fff.read()
+        c1 = dat[0x00000310:0x0028030F +1]
+        c2 = dat2[0x00000310:0x0028030F +1]
+        c3 = dat3[0x00000310:0x0028030F +1]
+        index = []
+        for ind, i in enumerate(c1):
+            if ind < 30000:
+                continue
+
+            if (
+                l_endian(c1[ind:ind+1]) == int(q1)
+                and l_endian(c2[ind:ind+1]) == int(q2)
+                and l_endian(c3[ind:ind+1]) == int(q3)
+                ):
+
+
+                print(l_endian(c1[ind-4 : ind-3]))
+                print(l_endian(c1[ind-3 : ind-2]))
+                print(l_endian(c1[ind-2 : ind -1]))
+                print(l_endian(c1[ind-1 : ind]))
+
+                if ( l_endian(c1[ind - 2 : ind - 1]) == 0 and l_endian(c1[ind -1 : ind]) == 176 ) or ( l_endian(c1[ind - 2 : ind - 1]) == 128 and l_endian(c1[ind-1 : ind]) == 128):
+                    index.append(ind)
+
+        print(f"INDEX LENGTH: {index}")
+        if len(index) == 1:
+            idx = index[0]
+            idx -= 6
+            return [l_endian(c1[idx + 2:idx + 3]), l_endian(c1[idx + 3:idx+4])]
+        else:
+            return None

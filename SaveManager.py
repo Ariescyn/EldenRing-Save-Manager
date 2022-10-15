@@ -1545,6 +1545,7 @@ def inventory_editor():
 
 
         def search():
+
             valid = True
             # VALIDATE USER INPUTS
 
@@ -1563,36 +1564,11 @@ def inventory_editor():
                 popup("Invalid paths")
                 return
 
-            found = False
-            with open(file_paths[0], 'rb') as f, open(file_paths[1], 'rb') as ff, open(file_paths[2], 'rb') as fff:
-                dat = f.read()
-                dat2 = ff.read()
-                dat3 = fff.read()
-                c1 = dat[0x00000310:0x0028030F +1]
-                c2 = dat2[0x00000310:0x0028030F +1]
-                c3 = dat3[0x00000310:0x0028030F +1]
-                idx = 0
-                for ind, i in enumerate(c1):
-                    #if hexedit.l_endian(c1[ind:ind+1]) == int(q1_ent.get()) and hexedit.l_endian(c2[ind:ind+1]) == int(q2_ent.get()) and hexedit.l_endian(c3[ind:ind+1]) == int(q3_ent.get()) and hexedit.l_endian(c1[ind + 2 : ind + 3]) == 0 and hexedit.l_endian(c1[ind + 3 : ind + 4]) == 176:
-                    try:
-                        if hexedit.l_endian(c1[ind:ind+1]) == int(q1_ent.get()) and hexedit.l_endian(c2[ind:ind+1]) == int(q2_ent.get()) and hexedit.l_endian(c3[ind:ind+1]) == int(q3_ent.get()):
-                            found = True
-                            if ind < 30000:
-                                continue
-                            idx = ind
-                            #break
-                    except:
-                        popup("Something went wrong. Maybe you didnt choose a valid file?", parent_window=window)
-                        return
-            #!!!!!!!!!!!
-            if not found:
-                popup("Couldn't find item ID", parent_window=window)
+
+            item_id = hexedit.search_itemid(file_paths[0], file_paths[1], file_paths[2], q1_ent.get(), q2_ent.get(), q3_ent.get())
+            if item_id is None:
+                popup("Unable to find item ID")
                 return
-
-
-            idx -= 6
-            #item_id = f"Item ID: ({hexedit.l_endian(c1[idx + 2:idx + 3])} {hexedit.l_endian(c1[idx + 3:idx+4])})"
-            item_id = [hexedit.l_endian(c1[idx + 2:idx + 3]), hexedit.l_endian(c1[idx + 3:idx+4])]
             name_id_popup(item_id)
 
 
