@@ -133,7 +133,7 @@ def unarchive_file(file):
     lzc = lzma.LZMACompressor()
     name = file.split("/")[-2]
     path = f"./data/recovered/{name}/"
-    print("PATH: ", path)
+
 
     if not os.path.exists("./data/recovered/"):
         os.makedirs("./data/recovered/")
@@ -570,8 +570,6 @@ def fetch_listbox_entry(lstbox):
     return (internal_name, name)
 
 
-
-
 def rename_slot():
     """Renames the name in save file listbox"""
 
@@ -992,7 +990,6 @@ def changelog(run=False):
         return
     if config.post_update:
         popup(info, title="Changelog")
-
 
 
 def stat_editor():
