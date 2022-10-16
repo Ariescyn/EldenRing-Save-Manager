@@ -3,8 +3,8 @@ NOTE:
 - Many of these item ID's are untested and not all of them will work (Don't worry, you can try them and the save manager will not write values unless it passes a validation check)
 
 
-'Flask of Crimson Tears +12':[0, 4],
-'Dragon Communion Seal':[0, 5],
+'Flask of Crimson Tears +12':[0, 4],<br />
+'Dragon Communion Seal':[0, 5],<br />
 'Greatsword':[0, 9],
 'Jar':[0, 23],
 'Fanged Imp Ashes +8':[0, 25],
