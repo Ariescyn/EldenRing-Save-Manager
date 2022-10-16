@@ -1695,6 +1695,7 @@ def inventory_editor():
     helpmenu.add_command(label="Search", command=manual_search)
     helpmenu.add_command(label="Add item by ID", command=add_custom_id)
     helpmenu.add_command(label="Remove Custom Item", command=remove_id)
+    helpmenu.add_command(label="View Master Spreadsheet", command=lambda:webbrowser.open_new_tab("https://github.com/Ariescyn/EldenRing-Save-Manager/blob/main/ALL_ITEM_IDS.md"))
     menubar.add_cascade(label="Custom Items", menu=helpmenu)
 
 

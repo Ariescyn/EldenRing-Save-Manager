@@ -556,7 +556,7 @@ def additem(file, slot, itemids, quantity):
             ):
                 index.append(ind + 4)
 
-        print(f"Index:  {index}")
+
         if len(index) < 1 or len(index) > 1:
             return None
 
@@ -579,7 +579,7 @@ def additem(file, slot, itemids, quantity):
 
 
 def search_itemid(f1,f2,f3,q1,q2,q3):
-    print(q1,q2,q3)
+
     with open(f1, 'rb') as f, open(f2, 'rb') as ff, open(f3, 'rb') as fff:
         dat = f.read()
         dat2 = ff.read()
@@ -599,15 +599,11 @@ def search_itemid(f1,f2,f3,q1,q2,q3):
                 ):
 
 
-                print(l_endian(c1[ind-4 : ind-3]))
-                print(l_endian(c1[ind-3 : ind-2]))
-                print(l_endian(c1[ind-2 : ind -1]))
-                print(l_endian(c1[ind-1 : ind]))
 
                 if ( l_endian(c1[ind - 2 : ind - 1]) == 0 and l_endian(c1[ind -1 : ind]) == 176 ) or ( l_endian(c1[ind - 2 : ind - 1]) == 128 and l_endian(c1[ind-1 : ind]) == 128):
                     index.append(ind)
 
-        print(f"INDEX LENGTH: {index}")
+
         if len(index) == 1:
             idx = index[0]
             idx -= 6
