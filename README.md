@@ -1,5 +1,5 @@
 # EldenRing-Save-Manager
-This test branch may contain broken code!
+GUI app written entirely in Python
 
 ## Usage
 #### Windows
