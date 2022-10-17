@@ -2016,7 +2016,7 @@ NOTE:
 'Battlemage Robe':[164, 66],<br />
 'Map: Siofra River':[167, 33],<br />
 'Stormhawk Deenh +3':[179, 161],<br />
-'Golem's Great Arrow':[208, 89],<br />
+'Golem's Great Arrow':[125,6] OR [208, 89],<br />
 'Battlemage Manchettes':[8, 67],<br />
 'Map: Mohgwyn Palace':[168, 33],<br />
 'Stormhawk Deenh +4':[180, 161],<br />
