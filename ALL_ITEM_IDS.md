@@ -1,6 +1,7 @@
 NOTE:  
 - Adding weapons and other unstackable items are currently not supported. However i will be working on this in the future.
 - Many of these item ID's are untested and not all of them will work (Don't worry, you can try them and the save manager will not write values unless it passes a validation check)
+- If an ID doesn't work, you can use the built-in Item ID search in the Save Manager.
 
 
 'Unarmed':[176, 173],<br />
@@ -2016,7 +2017,7 @@ NOTE:
 'Battlemage Robe':[164, 66],<br />
 'Map: Siofra River':[167, 33],<br />
 'Stormhawk Deenh +3':[179, 161],<br />
-'Golem's Great Arrow':[208, 89],<br />
+'Golem's Great Arrow':[125,6] OR [208, 89],<br />
 'Battlemage Manchettes':[8, 67],<br />
 'Map: Mohgwyn Palace':[168, 33],<br />
 'Stormhawk Deenh +4':[180, 161],<br />
