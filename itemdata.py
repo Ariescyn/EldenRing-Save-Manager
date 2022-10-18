@@ -29,10 +29,15 @@ item_dict = {
         "Flight Pinion": [212,58],
         "Gold Fireflies": [75,81],
         "Root Resin": [39,81],
-        "Old Fang": [192,58]
+        "Old Fang": [192,58],
+        "Great Dragonfly Head":[6, 59],
+        "Golden Centipede":[84, 81],
+
     },
     "Runes": {
         "Lords Rune": [103, 11],
+        "Hero's Rune [1]":[98, 11],
+        "Hero's Rune [4]":[101, 11],
         "Golden Rune [1]": [84, 11],
         "Golden Rune [2]": [85, 11],
         "Golden Rune [3]": [86, 11],
@@ -46,14 +51,23 @@ item_dict = {
         "Golden Rune [11]": [94,11],
         "Golden Rune [12]": [95,11],
     },
-    "Key Items":
-        {"Rune Arc": [190, 0],
+    "Key Items": {
         "Larval Tear": [249, 31],
         "Sacred Tear": [36,39],
         "Golden Seed": [26,39],
         "Swordstone Key": [64,31],
+        'Imbued Sword Key':[250, 31],
+        'Cracked Pot':[28, 37],
+        'Ritual Pot':[29, 37],
+        'Perfume Bottle':[38, 37],
+        'Memory Stone':[46, 39],
+        'Talisman Pouch':[56, 39],
+        'Dragon Heart':[76, 39],
+        'Celestial Dew':[82, 8],
     },
     "Tools": {
+        "Rune Arc": [190, 0],
+        "Starlight Shards":[10, 5],
         "Gold Pickled Foot": [176, 4],
         "Silver Pickled Foot": [166,4],
         "Bewitching Branches": [22,13]
@@ -81,8 +95,8 @@ item_dict = {
         "Great Ghost Glovewort": [167, 42],
     },
     "Consumables": {
-        "Starlight Shards": [10, 5],
-         "Bloodboil Aromatic": [222,13],
+
+        "Bloodboil Aromatic": [222,13],
         "Neutralizing Boluses": [132, 3],
         "Stanching Boluses": [142, 3],
         "Thawfrost Boluses": [152, 3],
@@ -91,7 +105,42 @@ item_dict = {
         "Rejuvenating Boluses": [182, 3],
         "Clarifying Boluses": [192, 3],
         "Exalted Flesh": [186,4],
+        'Spellproof Dried Liver':[126, 4],
+        'Fireproof Dried Liver':[136, 4],
+        'Lightningproof Dried Liver':[146, 4],
+        'Holyproof Dried Liver':[156, 4],
+        'Immunizing White Cured Meat':[30, 5],
+        'Invigorating White Cured Meat':[40, 5],
+        'Clarifying White Cured Meat':[50, 5],
+        'Dappled White Cured Meat':[60, 5],
+
     },
+
+    "Grease": {
+        'Fire Grease':[120, 5],
+        'Lightning Grease':[130, 5],
+        'Magic Grease':[140, 5],
+        'Holy Grease':[150, 5],
+        'Blood Grease':[160, 5],
+        'Soporific Grease':[170, 5],
+        'Poison Grease':[180, 5],
+        'Freezing Grease':[190, 5],
+        'Dragonwound Grease':[200, 5],
+        'Rot Grease':[210, 5],
+        'Drawstring Fire Grease':[220, 5],
+        'Drawstring Lightning Grease':[230, 5],
+        'Drawstring Magic Grease':[240, 5],
+        'Drawstring Holy Grease':[250, 5],
+        'Drawstring Blood Grease':[4, 6],
+        'Drawstring Soporific Grease':[14, 6],
+        'Drawstring Poison Grease':[24, 6],
+        'Drawstring Freezing Grease':[34, 6],
+        'Drawstring Rot Grease':[54, 6],
+        'Shield Grease':[154, 6],
+        'Holy Water Grease':[228, 12],
+
+    },
+
     "Remembrance": {
         "R- The Grafted":[134,11],
         "R- Starsourge":[135,11],

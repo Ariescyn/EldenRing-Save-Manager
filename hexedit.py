@@ -540,6 +540,8 @@ def additem(file, slot, itemids, quantity):
         for ind, i in enumerate(cs):
             if ind < 30000:
                 continue
+            if ind > 95000:
+                continue
             if (
                 l_endian(cs[ind : ind + 1]) == cur[0]
                 and l_endian(cs[ind + 1 : ind + 2]) == cur[1]
@@ -557,7 +559,7 @@ def additem(file, slot, itemids, quantity):
                 index.append(ind + 4)
 
 
-        if len(index) < 1 or len(index) > 1:
+        if len(index) < 1:
             return None
 
         else:
