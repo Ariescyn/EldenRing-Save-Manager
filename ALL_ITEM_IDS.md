@@ -2,7 +2,7 @@ NOTE:
 - Adding weapons and other unstackable items are currently not supported. However i will be working on this in the future.
 - Many of these item ID's are untested and not all of them will work (Don't worry, you can try them and the save manager will not write values unless it passes a validation check)
 - If an ID doesn't work, you can use the built-in Item ID search in the Save Manager.
-
+- Item IDs for arrows are inconsistent between save files and unlikely to work. 
 
 'Unarmed':[176, 173],<br />
 'Iron Helmet':[64, 156],<br />
