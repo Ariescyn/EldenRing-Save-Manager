@@ -1567,6 +1567,8 @@ def inventory_editor():
             but_cancel.grid(row=2, column=0, padx=(85, 0), pady=(5, 15))
             # Insert itemids alongside addresses so users can see if ids are like [0,0] and thus wrong
             for k,v in indexes.items():
+                if v == [0, 0]: # Obviously not an item ID
+                    continue
                 lb1.insert(END, "  " + f"{k} {v}")
 
 
