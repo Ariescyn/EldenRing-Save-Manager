@@ -15,6 +15,7 @@ post_update_file = "./data/post.update"
 version = "v1.63"
 v_num = 1.63  # Used for checking version for update
 video_url = "https://youtu.be/RZIP0kYjvZM"
+custom_search_tutorial_url = "CHANGEME"
 background_img = "./data/background.png"
 icon_file = "./data/icon.ico"
 bk_p = (-140, 20)  # Background image position

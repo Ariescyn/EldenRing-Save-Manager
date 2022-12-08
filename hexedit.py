@@ -607,7 +607,7 @@ def search_itemid(f1,f2,f3,q1,q2,q3):
             idx -= 6
             return ["match", [l_endian(c1[idx + 2:idx + 3]), l_endian(c1[idx + 3:idx+4])]]
 
-        elif len(index) > 1 and len(index) < 20:
+        elif len(index) > 1 and len(index) < 200:
             return_dict = {}
             for i in index:
                 return_dict[i-6] = [l_endian(c1[i+2:i+3]), l_endian(c1[i+3:i+4])]

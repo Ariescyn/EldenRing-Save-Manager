@@ -1388,7 +1388,7 @@ def inventory_editor():
         # x = hexedit.additem(dest_file,char_ind,item, qty)
         if x is None:
             pop_up(
-                "Unable to set quantity. Ensure you have at least 1 of the selected items."
+                "Unable to set quantity. Ensure you have at least 1 of the selected items.\nIf you already have one of the items in your inventory and are still unable to set the quantity,\nGo to Custom Items > Search and manually scan for the item ID."
             )
         else:
             pop_up("Successfully added items")
@@ -1571,12 +1571,6 @@ def inventory_editor():
 
 
 
-
-
-
-
-
-
         def search():
 
             valid = True
@@ -1619,7 +1613,7 @@ def inventory_editor():
         window = Toplevel(root)
         window.title("Inventory Editor")
         window.resizable(width=True, height=True)
-        window.geometry("530x530")
+        window.geometry("530x560")
 
         vcmd = (window.register(validate), "%P")
 
@@ -1668,7 +1662,7 @@ def inventory_editor():
         help_lab = Label(window, text=help_text)
         help_lab.pack()
 
-        post_but = Button(window, text="Watch Video", command=lambda: callback("https://www.nexusmods.com/eldenring/mods/214?tab=bugs"))
+        post_but = Button(window, text="Watch Video", command=lambda: callback(custom_search_tutorial_url))
         post_but.pack()
 
 
@@ -1934,6 +1928,18 @@ def ext():
 
 
 
+def open_game_save_dir():
+    if config.cfg["gamedir"] == "":
+        popup("Please set your default game save directory first")
+        return
+    else:
+        print(config.cfg["gamedir"])
+        open_folder_standard_exporer(config.cfg["gamedir"])
+        return
+
+
+
+
 # ----- LEGACY FUNCTIONS (NO LONGER USED) -----
 
 def quick_restore():
@@ -2055,6 +2061,7 @@ filemenu = Menu(menubar, tearoff=0)
 filemenu.add_command(label="Import Save File", command=import_save)
 filemenu.add_command(label="seamless Co-op Mode", command=seamless_coop)
 filemenu.add_command(label="Force quit EldenRing", command=forcequit)
+filemenu.add_command(label="Open Default Game Save Directory", command=open_game_save_dir)
 filemenu.add_separator()
 filemenu.add_command(label="Donate", command=lambda:webbrowser.open_new_tab("https://www.paypal.com/donate/?hosted_button_id=H2X24U55NUJJW"))
 filemenu.add_command(label="Exit", command=root.quit)
