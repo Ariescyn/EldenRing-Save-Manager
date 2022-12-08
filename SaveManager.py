@@ -92,18 +92,15 @@ def archive_file(file, name, metadata, names):
     if not os.path.exists(file):  # If you try to load a save from listbox, and it tries to archive the file already present in the gamedir, but it doesn't exist, then skip
         return
 
-    lzc = lzma.LZMACompressor()
+
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d__(%I.%M.%S)")
     name = f"{name}__{date}"
     os.makedirs(f"./data/archive/{name}")
 
 
-    with open(file, "rb") as fhi, open(f"./data/archive/{name}/ER0000.xz", 'wb') as fho:
-        pc = lzc.compress(fhi.read())
-        fho.write(pc)
-        fho.write(lzc.flush())
-
+    with open(file, "rb") as fhi, lzma.open(f"./data/archive/{name}/ER0000.xz", 'w') as fho:
+        fho.write(fhi.read())
         names = [i for i in names if not i is None]
         formatted_names = ", ".join(names)
         meta = f"{metadata}\nCHARACTERS: {formatted_names}"
@@ -1541,6 +1538,45 @@ def inventory_editor():
             but_cancel.grid(row=2, column=0, padx=(70, 0), pady=(0, 15))
 
 
+        def multi_item_select(indexes):
+            def grab_id(listbox):
+                ind = fetch_listbox_entry(listbox)[0]
+                if ind == '':
+                    popup("No value selected!")
+                    return
+                else:
+                    popupwin.destroy()
+                    name_id_popup(indexes[int(ind)])
+
+            popupwin = Toplevel(window)
+            popupwin.title("Add Item ID")
+            vcmd = (popupwin.register(validate), "%P")
+            x = window.winfo_x()
+            y = window.winfo_y()
+            popupwin.geometry("+%d+%d" % (x + 200, y + 200))
+            lab = Label(popupwin, text=f"Multiple locations found! Select an address.\nLower values have a higher chance of success.")
+            lab.grid(row=0, column=0, padx=(5,5))
+
+            lb1 = Listbox(popupwin, borderwidth=3, width=15, height=10, exportselection=0)
+            lb1.config(font=bolded)
+            lb1.grid(row=1, column=0)
+
+            but_select = Button(popupwin, text="Select", borderwidth=5, width=6, command=lambda:grab_id(lb1))
+            but_select.grid(row=2, column=0, padx=(50, 65), pady=(5, 15), sticky="w")
+            but_cancel = Button(popupwin, text="Cancel", borderwidth=5, width=6, command=lambda: popupwin.destroy())
+            but_cancel.grid(row=2, column=0, padx=(85, 0), pady=(5, 15))
+            # Insert itemids alongside addresses so users can see if ids are like [0,0] and thus wrong
+            for k,v in indexes.items():
+                lb1.insert(END, "  " + f"{k} {v}")
+
+
+
+
+
+
+
+
+
         def search():
 
             valid = True
@@ -1566,8 +1602,11 @@ def inventory_editor():
             if item_id is None:
                 popup("Unable to find item ID")
                 return
-            name_id_popup(item_id)
+            if item_id[0] == "match":
+                name_id_popup(item_id[1])
 
+            if item_id[0] == "multi-match":
+                multi_item_select(item_id[1])
 
         def callback(url):
             webbrowser.open_new(url)
@@ -1580,7 +1619,7 @@ def inventory_editor():
         window = Toplevel(root)
         window.title("Inventory Editor")
         window.resizable(width=True, height=True)
-        window.geometry("530x580")
+        window.geometry("530x530")
 
         vcmd = (window.register(validate), "%P")
 
@@ -1594,7 +1633,7 @@ def inventory_editor():
         window.config(menu=menubar)
         helpmenu = Menu(menubar, tearoff=0)
         helpmenu.add_command(label="Search", command=find_itemid)
-        menubar.add_cascade(label="Manually add item", menu=helpmenu)
+        #menubar.add_cascade(label="Manually add item", menu=helpmenu)
 
         s1_label = Label(window, text="Save file #1:")
         s1_label.pack()
@@ -1625,12 +1664,11 @@ def inventory_editor():
         but_search = Button(window, text="Search", command=search)
         but_search.pack()
 
-        part1 = "\n\n----- HOW TO -----\n\n1. Make two copies of a save file\n\n2. Load into the saves and change the value of the item you want\n  so they are all different\n\n3. Now select each save file and enter the quantity for each item\n\nNOTE: You must do this with the FIRST character slot\n\n"
-        part2 = f"\n\n # You can post the item IDs on you found on Nexus so other users can add them"
-        help_lab = Label(window, text=part1+part2)
+        help_text = "\n\n----- HOW TO -----\n\n1. Make two copies of a save file\n\n2. Load into the saves and change the value of the item you want\n  so they are all different\n\n3. Now select each save file and enter the quantity for each item\n\nNOTE: You must do this with the FIRST character slot\n\n"
+        help_lab = Label(window, text=help_text)
         help_lab.pack()
 
-        post_but = Button(window, text= "Post", command=lambda: callback("https://www.nexusmods.com/eldenring/mods/214?tab=bugs"))
+        post_but = Button(window, text="Watch Video", command=lambda: callback("https://www.nexusmods.com/eldenring/mods/214?tab=bugs"))
         post_but.pack()
 
 
