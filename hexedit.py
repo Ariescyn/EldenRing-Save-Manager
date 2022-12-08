@@ -1,5 +1,5 @@
 import binascii, re, hashlib, random, base64, stat_progression, itemdata, os
-
+from allitems import allitems
 
 def l_endian(val):
     """Takes bytes and returns little endian int32/64"""
@@ -580,35 +580,121 @@ def additem(file, slot, itemids, quantity):
         return True
 
 
-def search_itemid(f1,f2,f3,q1,q2,q3):
 
-    with open(f1, 'rb') as f, open(f2, 'rb') as ff, open(f3, 'rb') as fff:
+def search_itemid(f1):
+
+    with open(f1, 'rb') as f:
         dat = f.read()
-        dat2 = ff.read()
-        dat3 = fff.read()
         c1 = dat[0x00000310:0x0028030F +1]
-        c2 = dat2[0x00000310:0x0028030F +1]
-        c3 = dat3[0x00000310:0x0028030F +1]
+
         index = []
         for ind, i in enumerate(c1):
             if ind < 30000:
                 continue
-
-            if (
-                l_endian(c1[ind:ind+1]) == int(q1)
-                and l_endian(c2[ind:ind+1]) == int(q2)
-                and l_endian(c3[ind:ind+1]) == int(q3)
-                ):
-
-
-
-                if ( l_endian(c1[ind - 2 : ind - 1]) == 0 and l_endian(c1[ind -1 : ind]) == 176 ) or ( l_endian(c1[ind - 2 : ind - 1]) == 128 and l_endian(c1[ind-1 : ind]) == 128):
+            # Full Matches
+            if l_endian(c1[ind:ind+1]) == 84 and l_endian(c1[ind+1:ind+2]) == 11:
+                if l_endian(c1[ind+2:ind+3]) in [0,128] and l_endian(c1[ind+3:ind+4]) in [128,176]:
                     index.append(ind)
 
+        idx = index[0]
+        idx -= 512
+        for i in range(1024):
+            print(f"ind: {idx}: {l_endian(c1[idx:idx+1])}")
+            idx+= 1
 
-        if len(index) == 1:
-            idx = index[0]
-            idx -= 6
-            return [l_endian(c1[idx + 2:idx + 3]), l_endian(c1[idx + 3:idx+4])]
-        else:
-            return None
+
+
+
+
+
+def get_itemid(f1):
+    # Extract logic for appending items to inventory
+    with open(f1, 'rb') as f:
+        dat = f.read()
+        c1 = dat[0x00000310:0x0028030F +1]
+        itemIDs = []
+        index = []
+        for ind, i in enumerate(c1):
+            if  l_endian(c1[ind:ind+1]) == 0 and  l_endian(c1[ind+1:ind+2]) == 176 or l_endian(c1[ind:ind+1]) == 128 and  l_endian(c1[ind+1:ind+2]) == 128:
+                if l_endian(c1[ind+2:ind+3]) > 0:
+
+                    if l_endian(c1[ind+6:ind+7]) == (l_endian(c1[ind+18:ind+19]) - 1):
+                        iter = l_endian(c1[ind+6:ind+7])
+                        id = [l_endian(c1[ind+6+4:ind+7+4]),l_endian(c1[ind+6+5:ind+7+5])]
+                        itemIDs.append(id)
+                        #print(f"[{l_endian(c1[ind+6+4:ind+7+4])},{l_endian(c1[ind+6+5:ind+7+5])}]")
+                        print(f"ind: {ind} - iter: {iter}")
+
+
+        # Get item names for all items in inventory
+        for k,v in allitems.items():
+            for i in itemIDs:
+                if i == v:
+                    print(k,v)
+
+
+
+
+
+
+
+def lookatdata(f1):
+
+    with open(f1, 'rb') as f:
+        dat = f.read()
+        c1 = dat[0x00000310:0x0028030F +1]
+        itemIDs = []
+        index = []
+        checkind = []
+        for ind, i in enumerate(c1):
+            if l_endian(c1[ind:ind+1]) == 176 and l_endian(c1[ind+1:ind+2]) == 29:
+                checkind.append(ind)
+        print(f"LENNNNNN {len(checkind)}")
+        print(checkind)
+        checkind = checkind[2]
+        checkind -= 8
+        for i in range(16):
+            print(checkind, l_endian(c1[checkind:checkind+1]))
+            checkind += 1
+
+
+
+
+
+
+
+
+def writeval(file, value, pos):
+
+    with open(file, "rb") as f:
+        dat = f.read()
+        cs = dat[0x00000310:0x0028030F +1]
+        beginning = dat[:0x00000310]
+        end = dat[0x0028030F +1:]
+        with open(file, "wb") as fh:
+            ch = (beginning + cs[:pos] + value.to_bytes(2, "little") + cs[pos + 2 :] + end )
+            fh.write(ch)
+        recalc_checksum(file)
+
+
+
+
+
+
+
+#for i in [1084, 79839, 79845, 109249]:
+#    writeval("ER0000.sl2", 29, i)
+
+
+
+
+
+
+
+
+
+#get_itemid("ER0000.sl2")
+lookatdata("ER0000.sl2")
+#writeval("ER0000.sl2", 17, 109233)
+
+#search_itemid("ER0000.sl2")
