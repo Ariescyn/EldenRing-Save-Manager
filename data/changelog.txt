@@ -1,5 +1,4 @@
+WARNING: As of game version 1.08, it is no longer safe to use online!
+I will continue to look into this but unfortunately it's looking like everyone is going to have to go back to grinding for hundreds of hours..
+Fixed bug with saves not appearing in main listbox when trying to create or import saves.
 EVERY item ID has been added to a Master Spreadsheet! (inventory editor > Custom Items > View Master Spreadsheet)
-Fixed bug with being able to search for an item ID but unable to write the ID.
-Added support for add many more items that you were unable to add before.
-Added Some items directly into inventory editor list.
-1 out of 10,000 users donate, even $1 is appreciated!
