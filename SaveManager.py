@@ -92,18 +92,15 @@ def archive_file(file, name, metadata, names):
     if not os.path.exists(file):  # If you try to load a save from listbox, and it tries to archive the file already present in the gamedir, but it doesn't exist, then skip
         return
 
-    lzc = lzma.LZMACompressor()
+
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d__(%I.%M.%S)")
     name = f"{name}__{date}"
     os.makedirs(f"./data/archive/{name}")
 
 
-    with open(file, "rb") as fhi, open(f"./data/archive/{name}/ER0000.xz", 'wb') as fho:
-        pc = lzc.compress(fhi.read())
-        fho.write(pc)
-        fho.write(lzc.flush())
-
+    with open(file, "rb") as fhi, lzma.open(f"./data/archive/{name}/ER0000.xz", 'w') as fho:
+        fho.write(fhi.read())
         names = [i for i in names if not i is None]
         formatted_names = ", ".join(names)
         meta = f"{metadata}\nCHARACTERS: {formatted_names}"
@@ -126,7 +123,6 @@ def archive_file(file, name, metadata, names):
 
         with open(f"./data/archive/{name}/info.txt", 'w') as f:
             f.write(fixed_meta)
-
 
 
 def unarchive_file(file):
