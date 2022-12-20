@@ -1,4 +1,4 @@
-WARNING: As of game version 1.08, it is no longer safe to use online!
-I will continue to look into this but unfortunately it's looking like everyone is going to have to go back to grinding for hundreds of hours..
-Fixed bug with saves not appearing in main listbox when trying to create or import saves.
-EVERY item ID has been added to a Master Spreadsheet! (inventory editor > Custom Items > View Master Spreadsheet)
+Improvements to Custom ID Search tool
+Tutorial video added for Custom ID Search tool
+Ability to set starting class flag. Right-click a save file and select "Set starting classes"
+Minor bug fixes and improvements

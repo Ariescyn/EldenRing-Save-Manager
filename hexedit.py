@@ -534,13 +534,14 @@ def additem(file, slot, itemids, quantity):
         index = []
         cur = [int(i) for i in itemids]
 
+
         if cur is None:
             return
 
         for ind, i in enumerate(cs):
             if ind < 30000:
                 continue
-            if ind > 95000:
+            if ind > 195000:
                 continue
             if (
                 l_endian(cs[ind : ind + 1]) == cur[0]
@@ -593,22 +594,80 @@ def search_itemid(f1,f2,f3,q1,q2,q3):
         for ind, i in enumerate(c1):
             if ind < 30000:
                 continue
-
-            if (
-                l_endian(c1[ind:ind+1]) == int(q1)
-                and l_endian(c2[ind:ind+1]) == int(q2)
-                and l_endian(c3[ind:ind+1]) == int(q3)
-                ):
-
-
-
+            # Full Matches
+            if ( l_endian(c1[ind:ind+1]) == int(q1) and l_endian(c2[ind:ind+1]) == int(q2) and l_endian(c3[ind:ind+1]) == int(q3)):
                 if ( l_endian(c1[ind - 2 : ind - 1]) == 0 and l_endian(c1[ind -1 : ind]) == 176 ) or ( l_endian(c1[ind - 2 : ind - 1]) == 128 and l_endian(c1[ind-1 : ind]) == 128):
                     index.append(ind)
+
 
 
         if len(index) == 1:
             idx = index[0]
             idx -= 6
-            return [l_endian(c1[idx + 2:idx + 3]), l_endian(c1[idx + 3:idx+4])]
+            return ["match", [l_endian(c1[idx + 2:idx + 3]), l_endian(c1[idx + 3:idx+4])]]
+
+        elif len(index) > 1 and len(index) < 500:
+            return_dict = {}
+            for i in index:
+                return_dict[i-6] = [l_endian(c1[i+2:i+3]), l_endian(c1[i+3:i+4])]
+            return ["multi-match", return_dict]
+
         else:
             return None
+
+
+
+def set_play_time(file,slot,time):
+    # time = [hr,min,sec]
+    time = [int(i) for i in time]
+    hr = time[0]
+    min = time[1]
+    sec = time[2]
+    seconds = sec + (min*60) + (hr*3600)
+    time1 = 0x1901d0e+38
+    time2 = 0x1901f5a+38
+    time3 = 0x19021a6+38
+    time4 = 0x19023f2+38
+    time5 = 0x190263e+38
+    time6 = 0x190288a+38
+    time7 = 0x1902ad6+38
+    time8 = 0x1902d22+38
+    time9 = 0x1902f6e+38
+    time10 = 0x19031ba+38
+
+    times = [time1,time2,time3,time4,time5,time6,time7,time8,time9,time10]
+    with open(file,"rb") as f:
+        dat = f.read()
+        ch = dat[:times[slot-1] ] + seconds.to_bytes(4, "little") + dat[times[slot-1] +4:]
+    with open(file, "wb") as ff:
+        ff.write(ch)
+        recalc_checksum(file)
+
+
+
+def set_starting_class(file, slot, char_class):
+    cs = get_slot_ls(file)[slot - 1]
+    slices = get_slot_slices(file)
+    s_start = slices[slot - 1][0]
+    s_end = slices[slot - 1][1]
+    pos = 42165 # class flag is 42165 bytes from start of character block
+    classes = {"Vagabond":0, "Warrior":1, "Hero":2, "Bandit":3, "Astrologer":4,
+                "Prophet":5, "Confessor":6, "Samurai":7, "Prisoner":8, "Wretch":9
+                }
+    with open(file, "rb") as f:
+        dat = f.read()
+
+
+        with open(file, "wb") as fh:
+            ch = (
+                s_start
+                + cs[:pos]
+                + classes[char_class].to_bytes(1, "little")
+                + cs[pos + 1 :]
+                + s_end
+            )
+
+            fh.write(ch)
+
+        recalc_checksum(file)
+        return True

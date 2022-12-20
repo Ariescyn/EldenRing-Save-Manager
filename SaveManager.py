@@ -10,19 +10,13 @@ from PIL import Image, ImageTk
 import subprocess, os, zipfile, requests, re, time, hexedit, webbrowser, itemdata, lzma, datetime, json
 from os_layer import *
 from pathlib import Path as PATH
-
-# TODO + Notes
-#   Replace all nested pop_up functions with new popup impplementation
-# Left off with displaying file paths when opening save files in
-
+#Collapse all functions to navigate. In Atom editor: "crtl + ALT + ] To Close"
 
 
 
 # set always the working dir to the correct folder for unix env
 if not is_windows:
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-
 
 
 class Config:
@@ -85,44 +79,112 @@ class Config:
         with open(config_path, 'w') as f:
             json.dump(self.cfg, f)
 
+
+
+
+
+
+# ///// UTILITIES /////
+
+def popup(text, command=None, functions=False, buttons=False, button_names=("Yes", "No"), b_width=(6,6), title="Manager", parent_window=None):
+    """text: Message to display on the popup window.
+    command: Simply run the windows CMD command if you press yes.
+    functions: Pass in external functions to be executed for yes/no"""
+    def run_cmd():
+        cmd_out = run_command(command)
+        popupwin.destroy()
+        if cmd_out[0] == "error":
+            popupwin.destroy()
+
+    def dontrun_cmd():
+        popupwin.destroy()
+
+    def run_func(arg):
+        arg()
+        popupwin.destroy()
+    if parent_window is None:
+        parent_window = root
+    popupwin = Toplevel(parent_window)
+    popupwin.title(title)
+    # popupwin.geometry("200x75")
+    lab = Label(popupwin, text=text)
+    lab.grid(row=0, column=0, padx=5, pady=5, columnspan=2)
+    # Places popup window at center of the root window
+    x = parent_window.winfo_x()
+    y = parent_window.winfo_y()
+    popupwin.geometry("+%d+%d" % (x + 200, y + 200))
+
+    # Runs for simple windows CMD execution
+    if functions is False and buttons is True:
+        but_yes = Button(
+            popupwin, text=button_names[0], borderwidth=5, width=b_width[0], command=run_cmd
+        ).grid(row=1, column=0, padx=(10, 0), pady=(0, 10))
+        but_no = Button(
+            popupwin, text=button_names[1], borderwidth=5, width=b_width[1], command=dontrun_cmd
+        ).grid(row=1, column=1, padx=(10, 10), pady=(0, 10))
+
+    elif functions is not False and buttons is True:
+        but_yes = Button(
+            popupwin,
+            text=button_names[0],
+            borderwidth=5,
+            width=b_width[0],
+            command=lambda: run_func(functions[0]),
+        ).grid(row=1, column=0, padx=(10, 0), pady=(0, 10))
+        but_no = Button(
+            popupwin,
+            text=button_names[1],
+            borderwidth=5,
+            width=b_width[1],
+            command=lambda: run_func(functions[1]),
+        ).grid(row=1, column=1, padx=(10, 10), pady=(0, 10))
+    # if text is the only arguement passed in, it will simply be a popup window to display text
+
+
 def archive_file(file, name, metadata, names):
-
-    name = name.replace(" ", "_")
-
-    if not os.path.exists(file):  # If you try to load a save from listbox, and it tries to archive the file already present in the gamedir, but it doesn't exist, then skip
-        return
-
-
-    now = datetime.datetime.now()
-    date = now.strftime("%Y-%m-%d__(%I.%M.%S)")
-    name = f"{name}__{date}"
-    os.makedirs(f"./data/archive/{name}")
-
-
-    with open(file, "rb") as fhi, lzma.open(f"./data/archive/{name}/ER0000.xz", 'w') as fho:
-        fho.write(fhi.read())
-        names = [i for i in names if not i is None]
-        formatted_names = ", ".join(names)
-        meta = f"{metadata}\nCHARACTERS: {formatted_names}"
-
-    meta_ls = [i for i in meta]
     try:
-        x = meta.encode("ascii") # Will fail with UnicodeEncodeError if special characters exist
-        with open(f"./data/archive/{name}/info.txt", 'w') as f:
-            f.write(meta)
-    except:
-        for ind,i in enumerate(meta):
-            try:
-                x = i.encode("ascii")
-                meta_ls[ind] = i
-            except:
-                meta_ls[ind] = '?'
-        fixed_meta = ""
-        for i in meta_ls:
-            fixed_meta = fixed_meta + i
+        name = name.replace(" ", "_")
 
-        with open(f"./data/archive/{name}/info.txt", 'w') as f:
-            f.write(fixed_meta)
+        if not os.path.exists(file):  # If you try to load a save from listbox, and it tries to archive the file already present in the gamedir, but it doesn't exist, then skip
+            return
+
+
+        now = datetime.datetime.now()
+        date = now.strftime("%Y-%m-%d__(%I.%M.%S)")
+        name = f"{name}__{date}"
+        os.makedirs(f"./data/archive/{name}")
+
+
+        with open(file, "rb") as fhi, lzma.open(f"./data/archive/{name}/ER0000.xz", 'w') as fho:
+            fho.write(fhi.read())
+            names = [i for i in names if not i is None]
+            formatted_names = ", ".join(names)
+            meta = f"{metadata}\nCHARACTERS: {formatted_names}"
+
+        meta_ls = [i for i in meta]
+        try:
+            x = meta.encode("ascii") # Will fail with UnicodeEncodeError if special characters exist
+            with open(f"./data/archive/{name}/info.txt", 'w') as f:
+                f.write(meta)
+        except:
+            for ind,i in enumerate(meta):
+                try:
+                    x = i.encode("ascii")
+                    meta_ls[ind] = i
+                except:
+                    meta_ls[ind] = '?'
+            fixed_meta = ""
+            for i in meta_ls:
+                fixed_meta = fixed_meta + i
+
+            with open(f"./data/archive/{name}/info.txt", 'w') as f:
+                f.write(fixed_meta)
+
+    except Exception as e:
+        traceback.print_exc()
+        str_err = "".join(traceback.format_exc())
+        popup(str_err)
+        return
 
 
 def unarchive_file(file):
@@ -147,144 +209,68 @@ def grab_metadata(file):
         popup(meta)
 
 
-def change_default_steamid():
+def get_charnames(file):
+    """wrapper for hexedit.get_names"""
 
 
-    def done():
-        s_id = ent.get()
-        if not len(s_id) == 17:
-            popup("SteamID should be 17 digits long")
-            return
-        config.set("steamid", s_id)
+
+    out = hexedit.get_names(file)
+    if out is False:
+        popup(f"Error: Unable to get character names.\nDoes the following path exist?\n{file}")
+    else:
+        return out
 
 
-        popup("Successfully changed default SteamID")
-        popupwin.destroy()
-
-    def cancel():
-        popupwin.destroy()
-
-    def validate(P):
-        if len(P) == 0:
-            return True
-        elif len(P) < 18 and P.isdigit():
-            return True
-        else:
-            # Anything else, reject it
-            return False
-
-    popupwin = Toplevel(root)
-    popupwin.title("Set SteamID")
-    vcmd = (popupwin.register(validate), "%P")
-    # popupwin.geometry("200x70")
-
-    s_id = config.cfg["steamid"]
-    lab = Label(popupwin, text=f"Current ID: {s_id}\nEnter new ID:")
-    lab.grid(row=0, column=0)
-    ent = Entry(popupwin, borderwidth=5, validate="key", validatecommand=vcmd)
-    ent.grid(row=1, column=0, padx=25, pady=10)
-    x = root.winfo_x()
-    y = root.winfo_y()
-    popupwin.geometry("+%d+%d" % (x + 200, y + 200))
-    but_done = Button(popupwin, text="Done", borderwidth=5, width=6, command=done)
-    but_done.grid(row=2, column=0, padx=(25, 65), pady=(0, 15), sticky="w")
-    but_cancel = Button(popupwin, text="Cancel", borderwidth=5, width=6, command=cancel)
-    but_cancel.grid(row=2, column=0, padx=(70, 0), pady=(0, 15))
+def finish_update():
+    if os.path.exists("./data/GameSaveDir.txt"):  # Legacy file for pre v1.5 versions
+        os.remove("./data/GameSaveDir.txt")
 
 
-def import_save():
-    """Opens file explorer to choose a save file to import, Then checks if the files steam ID matches users, and replaces it with users id"""
+    if config.post_update:  # Will be ran on first launch after running update.exe
 
-    if os.path.isdir(savedir) is False:
-        os.makedirs(savedir)
-    d = fd.askopenfilename()
+        if not os.path.exists("./data/save-files-pre-V1.5-BACKUP"): # NONE OF THIS WILL BE RUN ON v1.5+
+            try:
+                copy_folder(savedir, "./data/save-files-pre-V1.5-BACKUP")
+            except Exception as e:
+                traceback.print_exc()
+                str_err = "".join(traceback.format_exc())
+                popup(str_err)
 
-    if len(d) < 1:
+            for dir in os.listdir(savedir):  # Reconstruct save-file structure for pre v1.5 versions
+
+                try:
+                    id = re.findall(r"\d{17}", str(os.listdir(f"{savedir}{dir}/")))
+                    if len(id) < 1:
+                        continue
+
+                    shutil.move(f"{savedir}{dir}/{id[0]}/{ext()}", f"{savedir}{dir}/{ext()}")
+                    for i in ["GraphicsConfig.xml", "notes.txt", "steam_autocloud.vdf"]:
+                        if os.path.exists(f"{savedir}{dir}/{i}"):
+                            os.remove(f"{savedir}{dir}/{i}")
+
+                    delete_folder(f"{savedir}{dir}/{id[0]}")
+                except Exception as e:
+                    traceback.print_exc()
+                    str_err = "".join(traceback.format_exc())
+                    popup(str_err)
+                    continue
+
+
+def ext():
+    if config.cfg["seamless-coop"]:
+        return "ER0000.co2"
+    elif config.cfg["seamless-coop"] is False:
+        return "ER0000.sl2"
+
+
+def open_game_save_dir():
+    if config.cfg["gamedir"] == "":
+        popup("Please set your default game save directory first")
         return
-
-    if not d.endswith(ext()):
-        popup("Select a valid save file!\nIt should be named: ER0000.sl2/ER0000.co2")
+    else:
+        print(config.cfg["gamedir"])
+        open_folder_standard_exporer(config.cfg["gamedir"])
         return
-
-
-
-
-    def cancel():
-        popupwin.destroy()
-
-    def done():
-
-        name = ent.get().strip()
-        if len(name) < 1:
-            popup("No name entered.")
-            return
-        isforbidden = False
-        for char in name:
-            if char in "~'{};:./\,:*?<>|-!@#$%^&()+":
-                isforbidden = True
-        if isforbidden is True:
-            popup("Forbidden character used")
-            return
-        elif isforbidden is False:
-            entries = []
-            for entry in os.listdir(savedir):
-                entries.append(entry)
-            if name.replace(" ", "-") in entries:
-                popup("Name already exists")
-                return
-
-
-
-
-
-
-
-        names = get_charnames(d)
-        archive_file(d, name, "ACTION: Imported", names)
-
-        newdir = "{}{}/".format(savedir, name.replace(" ", "-"))
-        cp_to_saves_cmd = lambda: copy_file(d, newdir)
-
-        if os.path.isdir(newdir) is False:
-            cmd_out = run_command(lambda: os.makedirs(newdir))
-
-            if cmd_out[0] == "error":
-                print("---ERROR #1----")
-                return
-
-            lb.insert(END, "  " + name)
-            cmd_out = run_command(cp_to_saves_cmd)
-            if cmd_out[0] == "error":
-                return
-            create_notes(name, "{}{}/".format(savedir, name.replace(" ", "-")))
-
-            file_id = hexedit.get_id(f"{newdir}/{ext()}")
-            user_id = config.cfg["steamid"]
-            if len(user_id) < 17:
-                popupwin.destroy()
-                return
-            if file_id != int(user_id):
-                popup(
-                    f"File SteamID: {file_id}\nYour SteamID: {user_id}", buttons=True, button_names=("Patch with your ID", "Leave it"), b_width=(15,8), functions=(lambda:hexedit.replace_id(f"{newdir}/{ext()}", int(user_id)), donothing)
-                )
-                #hexedit.replace_id(f"{newdir}/ER0000.sl2", int(id))
-
-            popupwin.destroy()
-
-    popupwin = Toplevel(root)
-    popupwin.title("Import")
-    # popupwin.geometry("200x70")
-    lab = Label(popupwin, text="Enter a Name:")
-    lab.grid(row=0, column=0)
-    ent = Entry(popupwin, borderwidth=5)
-    ent.grid(row=1, column=0, padx=25, pady=10)
-    x = root.winfo_x()
-    y = root.winfo_y()
-    popupwin.geometry("+%d+%d" % (x + 200, y + 200))
-    but_done = Button(popupwin, text="Done", borderwidth=5, width=6, command=done)
-    but_done.grid(row=2, column=0, padx=(25, 65), pady=(0, 15), sticky="w")
-    but_cancel = Button(popupwin, text="Cancel", borderwidth=5, width=6, command=cancel)
-    but_cancel.grid(row=2, column=0, padx=(70, 0), pady=(0, 15))
 
 
 def open_folder():
@@ -337,7 +323,6 @@ def reset_default_dir():
     with open(gamesavedir_txt, "r") as fh:
         gamedir = fh.readline()
     popup("Successfully reset default directory")
-
 
 
 def help_me():
@@ -457,69 +442,6 @@ def load_save_from_lb():
     popup(
         "Are you sure?", buttons=True, functions=(lambda: wrapper(comm), donothing)
     )
-
-
-def popup(
-    text,
-    command=None,
-    functions=False,
-    buttons=False,
-    button_names=("Yes", "No"),
-    b_width=(6,6),
-    title="Manager",
-    parent_window=None):
-    """text: Message to display on the popup window.
-    command: Simply run the windows CMD command if you press yes.
-    functions: Pass in external functions to be executed for yes/no"""
-    def run_cmd():
-        cmd_out = run_command(command)
-        popupwin.destroy()
-        if cmd_out[0] == "error":
-            popupwin.destroy()
-
-    def dontrun_cmd():
-        popupwin.destroy()
-
-    def run_func(arg):
-        arg()
-        popupwin.destroy()
-    if parent_window is None:
-        parent_window = root
-    popupwin = Toplevel(parent_window)
-    popupwin.title(title)
-    # popupwin.geometry("200x75")
-    lab = Label(popupwin, text=text)
-    lab.grid(row=0, column=0, padx=5, pady=5, columnspan=2)
-    # Places popup window at center of the root window
-    x = parent_window.winfo_x()
-    y = parent_window.winfo_y()
-    popupwin.geometry("+%d+%d" % (x + 200, y + 200))
-
-    # Runs for simple windows CMD execution
-    if functions is False and buttons is True:
-        but_yes = Button(
-            popupwin, text=button_names[0], borderwidth=5, width=b_width[0], command=run_cmd
-        ).grid(row=1, column=0, padx=(10, 0), pady=(0, 10))
-        but_no = Button(
-            popupwin, text=button_names[1], borderwidth=5, width=b_width[1], command=dontrun_cmd
-        ).grid(row=1, column=1, padx=(10, 10), pady=(0, 10))
-
-    elif functions is not False and buttons is True:
-        but_yes = Button(
-            popupwin,
-            text=button_names[0],
-            borderwidth=5,
-            width=b_width[0],
-            command=lambda: run_func(functions[0]),
-        ).grid(row=1, column=0, padx=(10, 0), pady=(0, 10))
-        but_no = Button(
-            popupwin,
-            text=button_names[1],
-            borderwidth=5,
-            width=b_width[1],
-            command=lambda: run_func(functions[1]),
-        ).grid(row=1, column=1, padx=(10, 10), pady=(0, 10))
-    # if text is the only arguement passed in, it will simply be a popup window to display text
 
 
 def run_command(subprocess_command, optional_success_out="OK"):
@@ -674,7 +596,29 @@ def rename_char(file, nw_nm, dest_slot):
         raise
 
 
-def char_manager():
+def changelog(run=False):
+    info = ""
+    with open("./data/changelog.txt", "r") as f:
+        dat = f.readlines()
+        for line in dat:
+            info = info + f"\n\u2022 {line}\n"
+    if run:
+        popup(info, title="Changelog")
+        return
+    if config.post_update:
+        popup(info, title="Changelog")
+
+
+
+
+
+
+
+
+
+# ////// MENUS //////
+
+def char_manager_menu():
     """Entire character manager window for copying characters between save files"""
 
     def readme():
@@ -904,7 +848,7 @@ def char_manager():
     #mainloop()
 
 
-def rename_characters():
+def rename_characters_menu():
     """Opens popup window and renames character of selected listbox item"""
 
     def do():
@@ -975,20 +919,7 @@ def rename_characters():
     but_go.grid(row=2, column=0, padx=(35, 0), pady=(10, 0))
 
 
-def changelog(run=False):
-    info = ""
-    with open("./data/changelog.txt", "r") as f:
-        dat = f.readlines()
-        for line in dat:
-            info = info + f"\n\u2022 {line}\n"
-    if run:
-        popup(info, title="Changelog")
-        return
-    if config.post_update:
-        popup(info, title="Changelog")
-
-
-def stat_editor():
+def stat_editor_menu():
     def recalc_lvl():
         # entries = [vig_ent, min_ent, end_ent, str_ent, dex_ent, int_ent, fai_ent, arc_ent]
         lvl = 0
@@ -1247,7 +1178,7 @@ def stat_editor():
     but_set_stats.grid(row=0, column=1, padx=(0, 135), pady=(450, 0), sticky="n")
 
 
-def set_steam_id():
+def set_steam_id_menu():
 
     def done():
 
@@ -1301,7 +1232,7 @@ def set_steam_id():
     but_cancel.grid(row=3, column=0, padx=(70, 0), pady=(0, 15))
 
 
-def inventory_editor():
+def inventory_editor_menu():
 
     def pop_up(txt, bold=True):
         """Basic popup window used only for parent function"""
@@ -1387,7 +1318,7 @@ def inventory_editor():
         # x = hexedit.additem(dest_file,char_ind,item, qty)
         if x is None:
             pop_up(
-                "Unable to set quantity. Ensure you have at least 1 of the selected items."
+                "Unable to set quantity. Ensure you have at least 1 of the selected items.\nIf you already have one of the items in your inventory and are still unable to set the quantity,\nGo to Custom Items > Search and manually scan for the item ID."
             )
         else:
             pop_up("Successfully added items")
@@ -1410,6 +1341,12 @@ def inventory_editor():
 
 
     def manual_search():
+        try:
+            delete_folder(f"{temp_dir}1")
+            delete_folder(f"{temp_dir}2")
+            delete_folder(f"{temp_dir}3")
+        except Exception as e:
+            pass
         popupwin.destroy()
         find_itemid()
 
@@ -1429,7 +1366,7 @@ def inventory_editor():
 
             idwin.destroy()
             popupwin.destroy()
-            inventory_editor()
+            inventory_editor_menu()
 
 
         def validate_id(P):
@@ -1484,19 +1421,47 @@ def inventory_editor():
                 return False
 
 
-        def open_save(pos):
-            path = fd.askopenfilename()
+        def load_temp_save(pos):
+            if config.cfg["gamedir"] == "" or len(config.cfg["gamedir"]) < 2:
+                popup("Please set your Default Game Directory first")
+                return
+            if os.path.isdir(temp_dir) is False:
+                cmd_out = run_command(lambda: os.makedirs(temp_dir))
+                if cmd_out[0] == "error":
+                    popup("Error! unable to make temp directory.")
+                    return
+
+            if os.path.isdir(f"{temp_dir}1") is False:
+                cmd_out = run_command(lambda: os.makedirs(f"{temp_dir}1"))
+                if cmd_out[0] == "error":
+                    popup("Error! unable to make temp directory.")
+                    return
+
+            if os.path.isdir(f"{temp_dir}2") is False:
+                cmd_out = run_command(lambda: os.makedirs(f"{temp_dir}2"))
+                if cmd_out[0] == "error":
+                    popup("Error! unable to make temp directory.")
+                    return
+
+            if os.path.isdir(f"{temp_dir}3") is False:
+                cmd_out = run_command(lambda: os.makedirs(f"{temp_dir}3"))
+                if cmd_out[0] == "error":
+                    popup("Error! unable to make temp directory.")
+                    return
+
+
             if pos == 1:
-                file_paths[0] = path
-                s1_label.config(text=path)
+                copy_file(f"{config.cfg['gamedir']}/{ext()}", f"{temp_dir}/1/{ext()}")
+                file_paths[0] = f"{temp_dir}/1/{ext()}"
+
 
             if pos == 2:
-                file_paths[1] = path
-                s2_label.config(text=path)
+                copy_file(f"{config.cfg['gamedir']}/{ext()}", f"{temp_dir}/2/{ext()}")
+                file_paths[1] = f"{temp_dir}/2/{ext()}"
 
             if pos == 3:
-                file_paths[2] = path
-                s3_label.config(text=path)
+                copy_file(f"{config.cfg['gamedir']}/{ext()}", f"{temp_dir}/3/{ext()}")
+                file_paths[2] = f"{temp_dir}/3/{ext()}"
 
             window.lift()
 
@@ -1511,7 +1476,7 @@ def inventory_editor():
 
                     config.add_to("custom_ids", {name:id})
                     window.destroy()
-                    inventory_editor()
+                    inventory_editor_menu()
 
 
                 except Exception as e:
@@ -1535,6 +1500,42 @@ def inventory_editor():
             but_done.grid(row=2, column=0, padx=(25, 65), pady=(0, 15), sticky="w")
             but_cancel = Button(popupwin, text="Cancel", borderwidth=5, width=6, command=lambda: popupwin.destroy())
             but_cancel.grid(row=2, column=0, padx=(70, 0), pady=(0, 15))
+
+
+        def multi_item_select(indexes):
+            def grab_id(listbox):
+                ind = fetch_listbox_entry(listbox)[0].split(":")[0]
+
+                if ind == '':
+                    popup("No value selected!")
+                    return
+                else:
+                    popupwin.destroy()
+                    name_id_popup(indexes[int(ind)])
+
+            popupwin = Toplevel(window)
+            popupwin.title("Add Item ID")
+            vcmd = (popupwin.register(validate), "%P")
+            x = window.winfo_x()
+            y = window.winfo_y()
+            popupwin.geometry("+%d+%d" % (x + 200, y + 200))
+            lab = Label(popupwin, text=f"Multiple locations found! Select an address.\nLower addresses have a higher chance of success.")
+            lab.grid(row=0, column=0, padx=(5,5))
+
+            lb1 = Listbox(popupwin, borderwidth=3, width=19, height=10, exportselection=0)
+            lb1.config(font=bolded)
+            lb1.grid(row=1, column=0)
+
+            but_select = Button(popupwin, text="Select", borderwidth=5, width=6, command=lambda:grab_id(lb1))
+            but_select.grid(row=2, column=0, padx=(50, 65), pady=(5, 15), sticky="w")
+            but_cancel = Button(popupwin, text="Cancel", borderwidth=5, width=6, command=lambda: popupwin.destroy())
+            but_cancel.grid(row=2, column=0, padx=(85, 0), pady=(5, 15))
+            # Insert itemids alongside addresses so users can see if ids are like [0,0] and thus wrong
+            for k,v in indexes.items():
+                if v == [0, 0]: # Obviously not an item ID
+                    continue
+                lb1.insert(END, "  " + f"{k}: {v}")
+
 
 
         def search():
@@ -1562,9 +1563,15 @@ def inventory_editor():
             if item_id is None:
                 popup("Unable to find item ID")
                 return
-            name_id_popup(item_id)
+            if item_id[0] == "match":
+                name_id_popup(item_id[1])
 
+            if item_id[0] == "multi-match":
+                multi_item_select(item_id[1])
 
+            delete_folder(f"{temp_dir}1")
+            delete_folder(f"{temp_dir}2")
+            delete_folder(f"{temp_dir}3")
         def callback(url):
             webbrowser.open_new(url)
 
@@ -1576,7 +1583,7 @@ def inventory_editor():
         window = Toplevel(root)
         window.title("Inventory Editor")
         window.resizable(width=True, height=True)
-        window.geometry("530x580")
+        window.geometry("530x560")
 
         vcmd = (window.register(validate), "%P")
 
@@ -1590,43 +1597,42 @@ def inventory_editor():
         window.config(menu=menubar)
         helpmenu = Menu(menubar, tearoff=0)
         helpmenu.add_command(label="Search", command=find_itemid)
-        menubar.add_cascade(label="Manually add item", menu=helpmenu)
+        #menubar.add_cascade(label="Manually add item", menu=helpmenu)
+        padding_lab1 = Label(window, text=" ")
+        padding_lab1.pack()
 
-        s1_label = Label(window, text="Save file #1:")
+        but_open1 = Button(window, text="Grab Data 1", command=lambda:load_temp_save(1))
+        but_open1.pack()
+        s1_label = Label(window, text="Quantity:")
         s1_label.pack()
         q1_ent = Entry(window, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
         q1_ent.pack()
 
-        s2_label = Label(window, text="Save file #2:")
+        but_open2 = Button(window, text="Grab Data 2", command=lambda:load_temp_save(2))
+        but_open2.pack()
+        s2_label = Label(window, text="Quantity:")
         s2_label.pack()
         q2_ent = Entry(window, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
         q2_ent.pack()
 
-
-        s3_label = Label(window, text="Save file #3:")
+        but_open3 = Button(window, text="Grab Data 3", command=lambda:load_temp_save(3))
+        but_open3.pack()
+        s3_label = Label(window, text="Quantity:")
         s3_label.pack()
         q3_ent = Entry(window, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
         q3_ent.pack()
 
-
-        but_open1 = Button(window, text="Open #1", command=lambda:open_save(1))
-        but_open1.pack()
-
-        but_open2 = Button(window, text="Open #2", command=lambda:open_save(2))
-        but_open2.pack()
-
-        but_open3 = Button(window, text="Open #3", command=lambda:open_save(3))
-        but_open3.pack()
+        padding_lab2 = Label(window, text=" ")
+        padding_lab2.pack()
 
         but_search = Button(window, text="Search", command=search)
         but_search.pack()
 
-        part1 = "\n\n----- HOW TO -----\n\n1. Make two copies of a save file\n\n2. Load into the saves and change the value of the item you want\n  so they are all different\n\n3. Now select each save file and enter the quantity for each item\n\nNOTE: You must do this with the FIRST character slot\n\n"
-        part2 = f"\n\n # You can post the item IDs on you found on Nexus so other users can add them"
-        help_lab = Label(window, text=part1+part2)
+        help_text = "\n\n----- HOW TO -----\n\n1. Go in-game and note the quantity of the item you are trying to find. \n2. Exit to main menu and enter the quantity in the Manager.\n3. Click grab data 1.\n4. Go back in-game and load into the save file.\n5. Drop some of the items so the quantity is different from the original.\n6. Exit to main menu again.\n7. Enter the new quantity and click grab data 2.\n8. Repeat the process for #3.\n9. Click Search.\n\nNOTE: You must be using the first character in your save file!\n"
+        help_lab = Label(window, text=help_text)
         help_lab.pack()
 
-        post_but = Button(window, text= "Post", command=lambda: callback("https://www.nexusmods.com/eldenring/mods/214?tab=bugs"))
+        post_but = Button(window, text="Watch Video", command=lambda: callback(custom_search_tutorial_url))
         post_but.pack()
 
 
@@ -1642,7 +1648,7 @@ def inventory_editor():
                 popup(f"Error: Unable to delete Item\n\n{repr(e)}")
             idwin.destroy()
             popupwin.destroy()
-            inventory_editor()
+            inventory_editor_menu()
 
         idwin = Toplevel(root)
         idwin.title("Remove Custom ID")
@@ -1663,10 +1669,6 @@ def inventory_editor():
         but_done.grid(row=1, column=0, sticky='w', padx=(100,0), pady=(0,15))
         but_cancel = Button(idwin, text="Cancel", borderwidth=5, width=6, command=lambda: idwin.destroy())
         but_cancel.grid(row=1, column=0, sticky='w', padx=(200,100), pady=(0,15))
-
-
-
-
 
 
 
@@ -1742,7 +1744,7 @@ def inventory_editor():
     but_set.grid(row=6, column=0, padx=(155, 0), pady=(22, 10))
 
 
-def recovery():
+def recovery_menu():
     def do_popup(event):
         try:
             rt_click_menu.tk_popup(
@@ -1831,68 +1833,314 @@ def recovery():
     but_select1.grid(row=2, column=0, padx=(120, 0), pady=(0, 10))
 
 
-def get_charnames(file):
-    """wrapper for hexedit.get_names"""
-
-
-
-    out = hexedit.get_names(file)
-    if out is False:
-        popup(f"Error: Unable to get character names.\nDoes the following path exist?\n{file}")
-    else:
-        return out
-
-
-def finish_update():
-    if os.path.exists("./data/GameSaveDir.txt"):  # Legacy file for pre v1.5 versions
-        os.remove("./data/GameSaveDir.txt")
-
-
-    if config.post_update:  # Will be ran on first launch after running update.exe
-
-        if not os.path.exists("./data/save-files-pre-V1.5-BACKUP"): # NONE OF THIS WILL BE RUN ON v1.5+
-            try:
-                copy_folder(savedir, "./data/save-files-pre-V1.5-BACKUP")
-            except Exception as e:
-                traceback.print_exc()
-                str_err = "".join(traceback.format_exc())
-                popup(str_err)
-
-            for dir in os.listdir(savedir):  # Reconstruct save-file structure for pre v1.5 versions
-
-                try:
-                    id = re.findall(r"\d{17}", str(os.listdir(f"{savedir}{dir}/")))
-                    if len(id) < 1:
-                        continue
-
-                    shutil.move(f"{savedir}{dir}/{id[0]}/{ext()}", f"{savedir}{dir}/{ext()}")
-                    for i in ["GraphicsConfig.xml", "notes.txt", "steam_autocloud.vdf"]:
-                        if os.path.exists(f"{savedir}{dir}/{i}"):
-                            os.remove(f"{savedir}{dir}/{i}")
-
-                    delete_folder(f"{savedir}{dir}/{id[0]}")
-                except Exception as e:
-                    traceback.print_exc()
-                    str_err = "".join(traceback.format_exc())
-                    popup(str_err)
-                    continue
-
-
-
-def seamless_coop():
+def seamless_coop_menu():
     x = lambda: 'Enabled' if config.cfg['seamless-coop'] else 'Disabled'
     popup(f"Enable this option to support the seamless Co-op mod .co2 extension\nIt's recommended to use a separate copy of the Manager just for seamless co-op.\n\nCurrent State: {x()}", buttons=True, button_names=("Enable", "Disable"), functions=(lambda:config.set("seamless-coop", True), lambda:config.set("seamless-coop", False)))
 
 
-def ext():
-    if config.cfg["seamless-coop"]:
-        return "ER0000.co2"
-    elif config.cfg["seamless-coop"] is False:
-        return "ER0000.sl2"
+def set_playtimes_menu():
+    #  This function is unused. The game will overwrite modified playtime value on reload with original value.
+    def set():
+        choice = vars.get()
+        try:
+            choice_real = choice.split(". ")[1]
+        except IndexError:
+            popup("Select a character!")
+            return
+        slot_ind = int(choice.split(".")[0])
+        if len(hr_ent.get()) < 1 or len(min_ent.get()) < 1 or len(sec_ent.get()) < 1:
+            popup("Set a value for hr/min/sec")
+            return
+        time = [hr_ent.get(), min_ent.get(), sec_ent.get()]
+        archive_file(path, choice_real, "ACTION: Change Play Time", names)
+        hexedit.set_play_time(path,slot_ind,time)
+        popup("Success")
+
+    def validate_hr(P):
+        if len(P) > 0 and len(P) < 5 and P.isdigit():
+            return True
+        else:
+            return False
+
+    def validate_min_sec(P):
+        if len(P) > 0 and len(P) < 3 and P.isdigit() and int(P) < 61:
+            return True
+        else:
+            return False
 
 
 
-# ----- LEGACY FUNCTIONS (NO LONGER USED) -----
+    name = fetch_listbox_entry(lb)[0]
+    if name == "":
+        popup("No listbox item selected.")
+        return
+    path = f"{savedir}{name}/{ext()}"
+    names = get_charnames(path)
+    if names is False:
+        popup("FileNotFoundError: This is a known issue.\nPlease try re-importing your save file.")
+
+
+    chars = []
+    for ind, i in enumerate(names):
+        if i != None:
+            chars.append(f"{ind +1}. {i}")
+
+
+
+
+    rwin = Toplevel(root)
+    rwin.title("Set Play Time")
+    rwin.geometry("200x250")
+
+    vcmd_hr = (rwin.register(validate_hr), "%P")
+    vcmd_min_sec = (rwin.register(validate_min_sec), "%P")
+
+    bolded = FNT.Font(weight="bold")  # will use the default font
+    x = root.winfo_x()
+    y = root.winfo_y()
+    rwin.geometry("+%d+%d" % (x + 250, y + 200))
+
+    opts = chars
+    vars = StringVar(rwin)
+    vars.set("Character")
+
+    drop = OptionMenu(rwin, vars, *opts)
+    drop.grid(row=0, column=0, padx=(15, 0), pady=(15, 0))
+    drop.configure(width=20)
+
+    hr_lab = Label(rwin, text="Hours: ")
+    hr_lab.grid(row=1, column=0, padx=(15,0), pady=(15,0), sticky="w")
+    hr_ent = Entry(rwin, borderwidth=5, width=5, validate="key", validatecommand=vcmd_hr)
+    hr_ent.grid(row=1, column=0, padx=(70, 0), pady=(15, 0))
+
+    min_lab = Label(rwin, text="Minutes: ")
+    min_lab.grid(row=2, column=0, padx=(15,0), pady=(15,0), sticky="w")
+    min_ent = Entry(rwin, borderwidth=5, width=5, validate="key", validatecommand=vcmd_min_sec)
+    min_ent.grid(row=2, column=0, padx=(70, 0), pady=(15, 0))
+
+    min_lab = Label(rwin, text="Seconds: ")
+    min_lab.grid(row=3, column=0, padx=(15,0), pady=(15,0), sticky="w")
+    sec_ent = Entry(rwin, borderwidth=5, width=5, validate="key", validatecommand=vcmd_min_sec)
+    sec_ent.grid(row=3, column=0, padx=(70, 0), pady=(15, 0))
+
+    but_go = Button(rwin, text="Set", borderwidth=5, command=set)
+    but_go.config(font=bolded)
+    but_go.grid(row=4, column=0, padx=(15, 0), pady=(20, 0))
+
+
+def set_starting_class_menu():
+    def set():
+        if class_var.get() == "Class":
+            popup("No class selected!")
+            return
+        if char_var.get() == "Character":
+            popup("No Character Selected!")
+            return
+        src_ind = int(char_var.get().split(".")[0])
+        selected_name = char_var.get().split(".")[1]
+        archive_file(path, name, f"Modified starting class of {selected_name}", names)
+        hexedit.set_starting_class(path,src_ind,class_var.get())
+        popup("Success!")
+        return
+
+    # Populate dropdown containing characters.
+    name = fetch_listbox_entry(lb)[0]
+    if name == "":
+        popup("No listbox item selected.")
+        return
+    path = f"{savedir}{name}/{ext()}"
+    names = get_charnames(path)
+    if names is False:
+        popup("FileNotFoundError: This is a known issue.\nPlease try re-importing your save file.")
+
+    chars = []
+    for ind, i in enumerate(names):
+        if i != None:
+            chars.append(f"{ind +1}. {i}")
+
+
+
+
+    rwin = Toplevel(root)
+    rwin.title("Set Starting Class")
+    rwin.geometry("200x190")
+
+    bolded = FNT.Font(weight="bold")  # will use the default font
+    x = root.winfo_x()
+    y = root.winfo_y()
+    rwin.geometry("+%d+%d" % (x + 250, y + 200))
+
+    opts = chars
+    char_var = StringVar(rwin)
+    char_var.set("Character")
+
+    drop = OptionMenu(rwin, char_var, *opts)
+    drop.grid(row=0, column=0, padx=(15, 0), pady=(15, 0))
+    drop.configure(width=20)
+
+    class_opts = ["Vagabond", "Warrior", "Hero", "Bandit", "Astrologer", "Prophet", "Confessor", "Samurai", "Prisoner", "Wretch"]
+    class_var = StringVar(rwin)
+    class_var.set("Class")
+
+    class_drop = OptionMenu(rwin, class_var, *class_opts)
+    class_drop.grid(row=1, column=0, padx=(15, 0), pady=(15, 0))
+
+
+
+    but_set = Button(rwin, text="Set", borderwidth=5, command=set)
+    but_set.config(font=bolded)
+    but_set.grid(row=4, column=0, padx=(15, 0), pady=(20, 0))
+
+
+def change_default_steamid_menu():
+
+
+    def done():
+        s_id = ent.get()
+        if not len(s_id) == 17:
+            popup("SteamID should be 17 digits long")
+            return
+        config.set("steamid", s_id)
+
+
+        popup("Successfully changed default SteamID")
+        popupwin.destroy()
+
+    def cancel():
+        popupwin.destroy()
+
+    def validate(P):
+        if len(P) == 0:
+            return True
+        elif len(P) < 18 and P.isdigit():
+            return True
+        else:
+            # Anything else, reject it
+            return False
+
+    popupwin = Toplevel(root)
+    popupwin.title("Set SteamID")
+    vcmd = (popupwin.register(validate), "%P")
+    # popupwin.geometry("200x70")
+
+    s_id = config.cfg["steamid"]
+    lab = Label(popupwin, text=f"Current ID: {s_id}\nEnter new ID:")
+    lab.grid(row=0, column=0)
+    ent = Entry(popupwin, borderwidth=5, validate="key", validatecommand=vcmd)
+    ent.grid(row=1, column=0, padx=25, pady=10)
+    x = root.winfo_x()
+    y = root.winfo_y()
+    popupwin.geometry("+%d+%d" % (x + 200, y + 200))
+    but_done = Button(popupwin, text="Done", borderwidth=5, width=6, command=done)
+    but_done.grid(row=2, column=0, padx=(25, 65), pady=(0, 15), sticky="w")
+    but_cancel = Button(popupwin, text="Cancel", borderwidth=5, width=6, command=cancel)
+    but_cancel.grid(row=2, column=0, padx=(70, 0), pady=(0, 15))
+
+
+def import_save_menu():
+    """Opens file explorer to choose a save file to import, Then checks if the files steam ID matches users, and replaces it with users id"""
+
+    if os.path.isdir(savedir) is False:
+        os.makedirs(savedir)
+    d = fd.askopenfilename()
+
+    if len(d) < 1:
+        return
+
+    if not d.endswith(ext()):
+        popup("Select a valid save file!\nIt should be named: ER0000.sl2 or ER0000.co2 if seamless co-op is enabled.")
+        return
+
+
+
+
+    def cancel():
+        popupwin.destroy()
+
+    def done():
+
+        name = ent.get().strip()
+        if len(name) < 1:
+            popup("No name entered.")
+            return
+        isforbidden = False
+        for char in name:
+            if char in "~'{};:./\,:*?<>|-!@#$%^&()+":
+                isforbidden = True
+        if isforbidden is True:
+            popup("Forbidden character used")
+            return
+        elif isforbidden is False:
+            entries = []
+            for entry in os.listdir(savedir):
+                entries.append(entry)
+            if name.replace(" ", "-") in entries:
+                popup("Name already exists")
+                return
+
+
+
+
+
+
+
+        names = get_charnames(d)
+        archive_file(d, name, "ACTION: Imported", names)
+
+        newdir = "{}{}/".format(savedir, name.replace(" ", "-"))
+        cp_to_saves_cmd = lambda: copy_file(d, newdir)
+
+        if os.path.isdir(newdir) is False:
+            cmd_out = run_command(lambda: os.makedirs(newdir))
+
+            if cmd_out[0] == "error":
+                print("---ERROR #1----")
+                return
+
+            lb.insert(END, "  " + name)
+            cmd_out = run_command(cp_to_saves_cmd)
+            if cmd_out[0] == "error":
+                return
+            create_notes(name, "{}{}/".format(savedir, name.replace(" ", "-")))
+
+            file_id = hexedit.get_id(f"{newdir}/{ext()}")
+            user_id = config.cfg["steamid"]
+            if len(user_id) < 17:
+                popupwin.destroy()
+                return
+            if file_id != int(user_id):
+                popup(
+                    f"File SteamID: {file_id}\nYour SteamID: {user_id}", buttons=True, button_names=("Patch with your ID", "Leave it"), b_width=(15,8), functions=(lambda:hexedit.replace_id(f"{newdir}/{ext()}", int(user_id)), donothing)
+                )
+                #hexedit.replace_id(f"{newdir}/ER0000.sl2", int(id))
+
+            popupwin.destroy()
+
+    popupwin = Toplevel(root)
+    popupwin.title("Import")
+    # popupwin.geometry("200x70")
+    lab = Label(popupwin, text="Enter a Name:")
+    lab.grid(row=0, column=0)
+    ent = Entry(popupwin, borderwidth=5)
+    ent.grid(row=1, column=0, padx=25, pady=10)
+    x = root.winfo_x()
+    y = root.winfo_y()
+    popupwin.geometry("+%d+%d" % (x + 200, y + 200))
+    but_done = Button(popupwin, text="Done", borderwidth=5, width=6, command=done)
+    but_done.grid(row=2, column=0, padx=(25, 65), pady=(0, 15), sticky="w")
+    but_cancel = Button(popupwin, text="Cancel", borderwidth=5, width=6, command=cancel)
+    but_cancel.grid(row=2, column=0, padx=(70, 0), pady=(0, 15))
+
+
+
+
+
+
+
+
+
+
+# //// LEGACY FUNCTIONS (NO LONGER USED) ////
 
 def quick_restore():
     """Copies the selected save file in temp to selected listbox item"""
@@ -1967,7 +2215,14 @@ def about():
 
 
 
-# ----- MAIN GUI CONTENT -----
+
+
+
+
+
+
+
+# ///// MAIN GUI CONTENT /////
 
 
 root = Tk()
@@ -2006,13 +2261,12 @@ root.config(
 
 # FILE MENU
 filemenu = Menu(menubar, tearoff=0)
-
 #filemenu.add_command(label="Save Backup", command=save_backup)
 #filemenu.add_command(label="Restore Backup", command=load_backup)
-
-filemenu.add_command(label="Import Save File", command=import_save)
-filemenu.add_command(label="seamless Co-op Mode", command=seamless_coop)
+filemenu.add_command(label="Import Save File", command=import_save_menu)
+filemenu.add_command(label="seamless Co-op Mode", command=seamless_coop_menu)
 filemenu.add_command(label="Force quit EldenRing", command=forcequit)
+filemenu.add_command(label="Open Default Game Save Directory", command=open_game_save_dir)
 filemenu.add_separator()
 filemenu.add_command(label="Donate", command=lambda:webbrowser.open_new_tab("https://www.paypal.com/donate/?hosted_button_id=H2X24U55NUJJW"))
 filemenu.add_command(label="Exit", command=root.quit)
@@ -2024,16 +2278,16 @@ menubar.add_cascade(label="File", menu=filemenu)
 editmenu = Menu(menubar, tearoff=0)
 editmenu.add_command(label="Change Default Directory", command=change_default_dir)
 #editmenu.add_command(label="Reset To Default Directory", command=reset_default_dir)
-editmenu.add_command(label="Change Default SteamID", command=change_default_steamid)
+editmenu.add_command(label="Change Default SteamID", command=change_default_steamid_menu)
 editmenu.add_command(label="Check for updates", command=update_app)
 menubar.add_cascade(label="Edit", menu=editmenu)
 
 # TOOLS MENU
 toolsmenu = Menu(menubar, tearoff=0)
-toolsmenu.add_command(label="Character Manager", command=char_manager)
-toolsmenu.add_command(label="Stat Editor", command=stat_editor)
-toolsmenu.add_command(label="Inventory Editor", command=inventory_editor)
-toolsmenu.add_command(label="File Recovery", command=recovery)
+toolsmenu.add_command(label="Character Manager", command=char_manager_menu)
+toolsmenu.add_command(label="Stat Editor", command=stat_editor_menu)
+toolsmenu.add_command(label="Inventory Editor", command=inventory_editor_menu)
+toolsmenu.add_command(label="File Recovery", command=recovery_menu)
 menubar.add_cascade(label="Tools", menu=toolsmenu)
 
 # HELP MENU
@@ -2045,13 +2299,12 @@ helpmenu.add_command(label="Changelog", command=lambda:changelog(run=True))
 helpmenu.add_command(label="Report Bug", command=lambda:popup("Report bugs on Nexus, GitHub or email me at scyntacks94@gmail.com"))
 menubar.add_cascade(label="Help", menu=helpmenu)
 
-#
+
 create_save_lab = Label(root, text="Create Save:", font=("Impact", 15))
 create_save_lab.config(fg="grey")
 create_save_lab.grid(row=0, column=0, padx=(80, 10), pady=(0, 260))
 
 cr_save_ent = Entry(root, borderwidth=5)
-# cr_save_ent.config(bg='grey')
 cr_save_ent.grid(row=0, column=1, pady=(0, 260))
 
 but_go = Button(root, text="Done", image=done_img, borderwidth=0, command=create_save)
@@ -2088,11 +2341,12 @@ def open_notes():
 rt_click_menu = Menu(lb, tearoff=0)
 #rt_click_menu.add_command(label="Edit Notes", command=open_notes)
 rt_click_menu.add_command(label="Rename Save", command=rename_slot)
-rt_click_menu.add_command(label="Rename Characters", command=rename_characters)
+rt_click_menu.add_command(label="Rename Characters", command=rename_characters_menu)
 rt_click_menu.add_command(label="Update", command=update_slot)
 #rt_click_menu.add_command(label="Quick Backup", command=quick_backup)
 #rt_click_menu.add_command(label="Quick Restore", command=quick_restore)
-rt_click_menu.add_command(label="Change SteamID", command=set_steam_id)
+rt_click_menu.add_command(label="Set Starting Classes", command=set_starting_class_menu) #FULLY FUNCTIONAL, but it doesn't work because game restores playtime to original values after loading..... :(
+rt_click_menu.add_command(label="Change SteamID", command=set_steam_id_menu)
 rt_click_menu.add_command(label="Open File Location", command=open_folder)
 lb.bind(
     "<Button-3>", do_popup
