@@ -40,25 +40,3 @@ def print_vals(file,index):
 
 items = dict([(f"{v[0]}:{v[1]}",k) for k,v in itemdict.items()])
 print_vals("ER0000.sl2", 65853-4) # 65853 is Index of a KNOWN quantity minus 4 (to start at id1 position)
-
-
-
-
-
-
-
-
-
-
-
-#with open("items.txt", 'r') as f:
-#    lines = f.readlines()
-
-#newls = []
-#for line in lines:
-#    x = line.replace("'", "")
-#    y = '"' + x
-#    newls.append(y)
-
-#with open("items_fixed.txt", 'w') as ff:
-#    ff.writelines(newls)
