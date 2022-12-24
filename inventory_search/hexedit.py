@@ -38,5 +38,5 @@ def print_vals(file,index):
 
 
 
-items = dict([(f"{v[0]}:{v[1]}",k) for k,v in itemdict.items()])
+items = dict([(f"{v[0]}:{v[1]}",k) for k,v in itemdict.items()]) # reverse key/values in dict
 print_vals("ER0000.sl2", 65853-4) # 65853 is Index of a KNOWN quantity minus 4 (to start at id1 position)
