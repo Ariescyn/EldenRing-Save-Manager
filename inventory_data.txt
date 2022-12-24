@@ -1,0 +1,263 @@
+
+Slice of inventory for a character.
+
+
+
+
+
+{'Name': '?', 'item_id': [21, 2], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [37, 0, 0], 'iter': 116}
+{'Name': 'Burn, O Flame!', 'item_id': [232, 23], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [59, 0, 0], 'iter': 145}
+{'Name': 'Mottled Necklace +1', 'item_id': [177, 4], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [37, 0, 0], 'iter': 147}
+{'Name': '?', 'item_id': [169, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [37, 0, 0], 'iter': 163}
+{'Name': 'Ghost Glovewort :[5]', 'item_id': [162, 42], 'uid': [0, 176], 'quantity': 7, 'pad1': [0, 0, 0], 'pad2': [55, 0, 0], 'iter': 194}
+{'Name': 'Ancestral Infants Head', 'item_id': [184, 11], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [37, 0, 0], 'iter': 179}
+{'Name': '?', 'item_id': [181, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 107}
+{'Name': 'Warrior Jar Shard', 'item_id': [206, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [37, 0, 0], 'iter': 187}
+{'Name': '?', 'item_id': [62, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [37, 0, 0], 'iter': 212}
+{'Name': '?', 'item_id': [55, 3], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [37, 0, 0], 'iter': 222}
+{'Name': '?', 'item_id': [156, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [37, 0, 0], 'iter': 229}
+{'Name': 'Numens Rune', 'item_id': [97, 11], 'uid': [0, 176], 'quantity': 10, 'pad1': [0, 0, 0], 'pad2': [58, 0, 0], 'iter': 57}
+{'Name': 'Executioners Greataxe', 'item_id': [64, 26], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [37, 0, 0], 'iter': 247}
+{'Name': 'All-Knowing Greaves', 'item_id': [220, 1], 'uid': [128, 128], 'quantity': 8, 'pad1': [0, 0, 0], 'pad2': [37, 0, 0], 'iter': 255}
+{'Name': 'Holy Grease', 'item_id': [150, 5], 'uid': [0, 176], 'quantity': 10, 'pad1': [0, 0, 0], 'pad2': [47, 0, 0], 'iter': 247}
+{'Name': '?', 'item_id': [3, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 45}
+{'Name': 'Smithing Stone :[6]', 'item_id': [121, 39], 'uid': [0, 176], 'quantity': 71, 'pad1': [0, 0, 0], 'pad2': [57, 0, 0], 'iter': 228}
+{'Name': 'Smithing Stone :[7]', 'item_id': [122, 39], 'uid': [0, 176], 'quantity': 61, 'pad1': [0, 0, 0], 'pad2': [58, 0, 0], 'iter': 192}
+{'Name': 'Ghost Glovewort :[7]', 'item_id': [164, 42], 'uid': [0, 176], 'quantity': 8, 'pad1': [0, 0, 0], 'pad2': [58, 0, 0], 'iter': 58}
+{'Name': 'Ghost Glovewort :[6]', 'item_id': [163, 42], 'uid': [0, 176], 'quantity': 10, 'pad1': [0, 0, 0], 'pad2': [55, 0, 0], 'iter': 102}
+{'Name': 'Bone Dart', 'item_id': [174, 6], 'uid': [0, 176], 'quantity': 40, 'pad1': [0, 0, 0], 'pad2': [56, 0, 0], 'iter': 243}
+{'Name': 'Ghost Glovewort :[8]', 'item_id': [165, 42], 'uid': [0, 176], 'quantity': 5, 'pad1': [0, 0, 0], 'pad2': [58, 0, 0], 'iter': 56}
+{'Name': 'Somber Smithing Stone :[7]', 'item_id': [182, 39], 'uid': [0, 176], 'quantity': 36, 'pad1': [0, 0, 0], 'pad2': [56, 0, 0], 'iter': 111}
+{'Name': 'Mausoleum Soldier Ashes', 'item_id': [48, 224], 'uid': [3, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 143}
+{'Name': '?', 'item_id': [138, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 150}
+{'Name': '?', 'item_id': [232, 0], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 152}
+{'Name': 'Ruptured Crystal Tear', 'item_id': [9, 43], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [53, 0, 0], 'iter': 124}
+{'Name': 'Clarifying Cured Meat', 'item_id': [106, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 166}
+{'Name': '?', 'item_id': [36, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 169}
+{'Name': '?', 'item_id': [199, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 170}
+{'Name': '?', 'item_id': [247, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 171}
+{'Name': 'Brick Hammer', 'item_id': [48, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 172}
+{'Name': 'Prince of Deaths Cyst', 'item_id': [167, 4], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 208}
+{'Name': 'Blessed Dew Talisman', 'item_id': [156, 19], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 211}
+{'Name': '?', 'item_id': [235, 0], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 219}
+{'Name': '?', 'item_id': [175, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 232}
+{'Name': '?', 'item_id': [229, 0], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 233}
+{'Name': '?', 'item_id': [229, 3], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 234}
+{'Name': 'Bloodboon', 'item_id': [166, 24], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [59, 0, 0], 'iter': 148}
+{'Name': 'Stargazer Heirloom', 'item_id': [56, 4], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [38, 0, 0], 'iter': 250}
+{'Name': '?', 'item_id': [209, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 238}
+{'Name': 'Fortissaxs Lightning Spear', 'item_id': [29, 27], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 109}
+{'Name': '?', 'item_id': [31, 3], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 111}
+{'Name': '?', 'item_id': [2, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 4}
+{'Name': '?', 'item_id': [11, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 5}
+{'Name': '?', 'item_id': [220, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 6}
+{'Name': '?', 'item_id': [125, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 7}
+{'Name': '?', 'item_id': [14, 5], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 8}
+{'Name': '?', 'item_id': [190, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 9}
+{'Name': '?', 'item_id': [22, 5], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 10}
+{'Name': '?', 'item_id': [199, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 12}
+{'Name': '?', 'item_id': [229, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 13}
+{'Name': '?', 'item_id': [71, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 14}
+{'Name': '?', 'item_id': [231, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 15}
+{'Name': '?', 'item_id': [48, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 16}
+{'Name': '?', 'item_id': [130, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 17}
+{'Name': '?', 'item_id': [81, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 18}
+{'Name': '?', 'item_id': [156, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [53, 0, 0], 'iter': 146}
+{'Name': '?', 'item_id': [196, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 51}
+{'Name': '?', 'item_id': [89, 2], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 125}
+{'Name': '?', 'item_id': [85, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 146}
+{'Name': 'Great Oracular Bubble', 'item_id': [246, 19], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 165}
+{'Name': 'Deathsbane Jerky', 'item_id': [196, 4], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 184}
+{'Name': '?', 'item_id': [79, 2], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 186}
+{'Name': 'Ancestral Follower Ashes', 'item_id': [104, 48], 'uid': [3, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 189}
+{'Name': '?', 'item_id': [144, 4], 'uid': [128, 128], 'quantity': 57, 'pad1': [0, 0, 0], 'pad2': [59, 0, 0], 'iter': 172}
+{'Name': 'Clayman Ashes', 'item_id': [48, 99], 'uid': [3, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [39, 0, 0], 'iter': 240}
+{'Name': '?', 'item_id': [192, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 8}
+{'Name': 'Drawstring Holy Grease', 'item_id': [250, 5], 'uid': [0, 176], 'quantity': 6, 'pad1': [0, 0, 0], 'pad2': [52, 0, 0], 'iter': 224}
+{'Name': 'Flask of Crimson Tears +12', 'item_id': [1, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 13}
+{'Name': 'Redmane Fire Pot', 'item_id': [45, 1], 'uid': [0, 176], 'quantity': 5, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 33}
+{'Name': '?', 'item_id': [90, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 38}
+{'Name': 'Archer Ashes', 'item_id': [168, 204], 'uid': [3, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 46}
+{'Name': '?', 'item_id': [233, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 51}
+{'Name': 'Shabriri Grape', 'item_id': [216, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [53, 0, 0], 'iter': 147}
+{'Name': 'Perfumers Cookbook :[4]', 'item_id': [176, 36], 'uid': [3, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 60}
+{'Name': 'Dappled Cured Meat', 'item_id': [116, 4], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 82}
+{'Name': 'Ghost Glovewort :[9]', 'item_id': [166, 42], 'uid': [0, 176], 'quantity': 14, 'pad1': [0, 0, 0], 'pad2': [58, 0, 0], 'iter': 59}
+{'Name': 'Somber Smithing Stone :[8]', 'item_id': [183, 39], 'uid': [0, 176], 'quantity': 15, 'pad1': [0, 0, 0], 'pad2': [57, 0, 0], 'iter': 164}
+{'Name': 'Immunizing Horn Charm +1', 'item_id': [147, 4], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 170}
+{'Name': '?', 'item_id': [28, 3], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 182}
+{'Name': '?', 'item_id': [4, 5], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 194}
+{'Name': '?', 'item_id': [88, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 210}
+{'Name': 'Thawfrost Boluses', 'item_id': [152, 3], 'uid': [0, 176], 'quantity': 12, 'pad1': [0, 0, 0], 'pad2': [55, 0, 0], 'iter': 94}
+{'Name': 'Scarlet Aeonia', 'item_id': [72, 28], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [59, 0, 0], 'iter': 149}
+{'Name': 'Cerulean Seed Talisman', 'item_id': [146, 19], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [53, 0, 0], 'iter': 166}
+{'Name': '?', 'item_id': [136, 3], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 118}
+{'Name': 'Invigorating Cured Meat', 'item_id': [96, 4], 'uid': [0, 176], 'quantity': 3, 'pad1': [0, 0, 0], 'pad2': [51, 0, 0], 'iter': 210}
+{'Name': 'Dappled White Cured Meat', 'item_id': [60, 5], 'uid': [0, 176], 'quantity': 2, 'pad1': [0, 0, 0], 'pad2': [48, 0, 0], 'iter': 121}
+{'Name': 'Freezing Grease', 'item_id': [190, 5], 'uid': [0, 176], 'quantity': 10, 'pad1': [0, 0, 0], 'pad2': [51, 0, 0], 'iter': 177}
+{'Name': 'Drawstring Magic Grease', 'item_id': [240, 5], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 254}
+{'Name': 'Drawstring Rot Grease', 'item_id': [54, 6], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [40, 0, 0], 'iter': 255}
+{'Name': 'Drawstring Blood Grease', 'item_id': [4, 6], 'uid': [0, 176], 'quantity': 5, 'pad1': [0, 0, 0], 'pad2': [54, 0, 0], 'iter': 83}
+{'Name': 'Drawstring Soporific Grease', 'item_id': [14, 6], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 1}
+{'Name': '?', 'item_id': [93, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 2}
+{'Name': '?', 'item_id': [28, 5], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 8}
+{'Name': '?', 'item_id': [72, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 36}
+{'Name': '?', 'item_id': [14, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 37}
+{'Name': '?', 'item_id': [69, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [53, 0, 0], 'iter': 182}
+{'Name': 'Somber Ancient Dragon Smithing Stone', 'item_id': [184, 39], 'uid': [0, 176], 'quantity': 6, 'pad1': [0, 0, 0], 'pad2': [57, 0, 0], 'iter': 229}
+{'Name': '?', 'item_id': [186, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 63}
+{'Name': 'Cerulean Amber Medallion +2', 'item_id': [244, 3], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 131}
+{'Name': 'Adulas Moonblade', 'item_id': [79, 17], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 141}
+{'Name': 'Rannis Dark Moon', 'item_id': [9, 17], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 158}
+{'Name': 'Banished Knight Helm', 'item_id': [64, 13], 'uid': [3, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 165}
+{'Name': '?', 'item_id': [30, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 168}
+{'Name': '?', 'item_id': [20, 2], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 171}
+{'Name': '?', 'item_id': [245, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 172}
+{'Name': '?', 'item_id': [194, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 173}
+{'Name': '?', 'item_id': [229, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 174}
+{'Name': '?', 'item_id': [101, 3], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 177}
+{'Name': 'Volcanic Stone', 'item_id': [114, 81], 'uid': [0, 176], 'quantity': 240, 'pad1': [0, 0, 0], 'pad2': [50, 0, 0], 'iter': 234}
+{'Name': '?', 'item_id': [82, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 188}
+{'Name': '?', 'item_id': [149, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [59, 0, 0], 'iter': 151}
+{'Name': '?', 'item_id': [214, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 190}
+{'Name': 'Dragon Communion Seal', 'item_id': [0, 5], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 191}
+{'Name': '?', 'item_id': [194, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 192}
+{'Name': '?', 'item_id': [226, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 209}
+{'Name': '?', 'item_id': [131, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 226}
+{'Name': '?', 'item_id': [23, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [53, 0, 0], 'iter': 245}
+{'Name': '?', 'item_id': [9, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [41, 0, 0], 'iter': 235}
+{'Name': '?', 'item_id': [196, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 1}
+{'Name': '?', 'item_id': [144, 2], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 28}
+{'Name': '?', 'item_id': [83, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 29}
+{'Name': 'All-Knowing Armor (Altered)', 'item_id': [252, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 30}
+{'Name': 'Champions Song Painting', 'item_id': [10, 32], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 65}
+{'Name': '?', 'item_id': [196, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 77}
+{'Name': 'Elden Lord Crown', 'item_id': [224, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 89}
+{'Name': '?', 'item_id': [14, 3], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 91}
+{'Name': '?', 'item_id': [86, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 95}
+{'Name': '?', 'item_id': [42, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 96}
+{'Name': '?', 'item_id': [1, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [48, 0, 0], 'iter': 225}
+{'Name': 'Flask of Cerulean Tears', 'item_id': [27, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 102}
+{'Name': 'Ancestral Spirits Horn', 'item_id': [222, 23], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 103}
+{'Name': '?', 'item_id': [144, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 108}
+{'Name': 'Godskin Swaddling Cloth', 'item_id': [176, 19], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 110}
+{'Name': '?', 'item_id': [185, 3], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 112}
+{'Name': 'Sweet Raisin', 'item_id': [43, 3], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 113}
+{'Name': 'Giantsflame Fire Pot', 'item_id': [46, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 114}
+{'Name': '?', 'item_id': [168, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 119}
+{'Name': '?', 'item_id': [142, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 120}
+{'Name': '?', 'item_id': [138, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 145}
+{'Name': '?', 'item_id': [13, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 149}
+{'Name': '?', 'item_id': [179, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 150}
+{'Name': '?', 'item_id': [193, 3], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 151}
+{'Name': 'Perfumers Talisman', 'item_id': [172, 8], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 169}
+{'Name': 'Takers Cameo', 'item_id': [166, 19], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 176}
+{'Name': 'Pearldrake Talisman +1', 'item_id': [211, 15], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 189}
+{'Name': '?', 'item_id': [205, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [42, 0, 0], 'iter': 202}
+{'Name': '?', 'item_id': [7, 2], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 57}
+{'Name': 'Rainbow Stone', 'item_id': [228, 7], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 61}
+{'Name': 'Roiling Magma', 'item_id': [212, 18], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 80}
+{'Name': 'Raw Meat Dumpling', 'item_id': [211, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 97}
+{'Name': 'Unendurable Frenzy', 'item_id': [143, 28], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [53, 0, 0], 'iter': 254}
+{'Name': '?', 'item_id': [61, 3], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 112}
+{'Name': 'Prattling Pate Youre beautiful', 'item_id': [159, 8], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 115}
+{'Name': 'Gold-Pickled Fowl Foot', 'item_id': [176, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 119}
+{'Name': '?', 'item_id': [255, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 120}
+{'Name': 'Placidusaxs Ruin', 'item_id': [138, 27], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [59, 0, 0], 'iter': 152}
+{'Name': 'Stalwart Horn Charm +1', 'item_id': [137, 4], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [54, 0, 0], 'iter': 6}
+{'Name': '?', 'item_id': [113, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [54, 0, 0], 'iter': 8}
+{'Name': 'Comet Azur', 'item_id': [104, 16], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 135}
+{'Name': 'Graven-Mass Talisman', 'item_id': [185, 11], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [54, 0, 0], 'iter': 21}
+{'Name': 'Crystal Torrent', 'item_id': [168, 17], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 169}
+{'Name': 'Stars of Ruin', 'item_id': [124, 16], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 182}
+{'Name': '?', 'item_id': [114, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 192}
+{'Name': 'Oil Pot', 'item_id': [124, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 193}
+{'Name': '?', 'item_id': [88, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 194}
+{'Name': '?', 'item_id': [224, 0], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 195}
+{'Name': 'Magic Pot', 'item_id': [148, 2], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 196}
+{'Name': 'Boltdrake Talisman', 'item_id': [190, 15], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 197}
+{'Name': '?', 'item_id': [133, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 198}
+{'Name': 'Pearldrake Talisman', 'item_id': [210, 15], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 203}
+{'Name': 'Golden Vow', 'item_id': [200, 25], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [43, 0, 0], 'iter': 238}
+{'Name': '?', 'item_id': [38, 3], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 7}
+{'Name': '?', 'item_id': [54, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 34}
+{'Name': '?', 'item_id': [154, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [54, 0, 0], 'iter': 52}
+{'Name': '?', 'item_id': [227, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 67}
+{'Name': '?', 'item_id': [245, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 90}
+{'Name': '?', 'item_id': [203, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 100}
+{'Name': 'Leaden Hardtear', 'item_id': [10, 43], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 136}
+{'Name': 'Cerulean Hidden Tear', 'item_id': [17, 43], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 137}
+{'Name': '?', 'item_id': [207, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 175}
+{'Name': '?', 'item_id': [99, 3], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 188}
+{'Name': '?', 'item_id': [157, 3], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 196}
+{'Name': '?', 'item_id': [112, 0], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 200}
+{'Name': '?', 'item_id': [191, 31], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 201}
+{'Name': '?', 'item_id': [240, 3], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 218}
+{'Name': '?', 'item_id': [15, 5], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 219}
+{'Name': '?', 'item_id': [57, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 220}
+{'Name': '?', 'item_id': [70, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 221}
+{'Name': 'Magma Shot', 'item_id': [192, 18], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 222}
+{'Name': '?', 'item_id': [152, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 223}
+{'Name': '?', 'item_id': [139, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 224}
+{'Name': 'Raging Wolf Armor', 'item_id': [196, 31], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 225}
+{'Name': 'Crepuss Vial', 'item_id': [112, 23], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 234}
+{'Name': '?', 'item_id': [66, 2], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 236}
+{'Name': 'Letter to Bernahl', 'item_id': [237, 31], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 237}
+{'Name': 'Red Letter', 'item_id': [197, 31], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 238}
+{'Name': 'Blessed Dew Talisman', 'item_id': [156, 19], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 239}
+{'Name': '?', 'item_id': [246, 0], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 249}
+{'Name': '?', 'item_id': [150, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 250}
+{'Name': '?', 'item_id': [39, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 251}
+{'Name': '?', 'item_id': [243, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 252}
+{'Name': 'Margits Shackle', 'item_id': [92, 8], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [44, 0, 0], 'iter': 254}
+{'Name': 'Gelmirs Fury', 'item_id': [202, 18], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 0}
+{'Name': 'Letter to Patches', 'item_id': [231, 31], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 1}
+{'Name': '?', 'item_id': [177, 3], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 16}
+{'Name': 'Poison Pot', 'item_id': [114, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 17}
+{'Name': '?', 'item_id': [238, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 18}
+{'Name': '?', 'item_id': [98, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 19}
+{'Name': '?', 'item_id': [19, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 20}
+{'Name': 'Heros Rune :[4]', 'item_id': [101, 11], 'uid': [0, 176], 'quantity': 3, 'pad1': [0, 0, 0], 'pad2': [57, 0, 0], 'iter': 196}
+{'Name': '?', 'item_id': [120, 3], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 32}
+{'Name': 'Roped Freezing Pot', 'item_id': [224, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 33}
+{'Name': 'Boltdrake Talisman +1', 'item_id': [191, 15], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 56}
+{'Name': '?', 'item_id': [249, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 65}
+{'Name': '?', 'item_id': [130, 3], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 72}
+{'Name': '?', 'item_id': [170, 2], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 73}
+{'Name': 'Lightning Scorpion Charm', 'item_id': [218, 7], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 86}
+{'Name': '?', 'item_id': [253, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 88}
+{'Name': 'Swarm of Flies', 'item_id': [42, 28], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [54, 0, 0], 'iter': 57}
+{'Name': '?', 'item_id': [70, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 119}
+{'Name': 'Flask of Wondrous Physick', 'item_id': [251, 0], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 120}
+{'Name': '?', 'item_id': [14, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 121}
+{'Name': 'Kindred of Rots Exultation', 'item_id': [122, 8], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 131}
+{'Name': '?', 'item_id': [79, 3], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 142}
+{'Name': '?', 'item_id': [201, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 152}
+{'Name': 'Grave Glovewort :[7]', 'item_id': [154, 42], 'uid': [0, 176], 'quantity': 12, 'pad1': [0, 0, 0], 'pad2': [57, 0, 0], 'iter': 78}
+{'Name': 'Grave Glovewort :[6]', 'item_id': [153, 42], 'uid': [0, 176], 'quantity': 14, 'pad1': [0, 0, 0], 'pad2': [57, 0, 0], 'iter': 36}
+{'Name': '?', 'item_id': [104, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 172}
+{'Name': '?', 'item_id': [252, 2], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [57, 0, 0], 'iter': 48}
+{'Name': 'Jarwight Puppet +3', 'item_id': [91, 3], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [57, 0, 0], 'iter': 49}
+{'Name': '?', 'item_id': [96, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [57, 0, 0], 'iter': 51}
+{'Name': 'Blood-Tainted Excrement', 'item_id': [95, 81], 'uid': [0, 176], 'quantity': 22, 'pad1': [0, 0, 0], 'pad2': [54, 0, 0], 'iter': 151}
+{'Name': '?', 'item_id': [51, 3], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 190}
+{'Name': '?', 'item_id': [94, 2], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 193}
+{'Name': '?', 'item_id': [123, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 194}
+{'Name': '?', 'item_id': [223, 0], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 195}
+{'Name': 'Flask of Crimson Tears +4', 'item_id': [241, 3], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 196}
+{'Name': '?', 'item_id': [89, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [59, 0, 0], 'iter': 153}
+{'Name': '?', 'item_id': [72, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 198}
+{'Name': '?', 'item_id': [93, 1], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [59, 0, 0], 'iter': 154}
+{'Name': '?', 'item_id': [220, 0], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 200}
+{'Name': 'Bloodhound Knight Floh', 'item_id': [152, 165], 'uid': [3, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 206}
+{'Name': 'Errant Sorcerer Robe', 'item_id': [148, 27], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 211}
+{'Name': 'Dragonmaw', 'item_id': [168, 27], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 212}
+{'Name': 'Lightning Pot', 'item_id': [64, 1], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [45, 0, 0], 'iter': 215}
+{'Name': 'Heros Rune :[3]', 'item_id': [100, 11], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [54, 0, 0], 'iter': 82}
+{'Name': 'Flask of Cerulean Tears +9', 'item_id': [45, 4], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [46, 0, 0], 'iter': 39}
+{'Name': 'Haligdrake Talisman +2', 'item_id': [202, 15], 'uid': [0, 160], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [54, 0, 0], 'iter': 107}
+{'Name': 'Jarwight Puppet +7', 'item_id': [95, 3], 'uid': [128, 144], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [46, 0, 0], 'iter': 105}
+{'Name': '?', 'item_id': [251, 4], 'uid': [128, 128], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [59, 0, 0], 'iter': 155}
+{'Name': 'Opaline Hardtear', 'item_id': [3, 43], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [46, 0, 0], 'iter': 119}
+{'Name': 'Stonebarb Cracked Tear', 'item_id': [18, 43], 'uid': [0, 176], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [46, 0, 0], 'iter': 120}
+{'Name': '?', 'item_id': [199, 0], 'uid': [128, 192], 'quantity': 1, 'pad1': [0, 0, 0], 'pad2': [46, 0, 0], 'iter': 173}
