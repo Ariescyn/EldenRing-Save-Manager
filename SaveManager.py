@@ -1190,7 +1190,10 @@ def set_steam_id_menu():
             return
         nms = get_charnames(file)
         archive_file(file, name, "ACTION: Changed SteamID", nms)
-        hexedit.replace_id(file, int(x[0]))
+        out = hexedit.replace_id(file, int(x[0]))
+        if out is False:
+            popup("Unable to find SteamID, SaveData may be corrupt.")
+            return
         popup("Successfully changed SteamID")
         popupwin.destroy()
 
@@ -1670,6 +1673,185 @@ def inventory_editor_menu():
         but_cancel = Button(idwin, text="Cancel", borderwidth=5, width=6, command=lambda: idwin.destroy())
         but_cancel.grid(row=1, column=0, sticky='w', padx=(200,100), pady=(0,15))
 
+    def replace_menu():
+        def populate_items(*args):
+            global itemdb
+
+
+            cat = cat_vars.get()
+            itemdb = itemdata.Items()
+            items = itemdb.get_item_ls(cat)
+
+            dropdown3["menu"].delete(0, "end")  # remove full list
+            for i in items:
+                if len(i) > 1:
+                    dropdown3["menu"].add_command(label=i, command=TKIN._setit(i_vars, i))
+            i_vars.set("Items")  # default value set
+            char = c_vars.get()
+
+
+        def populate_inventory():
+            inv_lb.delete(0,END)
+            char = c_vars.get()  # "1. charname"
+            if char == "Character" or char == "":
+                popup("Character not selected", parent_window=win)
+                return
+
+
+            if char.split(".")[1] == " ":
+                popup(
+                    "Can't write to empty slot.\nGo in-game and create a character to overwrite.", parent_window=win
+                )
+                return
+
+            name = fetch_listbox_entry(lb1)[0]  # Save file name. EX: main
+            if len(name) < 1:
+                popup(txt="Slot not selected", parent_window=win)
+                return
+
+            dest_file = f"{savedir}{name}/{ext()}"
+            char_ind = int(char.split(".")[0])
+
+            try:
+                inventory_items = hexedit.get_inventory(dest_file, char_ind)
+            except:
+                popup("Unable to load inventory! Do you have Tarnished's Wizened Finger?", parent_window=win)
+                return
+            for item in inventory_items:
+                inv_lb.insert(END, "  " + item["name"])
+
+            # Main GUI content STAT
+
+
+        def replace_item():
+
+            item = i_vars.get()
+            if item == "Items" or item == "":
+                popup("Select an item first.", parent_window=win)
+                return
+
+            char = c_vars.get()  # "1. charname"
+            if char == "Character" or char == "":
+                popup("Character not selected", parent_window=win)
+                return
+
+
+            if char.split(".")[1] == " ":
+                popup(
+                    "Can't write to empty slot.\nGo in-game and create a character to overwrite.", parent_window=win
+                )
+                return
+
+
+            item_to_replace = fetch_listbox_entry(inv_lb)[1].lstrip()
+            if item_to_replace == "":
+                popup("Select an item to replace!", parent_window=win)
+                return
+
+
+            name = fetch_listbox_entry(lb1)[1].strip()  # Save file name. EX: main
+            if len(name) < 1:
+                popup(txt="Slot not selected", parent_window=win)
+                return
+
+            dest_file = f"{savedir}{name}/{ext()}"
+            char_ind = int(char.split(".")[0])
+            archive_file(dest_file, name, f"ACTION: Replaced {item_to_replace}", get_charnames(dest_file))
+
+            inventory_entries = hexedit.get_inventory(dest_file, char_ind)
+
+            itemid = itemdb.db[cat_vars.get()].get(item)
+
+            for entry in inventory_entries:
+                if entry["name"] == item_to_replace:
+
+                    hexedit.overwrite_item(dest_file,char_ind, entry, itemid)
+                    popup(f"Successfully replaced {item_to_replace}", parent_window=win)
+                    inv_lb.delete(0,END)
+                    return
+
+
+
+
+        popupwin.destroy()
+        win = Toplevel(root)
+        win.title("Replace Items")
+        win.resizable(width=True, height=True)
+        win.geometry("610x540")
+        x = root.winfo_x()
+        y = root.winfo_y()
+        win.geometry("+%d+%d" % (x + 200, y + 200))
+
+        menubar = Menu(win)
+        win.config(menu=menubar)
+        helpmenu = Menu(menubar, tearoff=0)
+        message = "This feature is experimental and may not work for everything!\n\n-Weapons/Armor is unsupported\n\n-You should try to replace an item with another of the same category ex: crafting materials\n\n-Try not to replace an item you already have, or you will get two stacks of the same item\n\n-Not all items will appear in the inventory box, only detected items that can be overwritten\n\nYou must have Tarnished's Wizened Finger in your inventory (First item you pickup)\n"
+        helpmenu.add_command(label="Readme", command=lambda:popup(message, parent_window=win))
+        menubar.add_cascade(label="Help", menu=helpmenu)
+
+        # MAIN SAVE FILE LISTBOX
+        lb1 = Listbox(win, borderwidth=3, width=15, height=10, exportselection=0)
+        lb1.config(font=bolded, width=20)
+        lb1.grid(row=1, column=0, padx=(10, 0), pady=(10, 10))
+        load_listbox(lb1)
+
+        # SELECT LISTBOX ITEM BUTTON
+        but_select1 = Button(
+            win, text="Select", command=lambda: get_char_names(lb1, dropdown1, c_vars)
+        )
+        # but_select1.config(bg='grey', fg='white')
+        but_select1.grid(row=2, column=0, padx=(10, 0), pady=(0, 0))
+
+        # CHARACTER DROPDOWN MENU
+        opts = [""]
+        c_vars = StringVar(win)
+        c_vars.set("Character")
+        dropdown1 = OptionMenu(win, c_vars, *opts)
+        dropdown1.grid(row=3, column=0, padx=(10, 0), pady=(0, 0))
+
+
+        # LABEL REPLACE WITH
+        repl_lab = Label(win, text="Replace with:")
+        repl_lab.grid(row=4, column=1)
+
+        # CATEGORY DROPDOWN
+        opts1 = itemdb.categories
+        cat_vars = StringVar(win)
+        cat_vars.set("Category")
+        dropdown2 = OptionMenu(win, cat_vars, *opts1)
+        dropdown2.config(width=15)
+
+        cat_vars.trace("w", populate_items)
+        dropdown2.grid(row=5, column=1, padx=(10, 0), pady=(0, 0))
+
+        # ITEM DROPDOWN
+        opts2 = [""]
+        i_vars = StringVar(win)
+        i_vars.set("Items")
+        dropdown3 = OptionMenu(win, i_vars, *opts2)
+        dropdown3.config(width=15)
+        dropdown3.grid(row=6, column=1, padx=(10, 0), pady=(0, 0))
+
+        but_replace = Button(win, text="Replace", command=replace_item)
+        but_replace.grid(row=7, column=1, padx=(10,0), pady=(50,10))
+
+        # inventory items listbox
+        inv_lb = Listbox(win, borderwidth=3, width=15, height=10, exportselection=0)
+        inv_lb.config(font=bolded, width=25)
+        inv_lb.grid(row=1, column=2, padx=(10, 10), pady=(10, 10))
+
+        # get inventory button
+        but_get_inv = Button(win, text="Get Inventory", command=populate_inventory )
+        but_get_inv.grid(row=2, column=2, padx=(10, 0), pady=(10, 10))
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1690,11 +1872,12 @@ def inventory_editor_menu():
     menubar = Menu(popupwin)
     popupwin.config(menu=menubar)
     helpmenu = Menu(menubar, tearoff=0)
+    helpmenu.add_command(label="Replace item", command=replace_menu)
     helpmenu.add_command(label="Search", command=manual_search)
     helpmenu.add_command(label="Add item by ID", command=add_custom_id)
     helpmenu.add_command(label="Remove Custom Item", command=remove_id)
     helpmenu.add_command(label="View Master Spreadsheet", command=lambda:webbrowser.open_new_tab("https://github.com/Ariescyn/EldenRing-Save-Manager/blob/main/ALL_ITEM_IDS.md"))
-    menubar.add_cascade(label="Custom Items", menu=helpmenu)
+    menubar.add_cascade(label="Actions", menu=helpmenu)
 
 
     # MAIN SAVE FILE LISTBOX
@@ -2116,6 +2299,8 @@ def import_save_menu():
 
             popupwin.destroy()
 
+
+
     popupwin = Toplevel(root)
     popupwin.title("Import")
     # popupwin.geometry("200x70")
@@ -2345,7 +2530,7 @@ rt_click_menu.add_command(label="Rename Characters", command=rename_characters_m
 rt_click_menu.add_command(label="Update", command=update_slot)
 #rt_click_menu.add_command(label="Quick Backup", command=quick_backup)
 #rt_click_menu.add_command(label="Quick Restore", command=quick_restore)
-rt_click_menu.add_command(label="Set Starting Classes", command=set_starting_class_menu) #FULLY FUNCTIONAL, but it doesn't work because game restores playtime to original values after loading..... :(
+#rt_click_menu.add_command(label="Set Starting Classes", command=set_starting_class_menu) #FULLY FUNCTIONAL, but it doesn't work because game restores playtime to original values after loading..... :(
 rt_click_menu.add_command(label="Change SteamID", command=set_steam_id_menu)
 rt_click_menu.add_command(label="Open File Location", command=open_folder)
 lb.bind(

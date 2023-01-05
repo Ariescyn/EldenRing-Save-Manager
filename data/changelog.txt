@@ -1,4 +1,3 @@
-Improvements to Custom ID Search tool
-Tutorial video added for Custom ID Search tool
-Ability to set starting class flag. Right-click a save file and select "Set starting classes"
+New replace item tool! Go to Inventory Editor > Actions > Replace item
+Removed starting class feature (Broken for now)
 Minor bug fixes and improvements
