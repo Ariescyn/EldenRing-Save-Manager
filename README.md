@@ -1,6 +1,11 @@
 # EldenRing-Save-Manager
 GUI app written entirely in Python
 
+DO NOT use this mod online, there have been reports of bans and is no longer safe to use online!
+
+Because of the time investment and lack of donations (6 people have donated so far) i am no longer updating or supporting this mod and moving on to develop other applications. If you have any questions you can look through the posts on Nexusmods as most of them have already discussed.
+
+
 ## Usage
 #### Windows
 [Download Latest Release](https://github.com/Ariescyn/EldenRing-Save-Manager/releases/latest)
