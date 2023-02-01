@@ -25,12 +25,7 @@ Run
 python3 SaveManager.py
 ```
 
-Pyinstaller Windows
-```
-pyinstaller --onefile --windowed --icon=.\data\icon.ico .\SaveManager.py .\hexedit.py .\stat_progression.py .\itemdata.py .\os_layer.py .\allitems_dict.py
-```
-
-Pyinstaller Linux
+Pyinstaller
 ```
 pyinstaller --onefile --windowed --icon=./data/icon.ico ./SaveManager.py ./hexedit.py ./stat_progression.py ./itemdata.py ./os_layer.py ./allitems_dict.py
 ```
