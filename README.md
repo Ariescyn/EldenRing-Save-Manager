@@ -3,7 +3,6 @@ GUI app written entirely in Python
 
 DO NOT use this mod online, there have been reports of bans and is no longer safe to use online!
 
-Because of the time investment and lack of donations (6 people have donated so far) it is no longer practical to continue updating or supporting this mod and i will be moving on to develop other applications that i can monetize. If you have any questions you can look through the posts on Nexusmods as most of them have already been discussed.
 
 
 ## Usage
