@@ -708,7 +708,15 @@ def char_manager_menu():
         rmv_none = [i for i in dest_names if not i is None]
         if max(Counter(rmv_none).values()) > 1:
             pop_up(
-                "Sorry, can't handle writing to file with duplcate character names.",
+                """Sorry, Can't handle writing to a DESTINATION file with duplicate character names!\n\n
+                You can work around this limitation by using the save file with duplicate character names as the SOURCE file:\n
+                1. Select the save file with duplicate character names as the SOURCE file.\n
+                2. Select a different save file as the DESTINATION (can be anything).\n
+                3. Copy the first character with duplicate names to DESTINATION file\n
+                4. Rename the character in the DESTINATION file to something different.\n
+                5. Copy the second character with duplicate names to the DESTINATION file.\n\n
+                Why do you have to do this? Because character names vary greatly in frequency and location\n
+                within the save file, so this tool must replace ALL occurences of a given name.""",
                 bold=False,
             )
             return
@@ -897,8 +905,8 @@ def rename_characters_menu():
 
     rwin = Toplevel(root)
     rwin.title("Rename Character")
-    rwin.resizable(width=False, height=False)
-    rwin.geometry("200x150")
+    rwin.resizable(width=True, height=True)
+    rwin.geometry("300x200")
 
     bolded = FNT.Font(weight="bold")  # will use the default font
     x = root.winfo_x()
@@ -909,14 +917,20 @@ def rename_characters_menu():
     vars = StringVar(rwin)
     vars.set("Character")
 
+    info_lab = Label(rwin, text="Note: If you have more than one character\nwith the same name,\nthis will rename BOTH characters.\n\n")
+    info_lab.pack()
+
     drop = OptionMenu(rwin, vars, *opts)
-    drop.grid(row=0, column=0, padx=(35, 0), pady=(10, 0))
+    drop.pack()
+#    drop.grid(row=0, column=0, padx=(35, 0), pady=(10, 0))
 
     name_ent = Entry(rwin, borderwidth=5)
-    name_ent.grid(row=1, column=0, padx=(35, 0), pady=(10, 0))
+    name_ent.pack()
+#    name_ent.grid(row=1, column=0, padx=(35, 0), pady=(10, 0))
 
     but_go = Button(rwin, text="Rename", borderwidth=5, command=do)
-    but_go.grid(row=2, column=0, padx=(35, 0), pady=(10, 0))
+    but_go.pack()
+#    but_go.grid(row=2, column=0, padx=(35, 0), pady=(10, 0))
 
 
 def stat_editor_menu():
@@ -2317,8 +2331,105 @@ def import_save_menu():
     but_cancel.grid(row=2, column=0, padx=(70, 0), pady=(0, 15))
 
 
+def godmode_menu():
+    def get_char_names(lstbox, drop, v):
+        """Populates dropdown menu containing the name of characters in a save file"""
+        v.set("Character")
+        name = fetch_listbox_entry(lstbox)[0]
+        if len(name) < 1:
+            return
+        file = f"{savedir}{name}/{ext()}"
+        names = get_charnames(file)
+        if names is False:
+            popup("FileNotFoundError: This is a known issue.\nPlease try re-importing your save file.")
+        drop["menu"].delete(0, "end")  # remove full list
+
+        index = 1
+        for ind, opt in enumerate(names):
+            if not opt is None:
+                opt = f"{index}. {opt}"
+                drop["menu"].add_command(label=opt, command=TKIN._setit(v, opt))
+                index += 1
+            elif opt is None:
+                opt = f"{ind + 1}. "
+                drop["menu"].add_command(label=opt, command=TKIN._setit(v, opt))
+                index += 1
 
 
+
+    def run_cheat():
+
+        char = c_vars.get()  # "1. charname"
+        if char == "Character" or char == "":
+            popup("Character not selected", parent_window=popupwin)
+            return
+
+        if char.split(".")[1] == " ":
+            popup("Can't write to empty slot.\nGo in-game and create a character to overwrite.", parent_window=popupwin)
+            return
+
+
+
+        name = fetch_listbox_entry(lb1)[0]  # Save file name. EX: main
+        if len(name) < 1:
+            popup(txt="Slot not selected", parent_window=popupwin)
+            return
+
+        dest_file = f"{savedir}{name}/{ext()}"
+        char_ind = int(char.split(".")[0])
+
+        archive_file(dest_file, name, "ACTION: CHEAT GOD-MODE", get_charnames(dest_file))
+        try:
+            hexedit.set_attributes(dest_file, char_ind, [99, 99, 99], cheat=True)
+            popup("Success!", parent_window=popupwin)
+        except Exception as e:
+            traceback.print_exc()
+            str_err = "".join(traceback.format_exc())
+            popup(str_err, parent_window=popupwin)
+
+
+
+    popupwin = Toplevel(root)
+    popupwin.title("God Mode")
+    popupwin.resizable(width=True, height=True)
+    popupwin.geometry("450x450")
+
+    x = root.winfo_x()
+    y = root.winfo_y()
+    popupwin.geometry("+%d+%d" % (x + 200, y + 200))
+
+    main_label = Label(popupwin, text="DO NOT use this feature online! You will most certainly get banned.\n\nThis will set your HP,ST,FP to 60,000\n\n Note: After leveling up, your stats will return to normal\n\nNote: This won't work for some save files, like Nexus Tarnished")
+#    main_label.grid(row=0)
+    main_label.pack()
+    # MAIN SAVE FILE LISTBOX
+    lb1 = Listbox(popupwin, borderwidth=3, width=15, height=10, exportselection=0)
+    lb1.config(font=bolded)
+#    lb1.grid(row=1, column=0, padx=(155, 0), pady=(35, 15))
+    lb1.pack()
+    load_listbox(lb1)
+
+    but_select1 = Button( popupwin, text="Select", command=lambda: get_char_names(lb1, dropdown1, c_vars))
+#    but_select1.grid(row=2, column=0, padx=(155, 0), pady=(0, 10))
+    but_select1.pack()
+
+    # CHARACTER DROPDOWN MENU
+    opts = [""]
+    c_vars = StringVar(popupwin)
+    c_vars.set("Character")
+    dropdown1 = OptionMenu(popupwin, c_vars, *opts)
+#    dropdown1.grid(row=3, column=0, padx=(155, 0), pady=(0, 10))
+    dropdown1.pack()
+
+
+
+
+
+
+    # SELECT LISTBOX ITEM BUTTON
+    but_set = Button(popupwin, text="Set", command=run_cheat)
+    but_set.config(font=bolded)
+#    but_set.grid(row=6, column=0, padx=(155, 0), pady=(22, 10))
+    but_set.pack()
 
 
 
@@ -2474,6 +2585,12 @@ toolsmenu.add_command(label="Stat Editor", command=stat_editor_menu)
 toolsmenu.add_command(label="Inventory Editor", command=inventory_editor_menu)
 toolsmenu.add_command(label="File Recovery", command=recovery_menu)
 menubar.add_cascade(label="Tools", menu=toolsmenu)
+
+
+# CHEAT MENU
+cheatmenu = Menu(menubar, tearoff=0)
+cheatmenu.add_command(label="God Mode", command=godmode_menu)
+menubar.add_cascade(label="Cheats", menu=cheatmenu)
 
 # HELP MENU
 helpmenu = Menu(menubar, tearoff=0)

@@ -57,7 +57,6 @@ def recalc_checksum(file):
         with open(file, "wb") as fh1:
             fh1.write(dat)
 
-
 def change_name(file, nw_nm, dest_slot):
     """Builds list of each character name from static name locations in header, then passes specified char name in bytes into replacer function."""
 
@@ -69,9 +68,7 @@ def change_name(file, nw_nm, dest_slot):
             index = 0
 
             while index < len(dat1):
-                index = dat1.find(
-                    old_name.rstrip(b"\x00"), index
-                )  # Strip empty bytes off of character name
+                index = dat1.find( old_name, index)
 
                 if index == -1:
                     break
@@ -108,12 +105,12 @@ def change_name(file, nw_nm, dest_slot):
     ind1 = 0x1901D0E  # Start address of char names in header, 588 bytes apart
     for i in range(10):
         nm = dat1[ind1 : ind1 + 32]
+
         name_locations.append(nm)  # name in bytes
         ind1 += 588
 
     x = replacer(file, name_locations[dest_slot - 1], nw_nm)
     return x
-
 
 def replace_id(file, newid):
     id_loc = []
@@ -489,10 +486,9 @@ def get_levels(file):
     return lvls
 
 
-def set_attributes(file, slot, lvls, custom_val=False):
+def set_attributes(file, slot, lvls, cheat=False):
 
     stats = get_stats(file, slot)
-
     hp_inds = stats[2]
     hp_val = stat_progression.get_hp(lvls[0])
 
@@ -507,6 +503,8 @@ def set_attributes(file, slot, lvls, custom_val=False):
 
     all_inds = [hp_inds, fp_inds, st_inds]
     vals = [hp_val, st_val, fp_val]
+    if cheat:
+        vals = [60000,60000,60000] # Max value that you can represent with 2 byte unsigned int
 
     for ind_ls, nv in zip(all_inds, vals):
         char_slot = get_slot_ls(file)[slot - 1]
