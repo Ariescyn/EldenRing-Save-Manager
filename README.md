@@ -1,7 +1,6 @@
 # EldenRing-Save-Manager
 GUI app written entirely in Python
 
-DO NOT use this mod online, there have been reports of bans and is no longer safe to use online!
 
 
 
