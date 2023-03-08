@@ -1,3 +1,2 @@
-New God Mode cheat (Sets your Health, Stamina, FP to 60,000)
-Fixed bug with renaming characters that contain the same substring
+God mode fix (read the new description in god-mode window)
 Minor bug fixes and improvements

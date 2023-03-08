@@ -10,7 +10,7 @@ from PIL import Image, ImageTk
 import subprocess, os, zipfile, requests, re, time, hexedit, webbrowser, itemdata, lzma, datetime, json
 from os_layer import *
 from pathlib import Path as PATH
-#Collapse all functions to navigate. In Atom editor: "crtl + ALT + ] To Close"
+#Collapse all functions to navigate. In Atom editor: "Edit > Folding > Fold All"
 
 
 
@@ -106,7 +106,7 @@ def popup(text, command=None, functions=False, buttons=False, button_names=("Yes
         parent_window = root
     popupwin = Toplevel(parent_window)
     popupwin.title(title)
-    # popupwin.geometry("200x75")
+
     lab = Label(popupwin, text=text)
     lab.grid(row=0, column=0, padx=5, pady=5, columnspan=2)
     # Places popup window at center of the root window
@@ -1035,7 +1035,8 @@ def stat_editor_menu():
         try:
             stats = hexedit.get_stats(file, char_slot)[0]
         except Exception as e:
-            pop_up("Can't get stats, go in-game and\nload into the character first or try leveling up once.")
+            #pop_up("Can't get stats, go in-game and\nload into the character first or try leveling up once.")
+            popup("Unable to aquire stats/level.\nYour character level may be incorrect.\nFix now?",functions=(lambda:fix_stats_menu(file, char_slot), lambda:popupwin.destroy()), buttons=True, button_names=("Yes", "No"), parent_window=popupwin)
             return
 
         # entries = [vig_ent, min_ent, end_ent, str_ent, dex_ent, int_ent, fai_ent, arc_ent]
@@ -2383,22 +2384,23 @@ def godmode_menu():
             hexedit.set_attributes(dest_file, char_ind, [99, 99, 99], cheat=True)
             popup("Success!", parent_window=popupwin)
         except Exception as e:
-            traceback.print_exc()
-            str_err = "".join(traceback.format_exc())
-            popup(str_err, parent_window=popupwin)
+            #traceback.print_exc()
+            #str_err = "".join(traceback.format_exc())
+            #popup(str_err, parent_window=popupwin)
+            popup("Unable to aquire stats/level.\nYour character level may be incorrect.\nFix now?",functions=(lambda:fix_stats_menu(dest_file, char_ind), lambda:popupwin.destroy()), buttons=True, button_names=("Yes", "No"), parent_window=popupwin)
 
 
 
     popupwin = Toplevel(root)
     popupwin.title("God Mode")
     popupwin.resizable(width=True, height=True)
-    popupwin.geometry("450x450")
+    popupwin.geometry("510x470")
 
     x = root.winfo_x()
     y = root.winfo_y()
     popupwin.geometry("+%d+%d" % (x + 200, y + 200))
 
-    main_label = Label(popupwin, text="DO NOT use this feature online! You will most certainly get banned.\n\nThis will set your HP,ST,FP to 60,000\n\n Note: After leveling up, your stats will return to normal\n\nNote: This won't work for some save files, like Nexus Tarnished")
+    main_label = Label(popupwin, text="DO NOT use this feature online! You will most certainly get banned.\n\nThis will set your HP,ST,FP to 60,000\n\n Note: Your stats will return to normal after leveling up or equipping a stat boosting item. \n\nNote: Remove any stat boosting gear from your character before doing this or it won't work.\n\n")
 #    main_label.grid(row=0)
     main_label.pack()
     # MAIN SAVE FILE LISTBOX
@@ -2432,6 +2434,124 @@ def godmode_menu():
     but_set.pack()
 
 
+def fix_stats_menu(dest_file, char_ind):
+    def validate(P):
+        if len(P) == 0:
+            return True
+        elif len(P) < 3 and P.isdigit() and int(P) > 0:
+            return True
+        else:
+            # Anything else, reject it
+            return False
+
+    def fix():
+        for entry in entries:
+            if len(entry.get()) < 1:
+                popup("Not all stats entered!",parent_window=popupwin)
+                return
+
+        stat_lst = [int(i.get()) for i in entries]
+
+        name = dest_file.split("/")[-2]
+        print(f"DEST: {dest_file}   ==  char_ind {char_ind} ---   {stat_lst}")
+        archive_file(dest_file, name, "ACTION: Fix Level", get_charnames(dest_file))
+        x = hexedit.fix_stats(dest_file, char_ind, stat_lst)
+        if x is True:
+            popup("Successfully found stats and patched level!", parent_window=popupwin)
+        elif x is False:
+            popup("Unable to find stats, ensure you entered your stats correctly.\nMake sure your stats aren't boosted by an item.", parent_window=popupwin)
+            return
+
+
+    # Main GUI content STAT
+    popupwin = Toplevel(root)
+    popupwin.title("Fix Level")
+    popupwin.resizable(width=True, height=True)
+    popupwin.geometry("580x550")
+    vcmd = (popupwin.register(validate), "%P")
+    bolded = FNT.Font(weight="bold")  # will use the default font
+    x = root.winfo_x()
+    y = root.winfo_y()
+    popupwin.geometry("+%d+%d" % (x + 200, y + 200))
+
+
+
+    main_label = Label(popupwin, text="Enter your character stats.\n\nGo in-game and remove any stat boosting gear and take note of your stats and enter them here:")
+    main_label.grid(row=0, column=0, padx=(20,0), pady=(5,0), sticky="n")
+
+    # VIGOR
+    vig_lab = Label(popupwin, text="VIGOR:")
+    vig_lab.config(font=bolded)
+    vig_lab.grid(row=0, column=0, padx=(20, 0), pady=(75, 0), sticky="n")
+
+    vig_ent = Entry( popupwin, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
+    vig_ent.grid(row=0, column=0, padx=(120, 0), pady=(75, 0), sticky="n")
+
+    # MIND
+    min_lab = Label(popupwin, text="MIND:")
+    min_lab.config(font=bolded)
+    min_lab.grid(row=0, column=0, padx=(20, 0), pady=(115, 0), sticky="n")
+
+    min_ent = Entry(popupwin, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
+    min_ent.grid(row=0, column=0, padx=(120, 0), pady=(115, 0), sticky="n")
+
+    # ENDURANCE
+    end_lab = Label(popupwin, text="END:")
+    end_lab.config(font=bolded)
+    end_lab.grid(row=0, column=0, padx=(20, 0), pady=(155, 0), sticky="n")
+
+    end_ent = Entry(popupwin, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
+    end_ent.grid(row=0, column=0, padx=(120, 0), pady=(155, 0), sticky="n")
+
+    # STRENGTH
+    str_lab = Label(popupwin, text="STR:")
+    str_lab.config(font=bolded)
+    str_lab.grid(row=0, column=0, padx=(20, 0), pady=(195, 0), sticky="n")
+
+    str_ent = Entry(popupwin, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
+    str_ent.grid(row=0, column=0, padx=(120, 0), pady=(195, 0), sticky="n")
+
+    # DEXTERITY
+    dex_lab = Label(popupwin, text="DEX:")
+    dex_lab.config(font=bolded)
+    dex_lab.grid(row=0, column=0, padx=(20, 0), pady=(235, 0), sticky="n")
+
+    dex_ent = Entry(popupwin, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
+    dex_ent.grid(row=0, column=0, padx=(120, 0), pady=(235, 0), sticky="n")
+
+    # INTELLIGENCE
+    int_lab = Label(popupwin, text="INT:")
+    int_lab.config(font=bolded)
+    int_lab.grid(row=0, column=0, padx=(20, 0), pady=(275, 0), sticky="n")
+
+    int_ent = Entry(popupwin, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
+    int_ent.grid(row=0, column=0, padx=(120, 0), pady=(275, 0), sticky="n")
+
+    # FAITH
+    fai_lab = Label(popupwin, text="FAITH:")
+    fai_lab.config(font=bolded)
+    fai_lab.grid(row=0, column=0, padx=(20, 0), pady=(315, 0), sticky="n")
+
+    fai_ent = Entry(popupwin, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
+    fai_ent.grid(row=0, column=0, padx=(120, 0), pady=(315, 0), sticky="n")
+
+    # ARCANE
+    arc_lab = Label(popupwin, text="ARC:")
+    arc_lab.config(font=bolded)
+    arc_lab.grid(row=0, column=0, padx=(20, 0), pady=(355, 0), sticky="n")
+
+    arc_ent = Entry(popupwin, borderwidth=5, width=3, validate="key", validatecommand=vcmd)
+    arc_ent.grid(row=0, column=0, padx=(120, 0), pady=(355, 0), sticky="n")
+
+    # lIST OF ALL ENTRIES
+    entries = [vig_ent, min_ent, end_ent, str_ent, dex_ent, int_ent, fai_ent, arc_ent]
+
+
+
+    # SET STATS BUTTON
+    but_set_stats = Button(popupwin, text="Fix", width=12, command=fix)
+    but_set_stats.config(font=bolded)
+    but_set_stats.grid(row=0, column=0, padx=(25, 0), pady=(420, 0), sticky="n")
 
 
 
@@ -2508,6 +2628,15 @@ def create_notes(name, dir):
 
 def about():
     popup(text="Author: Lance Fitz\nEmail: scyntacks94@gmail.com\nGithub: github.com/Ariescyn")
+
+
+def open_notes():
+    name = fetch_listbox_entry(lb)[0]
+    if len(name) < 1:
+        popup("No listbox item selected.")
+        return
+    cmd = lambda: open_textfile_in_editor(f"{savedir}{name}/notes.txt")
+    out = run_command(cmd)
 
 
 
@@ -2630,14 +2759,6 @@ def do_popup(event):
     finally:
         rt_click_menu.grab_release()
 
-
-def open_notes():
-    name = fetch_listbox_entry(lb)[0]
-    if len(name) < 1:
-        popup("No listbox item selected.")
-        return
-    cmd = lambda: open_textfile_in_editor(f"{savedir}{name}/notes.txt")
-    out = run_command(cmd)
 
 
 rt_click_menu = Menu(lb, tearoff=0)

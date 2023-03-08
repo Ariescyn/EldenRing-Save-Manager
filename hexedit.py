@@ -57,6 +57,7 @@ def recalc_checksum(file):
         with open(file, "wb") as fh1:
             fh1.write(dat)
 
+
 def change_name(file, nw_nm, dest_slot):
     """Builds list of each character name from static name locations in header, then passes specified char name in bytes into replacer function."""
 
@@ -111,6 +112,7 @@ def change_name(file, nw_nm, dest_slot):
 
     x = replacer(file, name_locations[dest_slot - 1], nw_nm)
     return x
+
 
 def replace_id(file, newid):
     id_loc = []
@@ -377,7 +379,7 @@ def get_stats(file, char_slot):
                 l_endian(slot1[ind + 24 : ind + 25]),
                 l_endian(slot1[ind + 28 : ind + 29]),
             ]
-            hp = l_endian(slot1[ind - 44 : ind - 40])
+            
 
             if sum(stats) == lv + 79 and l_endian(slot1[ind + 44 : ind + 46]) == lv:
                 start_ind = ind
@@ -420,7 +422,9 @@ def get_stats(file, char_slot):
         stam.append(l_endian(slot1[z : z + 2]))
         stam_inds.append(z)
         z += 4
-
+    print(f"HP:  {hp}")
+    print(f"STAM:  {stam}")
+    print(f"FP:  {fp}")
     return [
         stats,
         indexes,
@@ -428,22 +432,6 @@ def get_stats(file, char_slot):
         stam_inds,
         fp_inds,
     ]  # [[36, 16, 38, 33, 16, 9, 10, 7], 47421]
-
-    # DELETE THIS ON NEXT RELEASE
-    hp = []
-    hp_inds = []
-    x = start_ind - 44
-    for i in range(3):
-        hp.append(l_endian(slot1[x : x + 2]))
-        hp_inds.append(x)
-        x += 4
-
-    return [
-        stats,
-        indexes,
-        hp_inds,
-    ]  # [[36, 16, 38, 33, 16, 9, 10, 7], [47421,47421], [3534345,35345,35345]]
-    # END
 
 
 def set_level(file, char, lvl):
@@ -485,7 +473,6 @@ def get_levels(file):
         ind += 588
     return lvls
 
-
 def set_attributes(file, slot, lvls, cheat=False):
 
     stats = get_stats(file, slot)
@@ -521,7 +508,6 @@ def set_attributes(file, slot, lvls, cheat=False):
         with open(file, "wb") as f:
             f.write(dat)
     recalc_checksum(file)
-
 
 def additem(file, slot, itemids, quantity):
     cs = get_slot_ls(file)[slot - 1]
@@ -617,7 +603,6 @@ def search_itemid(f1,f2,f3,q1,q2,q3):
             return None
 
 
-
 def set_play_time(file,slot,time):
     # time = [hr,min,sec]
     time = [int(i) for i in time]
@@ -643,7 +628,6 @@ def set_play_time(file,slot,time):
     with open(file, "wb") as ff:
         ff.write(ch)
         recalc_checksum(file)
-
 
 
 def set_starting_class(file, slot, char_class):
@@ -674,8 +658,6 @@ def set_starting_class(file, slot, char_class):
     return True
 
 
-
-
 def find_inventory(file,slot,ids):
     with open(file, 'rb') as f:
         dat = f.read()
@@ -694,8 +676,6 @@ def find_inventory(file,slot,ids):
                         break
 
         return index
-
-
 
 
 def get_inventory(file, slot):
@@ -739,10 +719,6 @@ def get_inventory(file, slot):
     return finished_ls
 
 
-
-
-
-
 def overwrite_item(file,slot, item_dict_entry, newids):
     #entry = {'name': 'Smithing Stone :[8]', 'item_id': [123, 39], 'uid': [0, 176], 'quantity': 63, 'pad1': [0, 0, 0], 'iter': 103, 'pad2': [58, 0, 0], 'index': 63987}
 
@@ -759,3 +735,53 @@ def overwrite_item(file,slot, item_dict_entry, newids):
         pos += 1
 
     recalc_checksum(file)
+
+
+def fix_stats(file, char_slot, stat_list):
+
+
+    slots = get_slot_ls(file)
+    slot_slices = get_slot_slices(file)
+
+    start_ind = 0
+    slot1 = slots[char_slot - 1]
+    indexes = []
+    lvl_ind = 0
+    for ind, b in enumerate(slot1):
+        if ind > 90000:
+            break
+
+        stats = [
+            l_endian(slot1[ind : ind + 1]),
+            l_endian(slot1[ind + 4 : ind + 5]),
+            l_endian(slot1[ind + 8 : ind + 9]),
+            l_endian(slot1[ind + 12 : ind + 13]),
+            l_endian(slot1[ind + 16 : ind + 17]),
+            l_endian(slot1[ind + 20 : ind + 21]),
+            l_endian(slot1[ind + 24 : ind + 25]),
+            l_endian(slot1[ind + 28 : ind + 29]),
+            ]
+
+
+        if stats == stat_list:
+            lvl_ind = ind + 44
+            break
+
+
+    if lvl_ind == 0:
+        return False
+
+    new_lv = sum(stats) - 79
+    new_lv_bytes = new_lv.to_bytes(2, "little")
+    data = (
+        slot_slices[char_slot - 1][0]
+        + slot1[:lvl_ind]
+        + new_lv_bytes
+        + slot1[lvl_ind + 2 :]
+        + slot_slices[char_slot - 1][1]
+    )
+
+    with open(file, "wb") as fh:
+        fh.write(data)
+    set_level(file, char_slot, new_lv) # Set level runs recalc_checksum
+    return True
