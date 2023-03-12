@@ -35,6 +35,7 @@ pyinstaller --onefile --windowed --icon=./data/icon.ico ./SaveManager.py ./hexed
 - Copy characters between save files
 - Duplicate characters within the same save file
 - rename characters in-game name
+- Seamless co-op .co2 extension support
 - automatically patch downloaded save files with your own Steam ID
 - Fix corrupt save files by recalculating checksum values
 - Update Save file to work on newer game versions
