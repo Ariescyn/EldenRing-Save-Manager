@@ -37,6 +37,8 @@ pyinstaller --onefile --windowed --icon=./data/icon.ico ./SaveManager.py ./hexed
 - rename characters in-game name
 - automatically patch downloaded save files with your own Steam ID
 - Fix corrupt save files by recalculating checksum values
+- Update Save file to work on newer game versions
+- God mode (sets HP, ST, FP to 60k)
 - Create save and load backups
 - Create save slots for various builds before respec etc.
 - Edit notes attached to each save slot
