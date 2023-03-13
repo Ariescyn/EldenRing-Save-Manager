@@ -379,7 +379,7 @@ def get_stats(file, char_slot):
                 l_endian(slot1[ind + 24 : ind + 25]),
                 l_endian(slot1[ind + 28 : ind + 29]),
             ]
-            
+
 
             if sum(stats) == lv + 79 and l_endian(slot1[ind + 44 : ind + 46]) == lv:
                 start_ind = ind
@@ -785,3 +785,33 @@ def fix_stats(file, char_slot, stat_list):
         fh.write(data)
     set_level(file, char_slot, new_lv) # Set level runs recalc_checksum
     return True
+
+
+def set_runes(file, char_slot, old_quantity, new_quantity):
+
+
+    slots = get_slot_ls(file)
+    slot_slices = get_slot_slices(file)
+    slot1 = slots[char_slot -1]
+    index = 0
+    for ind, b in enumerate(slot1):
+        if ind > 80000:
+            break
+        x = l_endian(slot1[ind : ind + 4])
+        if x == old_quantity:
+            index = ind
+            
+
+    if index == 0:
+        return False
+    data = (
+    slot_slices[char_slot - 1][0]
+    + slot1[:index]
+    + new_quantity.to_bytes(4,"little")
+    + slot1[index + 4 :]
+    + slot_slices[char_slot - 1][1]
+    )
+
+    with open(file, "wb") as fh:
+        fh.write(data)
+    recalc_checksum(file)

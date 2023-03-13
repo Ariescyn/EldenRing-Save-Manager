@@ -206,7 +206,7 @@ def grab_metadata(file):
     """Used to grab metadata from archive info.txt"""
     with open(file.replace(" ", "__").replace(":", "."), 'r') as f:
         meta = f.read()
-        popup(meta)
+        popup(meta.replace(",", "\n"))
 
 
 def get_charnames(file):
@@ -2401,17 +2401,15 @@ def godmode_menu():
     popupwin.geometry("+%d+%d" % (x + 200, y + 200))
 
     main_label = Label(popupwin, text="DO NOT use this feature online! You will most certainly get banned.\n\nThis will set your HP,ST,FP to 60,000\n\n Note: Your stats will return to normal after leveling up or equipping a stat boosting item. \n\nNote: Remove any stat boosting gear from your character before doing this or it won't work.\n\n")
-#    main_label.grid(row=0)
     main_label.pack()
+
     # MAIN SAVE FILE LISTBOX
     lb1 = Listbox(popupwin, borderwidth=3, width=15, height=10, exportselection=0)
     lb1.config(font=bolded)
-#    lb1.grid(row=1, column=0, padx=(155, 0), pady=(35, 15))
     lb1.pack()
     load_listbox(lb1)
 
     but_select1 = Button( popupwin, text="Select", command=lambda: get_char_names(lb1, dropdown1, c_vars))
-#    but_select1.grid(row=2, column=0, padx=(155, 0), pady=(0, 10))
     but_select1.pack()
 
     # CHARACTER DROPDOWN MENU
@@ -2419,18 +2417,12 @@ def godmode_menu():
     c_vars = StringVar(popupwin)
     c_vars.set("Character")
     dropdown1 = OptionMenu(popupwin, c_vars, *opts)
-#    dropdown1.grid(row=3, column=0, padx=(155, 0), pady=(0, 10))
     dropdown1.pack()
-
-
-
-
 
 
     # SELECT LISTBOX ITEM BUTTON
     but_set = Button(popupwin, text="Set", command=run_cheat)
     but_set.config(font=bolded)
-#    but_set.grid(row=6, column=0, padx=(155, 0), pady=(22, 10))
     but_set.pack()
 
 
@@ -2553,6 +2545,140 @@ def fix_stats_menu(dest_file, char_ind):
     but_set_stats.config(font=bolded)
     but_set_stats.grid(row=0, column=0, padx=(25, 0), pady=(420, 0), sticky="n")
 
+
+def set_runes_menu():
+    def get_char_names(lstbox, drop, v):
+        """Populates dropdown menu containing the name of characters in a save file"""
+        v.set("Character")
+        name = fetch_listbox_entry(lstbox)[0]
+        if len(name) < 1:
+            return
+        file = f"{savedir}{name}/{ext()}"
+        names = get_charnames(file)
+        if names is False:
+            popup("FileNotFoundError: This is a known issue.\nPlease try re-importing your save file.")
+        drop["menu"].delete(0, "end")  # remove full list
+
+        index = 1
+        for ind, opt in enumerate(names):
+            if not opt is None:
+                opt = f"{index}. {opt}"
+                drop["menu"].add_command(label=opt, command=TKIN._setit(v, opt))
+                index += 1
+            elif opt is None:
+                opt = f"{ind + 1}. "
+                drop["menu"].add_command(label=opt, command=TKIN._setit(v, opt))
+                index += 1
+
+    def validate(P):
+
+        if P.isdigit():
+            return True
+        else:
+            return False
+
+
+    def set_runecount():
+        old_quantity = old_q_ent.get()
+        new_quantity = new_q_ent.get()
+
+        char = c_vars.get()  # "1. charname"
+        if char == "Character" or char == "":
+            popup("Character not selected", parent_window=popupwin)
+            return
+
+        if char.split(".")[1] == " ":
+            popup("Can't write to empty slot.\nGo in-game and create a character to overwrite.", parent_window=popupwin)
+            return
+
+
+
+        name = fetch_listbox_entry(lb1)[0]  # Save file name. EX: main
+        if len(name) < 1:
+            popup(txt="Slot not selected", parent_window=popupwin)
+            return
+
+        dest_file = f"{savedir}{name}/{ext()}"
+        char_ind = int(char.split(".")[0])
+
+        if old_quantity == "" or new_quantity == "":
+            popup("Enter a rune quantity", parent_window = popupwin)
+            return
+
+        if int(old_quantity) < 1000 or int(new_quantity) < 1000:
+            popup("Rune count is too low! Enter a value greater than 1000", parent_window=popupwin)
+            return
+        if int(new_quantity) > 999999999: # Max quantity in-game
+            new_quantity = 999999999
+
+
+        archive_file(dest_file, fetch_listbox_entry(lb1)[0], "ACTION: Set rune count", get_charnames(dest_file))
+        out = hexedit.set_runes(dest_file, char_ind, int(old_quantity), int(new_quantity))
+        if out is False:
+            popup("Unable to find rune count!\nMake sure you have a larger value with the number being fairly random. Ex: 85732", parent_window=popupwin)
+            return
+        else:
+            popup(f"Successfully set rune count to {new_quantity}", parent_window=popupwin)
+
+    popupwin = Toplevel(root)
+    popupwin.title("Set Rune Count")
+    popupwin.resizable(width=True, height=True)
+    popupwin.geometry("510x590")
+
+    x = root.winfo_x()
+    y = root.winfo_y()
+    popupwin.geometry("+%d+%d" % (x + 200, y + 200))
+    vcmd = (popupwin.register(validate), "%P")
+
+
+    main_label = Label(popupwin, text="Go in-game and take note of how many held runes the character has.\nBigger numbers ensure the program finds the proper location of your runes.\n")
+    main_label.pack()
+
+    # MAIN SAVE FILE LISTBOX
+    lb1 = Listbox(popupwin, borderwidth=3, width=15, height=10, exportselection=0)
+    lb1.config(font=bolded)
+
+    lb1.pack()
+    load_listbox(lb1)
+
+    but_select1 = Button( popupwin, text="Select", command=lambda: get_char_names(lb1, dropdown1, c_vars))
+    but_select1.pack()
+
+    # CHARACTER DROPDOWN MENU
+    opts = [""]
+    c_vars = StringVar(popupwin)
+    c_vars.set("Character")
+    dropdown1 = OptionMenu(popupwin, c_vars, *opts)
+    dropdown1.pack()
+
+    padding_lab1 = Label(popupwin, text="\n\n")
+    padding_lab1.pack()
+
+    # OLD QUANTITY LABEL
+    old_q_label = Label(popupwin, text="Enter Current rune count:")
+    old_q_label.pack()
+
+     # OLD QUANTITY ENTRY
+    old_q_ent = Entry(popupwin, borderwidth=5, validate="key", validatecommand=vcmd)
+    old_q_ent.pack()
+
+
+     # NEW QUANTITY LABEL
+    new_q_label = Label(popupwin, text="Enter new rune count:")
+    new_q_label.pack()
+
+     # NEW QUANTITY ENTRY
+    new_q_ent = Entry(popupwin, borderwidth=5, validate="key", validatecommand=vcmd)
+    new_q_ent.pack()
+
+
+    padding_lab3 = Label(popupwin, text="\n\n")
+    padding_lab3.pack()
+
+    # SET BUTTON
+    but_set = Button(popupwin, text="Set", command=set_runecount)
+    but_set.config(font=bolded)
+    but_set.pack()
 
 
 
@@ -2719,6 +2845,7 @@ menubar.add_cascade(label="Tools", menu=toolsmenu)
 # CHEAT MENU
 cheatmenu = Menu(menubar, tearoff=0)
 cheatmenu.add_command(label="God Mode", command=godmode_menu)
+cheatmenu.add_command(label="Set Runes", command=set_runes_menu)
 menubar.add_cascade(label="Cheats", menu=cheatmenu)
 
 # HELP MENU
