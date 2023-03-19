@@ -1,5 +1,5 @@
 import os, json
-
+# Needed for hexedit.py dependency. Just ignore.
 
 item_dict = {
     "Upgrade Materials": {
