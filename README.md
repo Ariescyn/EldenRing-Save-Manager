@@ -60,4 +60,4 @@ You can use this icon to replace the horrible default Elden Ring game icon.
 
 
 
-Walkthrough: https://youtu.be/RZIP0kYjvZM
+Video Tutorial: https://youtu.be/RZIP0kYjvZM
