@@ -1,0 +1,2 @@
+ACTION: Loaded save and overwrite current save file in EldenRing game directory
+CHARACTERS: way of tomoe, eee, Cornflakes

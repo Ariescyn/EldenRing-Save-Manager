@@ -439,8 +439,11 @@ def load_save_from_lb():
         lb.delete(0, END)
         load_listbox(lb)
         return
+    
+    #"""asks for 2 confirmations: one warning to save your current game and the other to confirm you want to load the selected save"""
+    confirm = lambda: popup("Load " + name + "?", buttons=True, functions=(lambda: wrapper(comm), donothing)) #gaves the name of the save file in the confirmation
     popup(
-        "Are you sure?", buttons=True, functions=(lambda: wrapper(comm), donothing)
+        "Would you like to save your current game first?", buttons=True, functions=(donothing, confirm)
     )
 
 

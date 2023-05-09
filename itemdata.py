@@ -96,6 +96,7 @@ item_dict = {
     },
     "Consumables": {
 
+        "Boiled Prawn":[62, 3],
         "Bloodboil Aromatic": [222,13],
         "Neutralizing Boluses": [132, 3],
         "Stanching Boluses": [142, 3],
@@ -160,7 +161,7 @@ item_dict = {
     },
     "Ash of War": {
         "Lost Ash of War": [86, 39],
-    }
+    },
 
 }
 
