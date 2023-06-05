@@ -1,6 +1,9 @@
 # EldenRing-Save-Manager
 GUI app written entirely in Python
 
+
+
+
 ## Usage
 #### Windows
 [Download Latest Release](https://github.com/Ariescyn/EldenRing-Save-Manager/releases/latest)
@@ -22,8 +25,9 @@ python3 SaveManager.py
 
 Pyinstaller
 ```
-pyinstaller --onefile --windowed --icon=.\data\icon.ico .\SaveManager.py .\hexedit.py .\stat_progression.py .\itemdata.py .\os_layer.py
+pyinstaller --onefile --windowed --icon=./data/icon.ico ./SaveManager.py ./hexedit.py ./stat_progression.py ./itemdata.py ./os_layer.py ./allitems_dict.py
 ```
+
 
 ## Features:
 - Edit item quantities
@@ -31,8 +35,10 @@ pyinstaller --onefile --windowed --icon=.\data\icon.ico .\SaveManager.py .\hexed
 - Copy characters between save files
 - Duplicate characters within the same save file
 - rename characters in-game name
+- Seamless co-op .co2 extension support
 - automatically patch downloaded save files with your own Steam ID
 - Fix corrupt save files by recalculating checksum values
+- God mode (sets HP, ST, FP to 60k)
 - Create save and load backups
 - Create save slots for various builds before respec etc.
 - Edit notes attached to each save slot
@@ -54,4 +60,4 @@ You can use this icon to replace the horrible default Elden Ring game icon.
 
 
 
-Walkthrough: https://youtu.be/RZIP0kYjvZM
+Video Tutorial: https://youtu.be/RZIP0kYjvZM

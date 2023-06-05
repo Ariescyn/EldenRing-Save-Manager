@@ -1,4 +1,1 @@
-Fixed rare bug where importing or creating save failed to add save to main listbox
-Improvements to Custom ID search tool
-Note: Some items like Arrows do not have the same ID across save files
-Use the search tool in inventory editor to find the right item ID for your save file
+New cheat to set amount of held runes

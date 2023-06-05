@@ -4,7 +4,6 @@ NOTE:
 - If an ID doesn't work, you can use the built-in Item ID search in the Save Manager.
 - Item IDs for arrows are inconsistent between save files and unlikely to work. 
 
-
 'Unarmed':[176, 173],<br />
 'Iron Helmet':[64, 156],<br />
 'Crimson Amber Medallion':[232, 3],<br />

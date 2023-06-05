@@ -72,8 +72,6 @@ item_dict = {
         "Silver Pickled Foot": [166,4],
         "Bewitching Branches": [22,13]
     },
-
-
     "Gloveworts": {
         "Grave Glovewort [1]": [148, 42],
         "Grave Glovewort [2]": [149, 42],
