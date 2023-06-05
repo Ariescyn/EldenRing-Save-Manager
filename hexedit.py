@@ -2,14 +2,38 @@ import binascii, re, hashlib, random, base64, stat_progression, itemdata, os, al
 from allitems_dict import itemdict
 
 def l_endian(val):
-    """Takes bytes and returns little endian int32/64"""
-    l_hex = bytearray(val)
-    l_hex.reverse()
-    str_l = "".join(format(i, "02x") for i in l_hex)
-    return int(str_l, 16)
+    """
+    Takes bytes and returns little endian int32/64.
+
+    Args:
+        val: Bytes representing the integer value.
+
+    Returns:
+        int: Little endian integer value converted from the input bytes.
+
+    Raises:
+        None.
+    """
+    l_hex = bytearray(val)  # Convert bytes to a bytearray
+    l_hex.reverse()  # Reverse the order of bytes to represent little endian
+    str_l = "".join(format(i, "02x") for i in l_hex)  # Convert bytearray to hex string
+    return int(str_l, 16)  # Convert hex string to integer using base 16 (hexadecimal)
+
 
 
 def recalc_checksum(file):
+    """
+    Recalculates and updates checksum values in a binary file.
+
+    Args:
+        file (str): The path to the binary file.
+
+    Returns:
+        None.
+
+    Raises:
+        None.
+    """
     with open(file, "rb") as fh:
         dat = fh.read()
         slot_ls = []
@@ -20,20 +44,19 @@ def recalc_checksum(file):
 
         # Build nested list containing data and checksum related to each slot
         for i in range(10):
-            # [ dat[0x00000310:0x0028030F +1], dat[ 0x00000300:0x0000030F + 1] ]
-            d = dat[s_ind : s_ind + slot_len + 1]
-            c = dat[c_ind : c_ind + cs_len + 1]
-            slot_ls.append([d, c])
-            s_ind += 2621456
-            c_ind += 2621456
+            d = dat[s_ind : s_ind + slot_len + 1]  # Extract data for the slot
+            c = dat[c_ind : c_ind + cs_len + 1]  # Extract checksum for the slot
+            slot_ls.append([d, c])  # Append the data and checksum to the slot list
+            s_ind += 2621456  # Increment the slot data index
+            c_ind += 2621456  # Increment the checksum index
 
         # Do comparisons and recalculate checksums
         for ind, i in enumerate(slot_ls):
-            new_cs = hashlib.md5(i[0]).hexdigest()
-            cur_cs = binascii.hexlify(i[1]).decode("utf-8")
+            new_cs = hashlib.md5(i[0]).hexdigest()  # Recalculate the checksum for the data
+            cur_cs = binascii.hexlify(i[1]).decode("utf-8")  # Convert the current checksum to a string
 
-            if new_cs != cur_cs:
-                slot_ls[ind][1] = binascii.unhexlify(new_cs)
+            if new_cs != cur_cs:  # Compare the recalculated and current checksums
+                slot_ls[ind][1] = binascii.unhexlify(new_cs)  # Update the checksum in the slot list
 
         slot_len = 2621439
         cs_len = 15
@@ -41,42 +64,65 @@ def recalc_checksum(file):
         c_ind = 0x00000300
         # Insert all checksums into data
         for i in slot_ls:
-            dat = dat[:s_ind] + i[0] + dat[s_ind + slot_len + 1 :]
-            dat = dat[:c_ind] + i[1] + dat[c_ind + cs_len + 1 :]
-            s_ind += 2621456
-            c_ind += 2621456
+            dat = dat[:s_ind] + i[0] + dat[s_ind + slot_len + 1 :]  # Update the data in the original data
+            dat = dat[:c_ind] + i[1] + dat[c_ind + cs_len + 1 :]  # Update the checksum in the original data
+            s_ind += 2621456  # Increment the slot data index
+            c_ind += 2621456  # Increment the checksum index
 
         # Manually doing General checksum
-        general = dat[0x019003B0 : 0x019603AF + 1]
-        new_cs = hashlib.md5(general).hexdigest()
-        cur_cs = binascii.hexlify(dat[0x019003A0 : 0x019003AF + 1]).decode("utf-8")
+        general = dat[0x019003B0 : 0x019603AF + 1]  # Extract the data for the general checksum
+        new_cs = hashlib.md5(general).hexdigest()  # Recalculate the general checksum
+        cur_cs = binascii.hexlify(dat[0x019003A0 : 0x019003AF + 1]).decode("utf-8")  # Convert the current general checksum to a string
 
-        writeval = binascii.unhexlify(new_cs)
-        dat = dat[:0x019003A0] + writeval + dat[0x019003AF + 1 :]
+        writeval = binascii.unhexlify(new_cs)  # Convert the recalculated general checksum to bytes
+        dat = dat[:0x019003A0] + writeval + dat[0x019003AF + 1 :]  # Update the general checksum in the original data
 
         with open(file, "wb") as fh1:
-            fh1.write(dat)
-
+            fh1.write(dat)  # Write the updated data to the file
 
 def change_name(file, nw_nm, dest_slot):
-    """Builds list of each character name from static name locations in header, then passes specified char name in bytes into replacer function."""
+    """
+    Changes the character name in a binary file at a specified slot.
+
+    Args:
+        file (str): The path to the binary file.
+        nw_nm (str): The new name to be set.
+        dest_slot (int): The slot number where the name should be changed.
+
+    Returns:
+        str: Returns "error" if the operation encounters an issue, otherwise None.
+
+    Raises:
+        None.
+    """
 
     def replacer(file, old_name, name):
-        """Scans for all occurences of old_name and replaces it with name."""
+        """
+        Scans for all occurrences of old_name and replaces them with name in the file.
+
+        Args:
+            file (str): The path to the binary file.
+            old_name (bytes): The original name in bytes to be replaced.
+            name (bytes): The new name in bytes to replace the old name.
+
+        Returns:
+            None.
+
+        Raises:
+            None.
+        """
         with open(file, "rb") as fh:
             dat1 = fh.read()
             id_loc = []
             index = 0
 
             while index < len(dat1):
-                index = dat1.find( old_name, index)
+                index = dat1.find(old_name, index)
 
                 if index == -1:
                     break
                 id_loc.append(index)
-                if (
-                    len(id_loc) > 300
-                ):  # If it found that many locations then the name might be short like "M"
+                if len(id_loc) > 300:
                     return "error"
                 index += 8
 
@@ -98,7 +144,6 @@ def change_name(file, nw_nm, dest_slot):
                     f.write(data)
         recalc_checksum(file)
 
-    # empty = b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
     with open(file, "rb") as fh:
         dat1 = fh.read()
 
@@ -106,7 +151,6 @@ def change_name(file, nw_nm, dest_slot):
     ind1 = 0x1901D0E  # Start address of char names in header, 588 bytes apart
     for i in range(10):
         nm = dat1[ind1 : ind1 + 32]
-
         name_locations.append(nm)  # name in bytes
         ind1 += 588
 
@@ -115,6 +159,20 @@ def change_name(file, nw_nm, dest_slot):
 
 
 def replace_id(file, newid):
+    """
+    Replaces the steamID in a binary file with a new ID.
+
+    Args:
+        file (str): The path to the binary file.
+        newid (int): The new steamID to be set.
+
+    Returns:
+        bool: Returns False if the steamID length is not 17 digits, otherwise None.
+
+    Raises:
+        None.
+    """
+
     id_loc = []
     index = 0
 
@@ -122,9 +180,9 @@ def replace_id(file, newid):
         dat = f.read()
         f.seek(26215348)  # start address of steamID
         steam_id = f.read(8)  # Get steamID
-        if len(str(l_endian(steam_id))) != 17: # Prevent save file corruption if steamid is 0 for example.
-            return False
 
+        if len(str(l_endian(steam_id))) != 17:
+            return False  # Prevent save file corruption if steamID is not valid
 
         id_loc = []
         index = 0
@@ -150,14 +208,36 @@ def replace_id(file, newid):
 
 
 def copy_save(src_file, dest_file, src_char, dest_char):
-    """Copy characters between save files"""
+    """
+    Copy characters between save files.
+
+    Args:
+        src_file (str): The path to the source save file.
+        dest_file (str): The path to the destination save file.
+        src_char (int): The source character slot number.
+        dest_char (int): The destination character slot number.
+
+    Returns:
+        None.
+
+    Raises:
+        None.
+    """
+
+    # Length of a character slot
     slot_len = 2621456
+
+    # Get levels of characters from the source save file
     lvls = get_levels(src_file)
+
+    # Retrieve the level of the source character
     lvl = lvls[src_char - 1]
 
+    # Read the contents of the source save file
     with open(src_file, "rb") as fh:
         dat = fh.read()
 
+    # Select the appropriate character slot from the source save file
     if src_char == 1:
         src_slot = dat[0x00000310 : 0x0028030F + 1]
     else:
@@ -167,9 +247,11 @@ def copy_save(src_file, dest_file, src_char, dest_char):
             + 1
         ]
 
+    # Read the contents of the destination save file
     with open(dest_file, "rb") as fh:
         dat1 = fh.read()
 
+    # Select the appropriate sections from the destination save file
     if dest_char == 1:
         slot_s = dat1[:0x00000310]
         slot_e = dat1[0x0028030F + 1 :]
@@ -177,11 +259,14 @@ def copy_save(src_file, dest_file, src_char, dest_char):
         slot_s = dat1[: 0x00000310 + ((dest_char - 1) * slot_len)]
         slot_e = dat1[0x0028030F + ((dest_char - 1) * slot_len) + 1 :]
 
+    # Combine the character slot from the source save file with the destination save file
     dat1 = slot_s + src_slot + slot_e
 
+    # Write the modified contents back to the destination save file
     with open(dest_file, "wb") as fh:
         fh.write(dat1)
 
+    # Set the character level in the destination save file
     set_level(dest_file, dest_char, lvl)
 
 
@@ -800,7 +885,7 @@ def set_runes(file, char_slot, old_quantity, new_quantity):
         x = l_endian(slot1[ind : ind + 4])
         if x == old_quantity:
             index = ind
-            
+
 
     if index == 0:
         return False

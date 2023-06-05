@@ -12,7 +12,7 @@ from os_layer import *
 from pathlib import Path as PATH
 #Collapse all functions to navigate. In Atom editor: "Edit > Folding > Fold All"
 
-
+# ---!!!! Change button to 3!
 
 # set always the working dir to the correct folder for unix env
 if not is_windows:
@@ -159,7 +159,7 @@ def archive_file(file, name, metadata, names):
             fho.write(fhi.read())
             names = [i for i in names if not i is None]
             formatted_names = ", ".join(names)
-            meta = f"{metadata}\nCHARACTERS: {formatted_names}"
+            meta = f"{metadata}\nCHARACTERS:\n {formatted_names}"
 
         meta_ls = [i for i in meta]
         try:
@@ -420,7 +420,7 @@ def load_save_from_lb():
             run_command(comm)
         else:
             nms = get_charnames(path)
-            archive_file(path, "None", "ACTION: Loaded save and overwrite current save file in EldenRing game directory", nms)
+            archive_file(path, "Loaded Save", "ACTION: Loaded save and overwrite current save file in EldenRing game directory", nms)
             run_command(comm)
 
     if len(lb.curselection()) < 1:
@@ -428,7 +428,6 @@ def load_save_from_lb():
         return
     name = fetch_listbox_entry(lb)[0]
     src_dir = "".join((savedir, name.replace(" ", "-"), "/"))
-
 
 
     comm = lambda: copy_folder(src_dir, str(config.cfg["gamedir"]))
@@ -439,9 +438,7 @@ def load_save_from_lb():
         lb.delete(0, END)
         load_listbox(lb)
         return
-    popup(
-        "Are you sure?", buttons=True, functions=(lambda: wrapper(comm), donothing)
-    )
+    popup("This will load your save into the game directory.\nWould you like to backup your current game first?", buttons=True, functions=(lambda: import_save_menu(directory=src_dir + ext()), lambda:wrapper(comm)))
 
 
 def run_command(subprocess_command, optional_success_out="OK"):
@@ -1957,9 +1954,10 @@ def recovery_menu():
         name = fetch_listbox_entry(lb1)[1].strip().replace(" ", "__").replace(":", ".")
         path = f"./data/archive/{name}/ER0000.xz"
         folder_path = f"./data/recovered/{name}/"
+
         try:
             unarchive_file(path)
-            popup("Succesfully recovered save file.", functions=(lambda:open_folder_standard_exporer(folder_path), donothing), buttons=True, button_names=("Open", "Cancel"))
+            popup("Succesfully recovered save file.\nImport now?", functions=(lambda:import_save_menu(directory=folder_path + ext()), donothing), buttons=True, button_names=("Yes", "No"))
         except FileNotFoundError as e:
             popup(e)
 
@@ -1976,6 +1974,25 @@ def recovery_menu():
         y = win.winfo_y()
         pwin.geometry("+%d+%d" % (x + 200, y + 200))
 
+    def delete_entry(directory):
+
+        def delete(directory):
+            delete_folder(directory)
+            selected_index = lb1.curselection()
+            if selected_index:
+                lb1.delete(selected_index)
+            win.update()
+
+        def dont_delete():
+            pass
+
+        popup("Are you sure?", parent_window=win, functions=(lambda:delete(directory),dont_delete), buttons=True)
+
+    def delete_all():
+        folder_path = "./data/archive/"
+        shutil.rmtree(folder_path)
+        os.makedirs(folder_path)
+        lb1.delete(0,END)
 
     win = Toplevel(root)
     win.title("Recovery")
@@ -1995,7 +2012,7 @@ def recovery_menu():
     helpmenu.add_command(
         label="Readme",
         command=lambda: pop_up(
-            """\u2022 This tool recovers ruined save files in case of user error.\n
+            """\u2022 This tool recovers save files in case of user error.\n
                 \u2022 Every time you modify/create/delete a save file, before the action is performed, a copy is created, compressed and stored in data/archive.\n
                 \u2022 The original file size of 28mb is compressed to 2mb. To recover a file, simply select a file and click Restore.\n
                 \u2022 Restored save files are in the data/recovered directory.\n
@@ -2003,7 +2020,8 @@ def recovery_menu():
                 """
         ),
     )
-    menubar.add_cascade(label="Help", menu=helpmenu)
+    helpmenu.add_command(label="Delete All", command=lambda:popup(text="Are you sure?", buttons=True, functions=(delete_all, donothing)))
+    menubar.add_cascade(label="File", menu=helpmenu)
 
 
 
@@ -2022,7 +2040,9 @@ def recovery_menu():
     rt_click_menu = Menu(lb1, tearoff=0)
     rt_click_menu.add_command(label="Get Info", command=lambda:grab_metadata(f"./data/archive/{fetch_listbox_entry(lb1)[1].strip()}/info.txt"   )  )
 
-    lb1.bind("<Button-3>", do_popup)
+    rt_click_menu.add_command(label="Delete", command=lambda:delete_entry
+    (f"./data/archive/{fetch_listbox_entry(lb1)[1].strip().replace(' ', '__').replace(':', '.')}/"))
+    lb1.bind("<Button-2>", do_popup)
 
 
 
@@ -2235,12 +2255,15 @@ def change_default_steamid_menu():
     but_cancel.grid(row=2, column=0, padx=(70, 0), pady=(0, 15))
 
 
-def import_save_menu():
+def import_save_menu(directory=False):
     """Opens file explorer to choose a save file to import, Then checks if the files steam ID matches users, and replaces it with users id"""
 
     if os.path.isdir(savedir) is False:
         os.makedirs(savedir)
-    d = fd.askopenfilename()
+    if directory:
+        d = directory
+    else:
+        d = fd.askopenfilename()
 
     if len(d) < 1:
         return
@@ -2899,7 +2922,7 @@ rt_click_menu.add_command(label="Update", command=update_slot)
 rt_click_menu.add_command(label="Change SteamID", command=set_steam_id_menu)
 rt_click_menu.add_command(label="Open File Location", command=open_folder)
 lb.bind(
-    "<Button-3>", do_popup
+    "<Button-2>", do_popup
 )  # button 3 is right click, so when right clicking inside listbox, do_popup is executed at cursor position
 
 load_listbox(lb)  # populates listbox with saves on runtime
