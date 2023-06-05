@@ -1,1 +1,5 @@
-New cheat to set amount of held runes
+-- Improvements to File Recovery tool
+-- various small improvements
+-- Added more items to inventory editor
+I have spent hundreds of hours invested in this project with over 8,000 lines of code written
+If you enjoy the app and want to support future updates, PLEASE donate! Even $1 is appreciated!

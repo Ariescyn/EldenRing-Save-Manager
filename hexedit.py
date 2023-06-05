@@ -2,14 +2,38 @@ import binascii, re, hashlib, random, base64, stat_progression, itemdata, os, al
 from allitems_dict import itemdict
 
 def l_endian(val):
-    """Takes bytes and returns little endian int32/64"""
-    l_hex = bytearray(val)
-    l_hex.reverse()
-    str_l = "".join(format(i, "02x") for i in l_hex)
-    return int(str_l, 16)
+    """
+    Takes bytes and returns little endian int32/64.
+
+    Args:
+        val: Bytes representing the integer value.
+
+    Returns:
+        int: Little endian integer value converted from the input bytes.
+
+    Raises:
+        None.
+    """
+    l_hex = bytearray(val)  # Convert bytes to a bytearray
+    l_hex.reverse()  # Reverse the order of bytes to represent little endian
+    str_l = "".join(format(i, "02x") for i in l_hex)  # Convert bytearray to hex string
+    return int(str_l, 16)  # Convert hex string to integer using base 16 (hexadecimal)
+
 
 
 def recalc_checksum(file):
+    """
+    Recalculates and updates checksum values in a binary file.
+
+    Args:
+        file (str): The path to the binary file.
+
+    Returns:
+        None.
+
+    Raises:
+        None.
+    """
     with open(file, "rb") as fh:
         dat = fh.read()
         slot_ls = []
@@ -20,20 +44,19 @@ def recalc_checksum(file):
 
         # Build nested list containing data and checksum related to each slot
         for i in range(10):
-            # [ dat[0x00000310:0x0028030F +1], dat[ 0x00000300:0x0000030F + 1] ]
-            d = dat[s_ind : s_ind + slot_len + 1]
-            c = dat[c_ind : c_ind + cs_len + 1]
-            slot_ls.append([d, c])
-            s_ind += 2621456
-            c_ind += 2621456
+            d = dat[s_ind : s_ind + slot_len + 1]  # Extract data for the slot
+            c = dat[c_ind : c_ind + cs_len + 1]  # Extract checksum for the slot
+            slot_ls.append([d, c])  # Append the data and checksum to the slot list
+            s_ind += 2621456  # Increment the slot data index
+            c_ind += 2621456  # Increment the checksum index
 
         # Do comparisons and recalculate checksums
         for ind, i in enumerate(slot_ls):
-            new_cs = hashlib.md5(i[0]).hexdigest()
-            cur_cs = binascii.hexlify(i[1]).decode("utf-8")
+            new_cs = hashlib.md5(i[0]).hexdigest()  # Recalculate the checksum for the data
+            cur_cs = binascii.hexlify(i[1]).decode("utf-8")  # Convert the current checksum to a string
 
-            if new_cs != cur_cs:
-                slot_ls[ind][1] = binascii.unhexlify(new_cs)
+            if new_cs != cur_cs:  # Compare the recalculated and current checksums
+                slot_ls[ind][1] = binascii.unhexlify(new_cs)  # Update the checksum in the slot list
 
         slot_len = 2621439
         cs_len = 15
@@ -41,42 +64,65 @@ def recalc_checksum(file):
         c_ind = 0x00000300
         # Insert all checksums into data
         for i in slot_ls:
-            dat = dat[:s_ind] + i[0] + dat[s_ind + slot_len + 1 :]
-            dat = dat[:c_ind] + i[1] + dat[c_ind + cs_len + 1 :]
-            s_ind += 2621456
-            c_ind += 2621456
+            dat = dat[:s_ind] + i[0] + dat[s_ind + slot_len + 1 :]  # Update the data in the original data
+            dat = dat[:c_ind] + i[1] + dat[c_ind + cs_len + 1 :]  # Update the checksum in the original data
+            s_ind += 2621456  # Increment the slot data index
+            c_ind += 2621456  # Increment the checksum index
 
         # Manually doing General checksum
-        general = dat[0x019003B0 : 0x019603AF + 1]
-        new_cs = hashlib.md5(general).hexdigest()
-        cur_cs = binascii.hexlify(dat[0x019003A0 : 0x019003AF + 1]).decode("utf-8")
+        general = dat[0x019003B0 : 0x019603AF + 1]  # Extract the data for the general checksum
+        new_cs = hashlib.md5(general).hexdigest()  # Recalculate the general checksum
+        cur_cs = binascii.hexlify(dat[0x019003A0 : 0x019003AF + 1]).decode("utf-8")  # Convert the current general checksum to a string
 
-        writeval = binascii.unhexlify(new_cs)
-        dat = dat[:0x019003A0] + writeval + dat[0x019003AF + 1 :]
+        writeval = binascii.unhexlify(new_cs)  # Convert the recalculated general checksum to bytes
+        dat = dat[:0x019003A0] + writeval + dat[0x019003AF + 1 :]  # Update the general checksum in the original data
 
         with open(file, "wb") as fh1:
-            fh1.write(dat)
-
+            fh1.write(dat)  # Write the updated data to the file
 
 def change_name(file, nw_nm, dest_slot):
-    """Builds list of each character name from static name locations in header, then passes specified char name in bytes into replacer function."""
+    """
+    Changes the character name in a binary file at a specified slot.
+
+    Args:
+        file (str): The path to the binary file.
+        nw_nm (str): The new name to be set.
+        dest_slot (int): The slot number where the name should be changed.
+
+    Returns:
+        str: Returns "error" if the operation encounters an issue, otherwise None.
+
+    Raises:
+        None.
+    """
 
     def replacer(file, old_name, name):
-        """Scans for all occurences of old_name and replaces it with name."""
+        """
+        Scans for all occurrences of old_name and replaces them with name in the file.
+
+        Args:
+            file (str): The path to the binary file.
+            old_name (bytes): The original name in bytes to be replaced.
+            name (bytes): The new name in bytes to replace the old name.
+
+        Returns:
+            None.
+
+        Raises:
+            None.
+        """
         with open(file, "rb") as fh:
             dat1 = fh.read()
             id_loc = []
             index = 0
 
             while index < len(dat1):
-                index = dat1.find( old_name, index)
+                index = dat1.find(old_name, index)
 
                 if index == -1:
                     break
                 id_loc.append(index)
-                if (
-                    len(id_loc) > 300
-                ):  # If it found that many locations then the name might be short like "M"
+                if len(id_loc) > 300:
                     return "error"
                 index += 8
 
@@ -98,7 +144,6 @@ def change_name(file, nw_nm, dest_slot):
                     f.write(data)
         recalc_checksum(file)
 
-    # empty = b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
     with open(file, "rb") as fh:
         dat1 = fh.read()
 
@@ -106,7 +151,6 @@ def change_name(file, nw_nm, dest_slot):
     ind1 = 0x1901D0E  # Start address of char names in header, 588 bytes apart
     for i in range(10):
         nm = dat1[ind1 : ind1 + 32]
-
         name_locations.append(nm)  # name in bytes
         ind1 += 588
 
@@ -115,6 +159,20 @@ def change_name(file, nw_nm, dest_slot):
 
 
 def replace_id(file, newid):
+    """
+    Replaces the steamID in a binary file with a new ID.
+
+    Args:
+        file (str): The path to the binary file.
+        newid (int): The new steamID to be set.
+
+    Returns:
+        bool: Returns False if the steamID length is not 17 digits, otherwise None.
+
+    Raises:
+        None.
+    """
+
     id_loc = []
     index = 0
 
@@ -122,9 +180,9 @@ def replace_id(file, newid):
         dat = f.read()
         f.seek(26215348)  # start address of steamID
         steam_id = f.read(8)  # Get steamID
-        if len(str(l_endian(steam_id))) != 17: # Prevent save file corruption if steamid is 0 for example.
-            return False
 
+        if len(str(l_endian(steam_id))) != 17:
+            return False  # Prevent save file corruption if steamID is not valid
 
         id_loc = []
         index = 0
@@ -150,14 +208,36 @@ def replace_id(file, newid):
 
 
 def copy_save(src_file, dest_file, src_char, dest_char):
-    """Copy characters between save files"""
+    """
+    Copy characters between save files.
+
+    Args:
+        src_file (str): The path to the source save file.
+        dest_file (str): The path to the destination save file.
+        src_char (int): The source character slot number.
+        dest_char (int): The destination character slot number.
+
+    Returns:
+        None.
+
+    Raises:
+        None.
+    """
+
+    # Length of a character slot
     slot_len = 2621456
+
+    # Get levels of characters from the source save file
     lvls = get_levels(src_file)
+
+    # Retrieve the level of the source character
     lvl = lvls[src_char - 1]
 
+    # Read the contents of the source save file
     with open(src_file, "rb") as fh:
         dat = fh.read()
 
+    # Select the appropriate character slot from the source save file
     if src_char == 1:
         src_slot = dat[0x00000310 : 0x0028030F + 1]
     else:
@@ -167,9 +247,11 @@ def copy_save(src_file, dest_file, src_char, dest_char):
             + 1
         ]
 
+    # Read the contents of the destination save file
     with open(dest_file, "rb") as fh:
         dat1 = fh.read()
 
+    # Select the appropriate sections from the destination save file
     if dest_char == 1:
         slot_s = dat1[:0x00000310]
         slot_e = dat1[0x0028030F + 1 :]
@@ -177,11 +259,14 @@ def copy_save(src_file, dest_file, src_char, dest_char):
         slot_s = dat1[: 0x00000310 + ((dest_char - 1) * slot_len)]
         slot_e = dat1[0x0028030F + ((dest_char - 1) * slot_len) + 1 :]
 
+    # Combine the character slot from the source save file with the destination save file
     dat1 = slot_s + src_slot + slot_e
 
+    # Write the modified contents back to the destination save file
     with open(dest_file, "wb") as fh:
         fh.write(dat1)
 
+    # Set the character level in the destination save file
     set_level(dest_file, dest_char, lvl)
 
 
@@ -200,17 +285,6 @@ def get_names(file):
 
     except FileNotFoundError as e:
         return False
-#    except FileNotFoundError as e:
-#        d = file.split("/")[:4]
-#        d = "/".join(d)
-
-#        dir_id = re.findall(r'\d{17}',str(os.listdir(d)))
-#        if len(dir_id) != 1:
-#            return False
-
-#        new_path = f"{d}/{dir_id[0]}/ER0000.sl2"
-#        with open(new_path, "rb") as fh:
-#            dat1 = fh.read()
 
     name1 = dat1[0x1901d0e:0x1901d0e + 32].decode('utf-16')
     name2 = dat1[0x1901f5a:0x1901f5a + 32].decode('utf-16')
@@ -312,23 +386,43 @@ def get_slot_slices(file):
 
 
 def set_stats(file, char_num, stat_ls):
+    """
+    Set the stats of a character in a file.
 
-    locs = get_stats(file, char_num)[1]  # list of index values of stats
+    Parameters:
+        file (str): The file to modify.
+        char_num (int): The character number.
+        stat_ls (list): The list of new stats.
+
+    Returns:
+        None
+    """
+
+    # Get the index values of the stats in the file
+    locs = get_stats(file, char_num)[1]
 
     index = 0
-    for loc in locs:  # last val is lvl
+    for loc in locs:
+        # Get the character's slots and slot slices
         slots = get_slot_ls(file)
         slot_slices = get_slot_slices(file)
         dest_char = slots[char_num - 1]
 
         if index == 8:
-            # Last val is lvl index
+            # Last value is the level index
             lvl_ind = loc
 
+            # Get the current level of the character
             level = dest_char[lvl_ind : lvl_ind + 1]
+
+            # Calculate the new level by subtracting 79 from the sum of the new stats
             new_lv = sum(stat_ls) - 79
             new_lvl_int = new_lv
+
+            # Convert the new level to a 2-byte little-endian representation
             new_lv = new_lv.to_bytes(2, "little")
+
+            # Construct the new data by replacing the old level with the new level
             data = (
                 slot_slices[char_num - 1][0]
                 + dest_char[:lvl_ind]
@@ -336,12 +430,16 @@ def set_stats(file, char_num, stat_ls):
                 + dest_char[lvl_ind + 2 :]
                 + slot_slices[char_num - 1][1]
             )
+
+            # Write the new data to the file
             with open(file, "wb") as fh:
                 fh.write(data)
             break
 
+        # Convert the new stat value to a 1-byte little-endian representation
         writeval = stat_ls[index].to_bytes(1, "little")
-        # total = dat[:0x00000310] + slot[:47496] + b'c' + slot[47496 +1:] + dat[0x0028030F +1:]
+
+        # Construct the new data by replacing the old stat value with the new stat value
         data = (
             slot_slices[char_num - 1][0]
             + dest_char[:loc]
@@ -349,26 +447,43 @@ def set_stats(file, char_num, stat_ls):
             + dest_char[loc + 1 :]
             + slot_slices[char_num - 1][1]
         )
+
+        # Write the new data to the file
         with open(file, "wb") as fh:
             fh.write(data)
         index += 1
 
+    # Update the character's level in the file
     set_level(file, char_num, new_lvl_int)
 
 
+
 def get_stats(file, char_slot):
-    """"""
-    lvls = get_levels(file)
-    lv = lvls[char_slot - 1]
-    slots = get_slot_ls(file)
+    """
+    Retrieve the stats and corresponding indexes for a character from a file.
+
+    Parameters:
+        file (str): The file to read from.
+        char_slot (int): The character slot number.
+
+    Returns:
+        list: A list containing the stats, indexes, hp_inds, stam_inds, and fp_inds.
+    """
+
+    lvls = get_levels(file)  # Get the levels of all characters
+    lv = lvls[char_slot - 1]  # Get the level of the specified character slot
+    slots = get_slot_ls(file)  # Get the character slots
 
     start_ind = 0
-    slot1 = slots[char_slot - 1]
-    indexes = []
+    slot1 = slots[char_slot - 1]  # Get the slot data for the specified character slot
+    indexes = []  # List to store the indexes of the stats
+
     for ind, b in enumerate(slot1):
         if ind > 60000:
             return None
+
         try:
+            # Extract the individual stats using little-endian encoding
             stats = [
                 l_endian(slot1[ind : ind + 1]),
                 l_endian(slot1[ind + 4 : ind + 5]),
@@ -380,7 +495,8 @@ def get_stats(file, char_slot):
                 l_endian(slot1[ind + 28 : ind + 29]),
             ]
 
-
+            # Check if the sum of stats equals the level plus 79,
+            # and the level index matches the level
             if sum(stats) == lv + 79 and l_endian(slot1[ind + 44 : ind + 46]) == lv:
                 start_ind = ind
                 lvl_ind = ind + 44
@@ -394,10 +510,10 @@ def get_stats(file, char_slot):
         indexes.append(idx)
         idx += 4
 
-    indexes.append(lvl_ind)  # Add the level location to the end o
+    indexes.append(lvl_ind)  # Add the level location to the end of indexes
 
-    fp = []
-    fp_inds = []
+    fp = []  # List to store the fp values
+    fp_inds = []  # List to store the indexes of the fp values
     y = start_ind - 32
 
     for i in range(3):
@@ -405,8 +521,8 @@ def get_stats(file, char_slot):
         fp_inds.append(y)
         y += 4
 
-    hp = []
-    hp_inds = []
+    hp = []  # List to store the hp values
+    hp_inds = []  # List to store the indexes of the hp values
     x = start_ind - 44
 
     for i in range(3):
@@ -414,25 +530,26 @@ def get_stats(file, char_slot):
         hp_inds.append(x)
         x += 4
 
-    stam = []
-    stam_inds = []
+    stam = []  # List to store the stamina values
+    stam_inds = []  # List to store the indexes of the stamina values
     z = start_ind - 16
 
     for i in range(3):
         stam.append(l_endian(slot1[z : z + 2]))
         stam_inds.append(z)
         z += 4
+
     print(f"HP:  {hp}")
     print(f"STAM:  {stam}")
     print(f"FP:  {fp}")
+
     return [
         stats,
         indexes,
         hp_inds,
         stam_inds,
         fp_inds,
-    ]  # [[36, 16, 38, 33, 16, 9, 10, 7], 47421]
-
+    ]  # Return the list of stats, indexes, hp_inds, stam_inds, and fp_inds
 
 def set_level(file, char, lvl):
     """Sets levels in static header position by char names for in-game load save menu."""
@@ -474,6 +591,18 @@ def get_levels(file):
     return lvls
 
 def set_attributes(file, slot, lvls, cheat=False):
+    """
+    Sets the attributes (HP, FP, ST) of a character in a given slot.
+
+    Parameters:
+        file (str): The file path of the save file.
+        slot (int): The character slot number.
+        lvls (list): A list of attribute levels [hp_level, fp_level, st_level].
+        cheat (bool, optional): Flag indicating whether to set attributes to maximum value. Defaults to False.
+
+    Returns:
+        None
+    """
 
     stats = get_stats(file, slot)
     hp_inds = stats[2]
@@ -490,12 +619,14 @@ def set_attributes(file, slot, lvls, cheat=False):
 
     all_inds = [hp_inds, fp_inds, st_inds]
     vals = [hp_val, st_val, fp_val]
+
     if cheat:
-        vals = [60000,60000,60000] # Max value that you can represent with 2 byte unsigned int
+        vals = [60000, 60000, 60000]  # Max value that can be represented with a 2-byte unsigned integer
 
     for ind_ls, nv in zip(all_inds, vals):
         char_slot = get_slot_ls(file)[slot - 1]
         dat_slices = get_slot_slices(file)[slot - 1]
+
         for i in ind_ls:
             dat = (
                 dat_slices[0]
@@ -507,9 +638,24 @@ def set_attributes(file, slot, lvls, cheat=False):
 
         with open(file, "wb") as f:
             f.write(dat)
+
     recalc_checksum(file)
 
+
 def additem(file, slot, itemids, quantity):
+    """
+    Adds an item with the specified item IDs and quantity to a character's inventory in a given slot.
+
+    Parameters:
+        file (str): The file path of the save file.
+        slot (int): The character slot number.
+        itemids (list): A list of item IDs [item_id_1, item_id_2].
+        quantity (int): The quantity of the item to add.
+
+    Returns:
+        bool: True if the item was successfully added, None otherwise.
+    """
+
     cs = get_slot_ls(file)[slot - 1]
     slices = get_slot_slices(file)
     s_start = slices[slot - 1][0]
@@ -521,9 +667,8 @@ def additem(file, slot, itemids, quantity):
         index = []
         cur = [int(i) for i in itemids]
 
-
         if cur is None:
-            return
+            return None
 
         for ind, i in enumerate(cs):
             if ind < 30000:
@@ -537,7 +682,6 @@ def additem(file, slot, itemids, quantity):
                 and l_endian(cs[ind + 3 : ind + 4]) == 176
             ):
                 index.append(ind + 4)
-
             elif (
                 l_endian(cs[ind : ind + 1]) == cur[0]
                 and l_endian(cs[ind + 1 : ind + 2]) == cur[1]
@@ -546,10 +690,8 @@ def additem(file, slot, itemids, quantity):
             ):
                 index.append(ind + 4)
 
-
         if len(index) < 1:
             return None
-
         else:
             pos = index[0]
 
@@ -566,6 +708,7 @@ def additem(file, slot, itemids, quantity):
 
         recalc_checksum(file)
         return True
+
 
 
 def search_itemid(f1,f2,f3,q1,q2,q3):
@@ -800,7 +943,7 @@ def set_runes(file, char_slot, old_quantity, new_quantity):
         x = l_endian(slot1[ind : ind + 4])
         if x == old_quantity:
             index = ind
-            
+
 
     if index == 0:
         return False
