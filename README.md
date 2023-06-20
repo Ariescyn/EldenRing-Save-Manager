@@ -33,6 +33,7 @@ pyinstaller --onefile --windowed --icon=./data/icon.ico ./SaveManager.py ./hexed
 - Edit item quantities
 - Edit character stats
 - Copy characters between save files
+- Restore deleted characters
 - Duplicate characters within the same save file
 - rename characters in-game name
 - Seamless co-op .co2 extension support
