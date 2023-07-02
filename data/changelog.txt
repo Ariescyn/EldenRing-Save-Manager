@@ -1,5 +1,3 @@
--- Improvements to File Recovery tool
--- various small improvements
--- Added more items to inventory editor
+Regression fix ( The app was not loading saves when the user pressed "Load Save" and then "Yes")
 I have spent hundreds of hours invested in this project with over 8,000 lines of code written
 If you enjoy the app and want to support future updates, PLEASE donate! Even $1 is appreciated!

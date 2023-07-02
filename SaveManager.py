@@ -437,7 +437,7 @@ def load_save_from_lb():
         lb.delete(0, END)
         load_listbox(lb)
         return
-    popup("This will load your save into the game directory.\nWould you like to backup your current game first?\n\nClose this window to cancel load\n", buttons=True, functions=(lambda: import_save_menu(directory=src_dir + ext()), lambda:wrapper(comm)))
+    popup("Are you sure?", buttons=True, functions=(lambda: wrapper(comm), donothing))
 
 
 def run_command(subprocess_command, optional_success_out="OK"):
@@ -926,7 +926,7 @@ def rename_characters_menu():
 
     but_go = Button(rwin, text="Rename", borderwidth=5, command=do)
     but_go.pack()
-#    but_go.grid(row=2, column=0, padx=(35, 0), pady=(10, 0))
+
 
 
 def stat_editor_menu():
