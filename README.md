@@ -30,8 +30,9 @@ pyinstaller --onefile --windowed --icon=./data/icon.ico ./SaveManager.py ./hexed
 
 
 ## Features:
-- Edit item quantities
+- Edit item quantities ( Can't add items you don't have )
 - Edit character stats
+- Down-level characters to meet PVP meta
 - Copy characters between save files
 - Restore deleted characters
 - Duplicate characters within the same save file
@@ -39,10 +40,11 @@ pyinstaller --onefile --windowed --icon=./data/icon.ico ./SaveManager.py ./hexed
 - Seamless co-op .co2 extension support
 - automatically patch downloaded save files with your own Steam ID
 - Fix corrupt save files by recalculating checksum values
-- God mode (sets HP, ST, FP to 60k)
+- Change quantity of Runes
+- God mode (sets HP, ST, FP to 60,000)
+- File recovery tool that backs up your save file before every action
 - Create save and load backups
 - Create save slots for various builds before respec etc.
-- Edit notes attached to each save slot
 - Update to the latest release with included updater
 - Force quit EldenRing when the game locks up and even task manager wont end the process
 
