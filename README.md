@@ -50,7 +50,7 @@ pyinstaller --onefile --windowed --icon=./data/icon.ico ./SaveManager.py ./hexed
 
 If you like the mod or want to support future updates, please [Donate](https://www.paypal.com/donate/?hosted_button_id=H2X24U55NUJJW) via PayPal
 
-Video Tutorial: [https://youtu.be/RZIP0kYjvZM](https://youtu.be/LQxmFuq3dfg?si=sKhjtqenEUBuTvBY)
+Video Tutorial: https://youtu.be/LQxmFuq3dfg?si=sKhjtqenEUBuTvBY
 
 ![save-editor](https://user-images.githubusercontent.com/68882322/163687699-334cf9d6-f956-4509-bebc-e549fe39fd3e.jpg)
 
