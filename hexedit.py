@@ -286,31 +286,50 @@ def get_names(file):
     except FileNotFoundError as e:
         return False
 
-    name1 = dat1[0x1901d0e:0x1901d0e + 32].decode('utf-16')
-    name2 = dat1[0x1901f5a:0x1901f5a + 32].decode('utf-16')
-    name3 = dat1[0x19021a6:0x19021a6 + 32].decode('utf-16')
-    name4 = dat1[0x19023f2 :0x19023f2  +32].decode('utf-16')
-    name5 = dat1[0x190263e :0x190263e  +32].decode('utf-16')
-    name6 = dat1[0x190288a :0x190288a  +32].decode('utf-16')
-    name7 = dat1[0x1902ad6 :0x1902ad6  +32].decode('utf-16')
-    name8 = dat1[0x1902d22 :0x1902d22  +32].decode('utf-16')
-    name9 = dat1[0x1902f6e :0x1902f6e  +32].decode('utf-16')
-    name10 = dat1[0x19031ba :0x19031ba  +32].decode('utf-16')
+    # Start address of each character slot name
+    hex_locations = [   0x1901d0e,
+                        0x1901f5a,
+                        0x19021a6,
+                        0x19023f2,
+                        0x190263e,
+                        0x190288a,
+                        0x1902ad6,
+                        0x1902d22,
+                        0x1902f6e,
+                        0x19031ba
+                    ]
+    names = []
+    for idx in hex_locations:
+        try:
+            name = dat1[idx:idx+32].decode('utf-16')
 
+        # If name fails to be decoded, the data is corrupt.
+        # This commonly occurs with Seamless co-op mod.
+        # This try-except will ignore any decode errors and replace with None
+        except UnicodeDecodeError:
+            name = None
 
-    names = [name1,name2,name3,name4,name5,name6,name7,name8,name9,name10]
+        names.append(name)
 
 
     for ind,i in enumerate(names):
+
         if i == '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00':
             names[ind] = None
 
+
     for ind,i in enumerate(names):
+
         if not i is None:
             names[ind] = i.split('\x00')[0] # name looks like this: 'wete\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
 
-    return names
+    # Some corrupt data will produce names that are empty strings after the above split.
+    # Before the split, it is just a bunch of random junk that cant be decoded in any way.
+    for ind, name in enumerate(names):
+        if name == "":
+            names[ind] = None
 
+    return names
 
 def random_str():
     """Generates random 16 character long name"""
