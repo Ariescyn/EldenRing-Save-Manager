@@ -498,7 +498,7 @@ def get_stats(file, char_slot):
     indexes = []  # List to store the indexes of the stats
 
     for ind, b in enumerate(slot1):
-        if ind > 60000:
+        if ind > 120000:
             return None
 
         try:

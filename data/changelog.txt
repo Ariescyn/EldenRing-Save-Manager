@@ -1,3 +1,2 @@
-Fixed issue with import/create save not working for some users
-I have hundreds of hours invested in this project with over 8,000 lines of code written
+Fixed issue with stat editor being unable to acquire stats from some characters
 If you enjoy the app and want to support future updates, PLEASE donate! Even $1 is appreciated!
